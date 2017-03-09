@@ -1,0 +1,15 @@
+After you have downloaded the project from git
+
+1. Install the cmake-gui
+2. Open cmake-gui and set the source code path to the path of the bullet3-2.86(in the project folder) folder
+3. Create a new folder in the project folder named "build" and set the build path to it
+4. Press confiure and use a Visual Studio 14 2015 generator and press finish
+5. In the red text that shows up check the line USE_MSVC_RUNTIME_LIBRARY_DLL
+5. Press generate
+6. Open the project file NeuralCreature.sln in Visual Studio
+7. Remove the BulletCollision, BulletDynamics and LinearMath projects from the solution
+8. Remove the referneces to the projects you deleted from the NeuralCreature project
+9. Add BulletCollision, BulletDynamics and LinearMath back as exisitng projects from build/src
+10. Add the projects as references in the NeuralCreature project
+11. Build each of the three projects seperately with the order BulletCollision, BulletDynamics and LinearMath in visual studio.
+12. Build and Run the NeuralCreature project
