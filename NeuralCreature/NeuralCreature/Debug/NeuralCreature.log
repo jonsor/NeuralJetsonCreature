@@ -1,19 +1,9 @@
-﻿  OpenGLTutorial.cpp
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(169): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(170): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(171): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(256): warning C4305: 'initializing': truncation from 'const double' to 'btScalar'
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(257): warning C4305: 'initializing': truncation from 'const double' to 'btScalar'
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(300): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(368): warning C4018: '<': signed/unsigned mismatch
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(573): warning C4305: '+=': truncation from 'double' to 'btScalar'
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(576): warning C4305: '-=': truncation from 'double' to 'btScalar'
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(584): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(585): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(589): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(590): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(592): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(593): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\jsors\documents\visual studio 2017\projects\neuralcreature\neuralcreature\opengltutorial.cpp(601): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-  NeuralCreature.vcxproj -> C:\Users\jsors\Documents\Visual Studio 2017\Projects\NeuralCreature\Debug\NeuralCreature.exe
-  NeuralCreature.vcxproj -> C:\Users\jsors\Documents\Visual Studio 2017\Projects\NeuralCreature\Debug\NeuralCreature.pdb (Partial PDB)
+﻿  Main.cpp
+k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(169): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
+k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(170): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
+k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(171): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'glew32s.lib(glew.obj)' or at 'K:\GitHub Repositories\NeuralJetsonCreature\NeuralCreature\Debug\vc120.pdb'; linking object as if no debug info
+  NeuralCreature.vcxproj -> K:\GitHub Repositories\NeuralJetsonCreature\NeuralCreature\Debug\NeuralCreature.exe
+  NeuralCreature.vcxproj -> K:\GitHub Repositories\NeuralJetsonCreature\NeuralCreature\Debug\NeuralCreature.pdb (Full PDB)
