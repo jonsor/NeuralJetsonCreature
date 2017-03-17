@@ -28,13 +28,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -154,8 +154,9 @@
     <ClInclude Include="BulletTest.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
-    <ClInclude Include="OpenGlTest.h" />
-    <ClInclude Include="OpenGLTutorial.h" />
+    <ClInclude Include="NeuralCreature.h" />
+    <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -163,9 +164,10 @@
   <ItemGroup>
     <ClCompile Include="BulletTest.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="NeuralCreature.cpp" />
-    <ClCompile Include="OpenGlTest.cpp" />
-    <ClCompile Include="OpenGLTutorial.cpp" />
+    <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -174,21 +176,21 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bullet\src\BulletCollision\BulletCollision.vcxproj">
-      <Project>{8f42acfb-ed90-3034-9dda-2eef2b9301e7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\bullet\src\BulletDynamics\BulletDynamics.vcxproj">
-      <Project>{9238cf19-27b3-3729-8e12-c29efddfed2c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\bullet\src\LinearMath\LinearMath.vcxproj">
-      <Project>{0cacfaff-dc42-3a9a-898d-68d94265f0d1}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="defaultShader.vs" />
     <None Include="defaultShader.frag" />
     <None Include="lightingShader.frag" />
     <None Include="lightingShader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\build\src\BulletCollision\BulletCollision.vcxproj">
+      <Project>{f520a6c6-1f90-31b4-bf27-5e7ba977e950}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\build\src\BulletDynamics\BulletDynamics.vcxproj">
+      <Project>{eae64882-14a0-3464-a49e-9662f6883885}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\build\src\LinearMath\LinearMath.vcxproj">
+      <Project>{fa574dbc-a6fa-32d0-9211-b1879f8604bd}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
