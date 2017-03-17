@@ -32,6 +32,22 @@ void RenderManager::initGLFW()
 	glfwSwapInterval(1);
 }
 
+void RenderManager::initGLEW(GLFWwindow* window) {
+	glewExperimental = GL_TRUE;
+	if (glewInit() != GLEW_OK) {
+		std::cout << "Failed to initialize GLEW" << std::endl;
+		return;
+	}
+	initView(window);
+}
+
+void RenderManager::initView(GLFWwindow* window)
+{
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	glViewport(0, 0, width, height);
+}
+
 RenderManager::~RenderManager()
 {
 }

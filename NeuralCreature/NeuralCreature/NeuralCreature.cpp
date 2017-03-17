@@ -3,58 +3,51 @@
 #define GLEW_STATIC
 
 //Prototypes
+//TODO: Fix the callbacks so that they are in it's own class or they can be used in the header. Hard because they wont work as class methods...
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
-//TODO Fiks disse slik at de kan brukes i headeren. 
-//Vanskelig siden callback funksjonene ikke funker hvis de er klassemetoder OpenGLTutorial::key_callback f.eks
-// Camera
-Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
 
+//Variables
+//Camera and controls
+Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
 bool keys[1024];
 GLfloat lastX, lastY;
 bool firstMouse = true;
+bool applyImpulse = false;
 
+//Time
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
 // Light attributes
 glm::vec3 lightPos(-21.2f, 5.0f, 2.0f);
-// x y z
-
-bool applyImpulse = false;
 
 NeuralCreature::NeuralCreature()
 {
 }
 
 void NeuralCreature::init() {
-	RenderManager rm;
-
+	//Create a GLFW Window
 	GLFWwindow* window = rm.initWindow(WIDTH, HEIGHT);
+
+	//Init glew and view
+	rm.initGLEW(window);
 
 	//Set key callbacks
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	// Options
+	//OpenGL Options
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	//init glew 
-	initGLEW();
-
-	//Init view
-	initView(window);
-	// Setup some OpenGL options
-
 	glEnable(GL_DEPTH_TEST);
-	//Build anc compile shader program
+
+	//Build and compile shader program
 	Shader lightingShader("lightingShader.vs", "lightingShader.frag");
 
-	//Build and compile shaders
-	//GLint shaderProgram = initShaders();
 
 	float s = 50.0f;
 	GLfloat rectangleVertices[] = {
@@ -125,21 +118,6 @@ void NeuralCreature::init() {
 	//Terminate
 	glfwTerminate();
 	return;
-}
-
-void NeuralCreature::initGLEW() {
-	glewExperimental = GL_TRUE;
-	if (glewInit() != GLEW_OK) {
-		std::cout << "Failed to initialize GLEW" << std::endl;
-		return;
-	}
-}
-
-void NeuralCreature::initView(GLFWwindow* window)
-{
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);
 }
 btScalar targetAngle;
 

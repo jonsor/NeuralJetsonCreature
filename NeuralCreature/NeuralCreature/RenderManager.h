@@ -14,9 +14,11 @@ class RenderManager
 {
 private:
 	void initGLFW();
+	void initView(GLFWwindow* window);
 public:
 	RenderManager();
 	GLFWwindow* initWindow(GLuint width, GLuint height);
+	void initGLEW(GLFWwindow* window);
 	~RenderManager();
 };
 

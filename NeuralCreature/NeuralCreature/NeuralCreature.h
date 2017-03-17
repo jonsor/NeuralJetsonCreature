@@ -28,13 +28,12 @@
 class NeuralCreature
 {
 private:
+	RenderManager rm;
 	const GLuint WIDTH = 800, HEIGHT = 600;
 
 public:
 	NeuralCreature();
 	void init();
-	void initGLEW();
-	void initView(GLFWwindow * window);
 	void renderLoop(GLFWwindow * window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes);
 	btRigidBody * createRigidBody(btCollisionShape * collisionShape, btScalar mass, const btTransform & transform) const;
 	//GLint initShaders();
