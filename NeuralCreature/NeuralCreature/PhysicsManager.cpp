@@ -8,14 +8,10 @@ PhysicsManager::PhysicsManager()
 void PhysicsManager::initPhysics()
 {
 	broadphase = new btDbvtBroadphase();
-
 	collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
 	solver = new btSequentialImpulseConstraintSolver;
-
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-
 	dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
 }
@@ -37,8 +33,7 @@ void PhysicsManager::addBody(btRigidBody* rigidBody)
 
 void PhysicsManager::addNewConstraint(btHingeConstraint * hingeConstraint, bool isDisableCollisionsBetweenLinkedBodies)
 {
-	dynamicsWorld->addConstraint(hingeConstraint,
-		isDisableCollisionsBetweenLinkedBodies);
+	dynamicsWorld->addConstraint(hingeConstraint, isDisableCollisionsBetweenLinkedBodies);
 }
 
 void PhysicsManager::removeBody(btRigidBody * rigidBody)
