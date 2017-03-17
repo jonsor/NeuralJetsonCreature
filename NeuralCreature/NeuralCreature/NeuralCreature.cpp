@@ -17,6 +17,7 @@ bool keys[1024];
 GLfloat lastX, lastY;
 bool firstMouse = true;
 bool applyImpulse = false;
+btScalar targetAngle;
 
 //Time
 GLfloat deltaTime = 0.0f;
@@ -30,10 +31,8 @@ NeuralCreature::NeuralCreature()
 }
 
 void NeuralCreature::init() {
-	//Create a GLFW Window
+	//Create a GLFW Window and init GLEW
 	GLFWwindow* window = rm.initWindow(WIDTH, HEIGHT);
-
-	//Init glew and view
 	rm.initGLEW(window);
 
 	//Set key callbacks
@@ -41,14 +40,10 @@ void NeuralCreature::init() {
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	//OpenGL Options
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glEnable(GL_DEPTH_TEST);
-
 	//Build and compile shader program
 	Shader lightingShader("lightingShader.vs", "lightingShader.frag");
 
-
+	//PLANE STUFF
 	float s = 50.0f;
 	GLfloat rectangleVertices[] = {
 		s,  s, 0.0f,  // Top Right
@@ -61,7 +56,6 @@ void NeuralCreature::init() {
 		1, 2, 3   // Second Triangle
 	};
 
-	//PLANE STUFF
 	//VBO = vertex buffer objects. Can store a large number of vertices in the GPU memory.
 	//VAO = vertex array object. Stores vertex buffer objects so that they can be easily swapped during rendering.
 	//EBO = element buffer objects. Used to add triangles together to for instance draw a rectangle(avoids overhead).
@@ -100,7 +94,7 @@ void NeuralCreature::init() {
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
-	//Start render loop
+	//Create Content
 	Cube cube1(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f);
 	Cube cube2(glm::vec3(5.0f, 2.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f);
 	Cube cube3(glm::vec3(-3.0f, 1.0f, 4.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.0f, 0.5f);
@@ -108,6 +102,8 @@ void NeuralCreature::init() {
 	cubes.push_back(cube1);
 	cubes.push_back(cube2);
 	cubes.push_back(cube3);
+
+	//Start render loop
 	renderLoop(window, planeVAO, lightVAO, lightingShader, cubes);
 
 	// Properly de-allocate all resources once they've outlived their purpose
@@ -119,12 +115,12 @@ void NeuralCreature::init() {
 	glfwTerminate();
 	return;
 }
-btScalar targetAngle;
+
 
 
 void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes) {
-	PhysicsManager pysMan;
-	pysMan.initPhysics();
+	PhysicsManager pm;
+	pm.initPhysics();
 
 	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
 
@@ -132,7 +128,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
 	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
 	//groundRigidBody->setFriction(5.0f);
-	pysMan.addBody(groundRigidBody);
+	pm.addBody(groundRigidBody);
 
 	//Hinge stuff
 	//btScalar targetAngle;
@@ -169,7 +165,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	const btVector3 rightOrigin(4.0f, 0.5f, 5.0f);
 	rightTransform.setOrigin(rightOrigin);
 	rightRigidBody = createRigidBody(rightCollisionShape, rightMass, rightTransform);
-	pysMan.addBody(rightRigidBody);
+	pm.addBody(rightRigidBody);
 
 	// create middle rigid body
 	const btScalar middleMass = 1.0f;
@@ -178,7 +174,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	const btVector3 middleOrigin(4.0f, 0.5f, 5.0f);
 	middleTransform.setOrigin(middleOrigin);
 	middleRigidBody = createRigidBody(middleCollisionShape, middleMass, middleTransform);
-	pysMan.addBody(middleRigidBody);
+	pm.addBody(middleRigidBody);
 
 	// create left rigid body
 	const btScalar leftMass = 10.0f;
@@ -187,7 +183,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	const btVector3 leftOrigin(4.5f, 0.5f, 5.0f);
 	leftTransform.setOrigin(leftOrigin);
 	leftRigidBody = createRigidBody(leftCollisionShape, leftMass, leftTransform);
-	pysMan.addBody(leftRigidBody);
+	pm.addBody(leftRigidBody);
 
 
 	// create right hinge constraint
@@ -230,9 +226,9 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	// add constraint to the world
 	const bool isDisableCollisionsBetweenLinkedBodies = false;
-	pysMan.addNewConstraint(rightHingeConstraint,
+	pm.addNewConstraint(rightHingeConstraint,
 		isDisableCollisionsBetweenLinkedBodies);
-	pysMan.addNewConstraint(leftHingeConstraint,
+	pm.addNewConstraint(leftHingeConstraint,
 		isDisableCollisionsBetweenLinkedBodies);
 
 	//Box
@@ -244,7 +240,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	fallShape->calculateLocalInertia(mass, fallInertia);
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
 	btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
-	pysMan.addBody(fallRigidBody);
+	pm.addBody(fallRigidBody);
 
 	float fps = 0;
 	float accumilatedTime = 0;
@@ -316,7 +312,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		glBindVertexArray(planeVAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		pysMan.update(deltaTime, 1);
+		pm.update(deltaTime, 1);
 
 		btTransform trans;
 		fallRigidBody->getMotionState()->getWorldTransform(trans);
@@ -376,7 +372,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		hinge1.setRotation(angle, glm::vec3(x, y, z));
 
 		//Hinge 2
-
 		btTransform hinge2Trans;
 		middleRigidBody->getMotionState()->getWorldTransform(hinge2Trans);
 
@@ -406,11 +401,11 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	}
 
-	pysMan.removeBody(fallRigidBody);
+	pm.removeBody(fallRigidBody);
 	delete fallRigidBody->getMotionState();
 	delete fallRigidBody;
 
-	pysMan.removeBody(groundRigidBody);
+	pm.removeBody(groundRigidBody);
 	delete groundRigidBody->getMotionState();
 	delete groundRigidBody;
 

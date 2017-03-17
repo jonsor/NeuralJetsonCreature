@@ -43,9 +43,14 @@ void RenderManager::initGLEW(GLFWwindow* window) {
 
 void RenderManager::initView(GLFWwindow* window)
 {
+	//Set Viewport
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
+	
+	//OpenGL Options
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glEnable(GL_DEPTH_TEST);
 }
 
 RenderManager::~RenderManager()

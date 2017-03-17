@@ -1,19 +1,21 @@
-﻿  NeuralCreature.cpp
+﻿  RenderManager.cpp
+  NeuralCreature.cpp
 k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(169): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(170): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(171): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(210): warning C4305: 'initializing': truncation from 'const double' to 'btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(211): warning C4305: 'initializing': truncation from 'const double' to 'btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(212): warning C4305: 'initializing': truncation from 'const double' to 'btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(255): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(323): warning C4018: '<': signed/unsigned mismatch
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(471): warning C4305: '+=': truncation from 'double' to 'btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(474): warning C4305: '-=': truncation from 'double' to 'btScalar'
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(254): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(322): warning C4018: '<': signed/unsigned mismatch
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(470): warning C4305: '+=': truncation from 'double' to 'btScalar'
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(473): warning C4305: '-=': truncation from 'double' to 'btScalar'
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(481): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(482): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(483): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(486): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(487): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(488): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(489): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(490): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(491): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(499): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(498): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+  Generating Code...
   NeuralCreature.vcxproj -> K:\GitHub Repositories\NeuralJetsonCreature\NeuralCreature\Debug\NeuralCreature.exe
   NeuralCreature.vcxproj -> K:\GitHub Repositories\NeuralJetsonCreature\NeuralCreature\Debug\NeuralCreature.pdb (Full PDB)
