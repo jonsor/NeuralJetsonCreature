@@ -20,13 +20,14 @@
 #include <vector>
 #include <math.h>
 #include <btBulletDynamicsCommon.h>
+#include "PhysicsManager.h"
 
 #define _USE_MATH_DEFINES
 
 class OpenGLTutorial
 {
 private:
-	const GLuint WIDTH = 1920, HEIGHT = 1080;
+	const GLuint WIDTH = 800, HEIGHT = 600;
 
 public:
 	OpenGLTutorial();

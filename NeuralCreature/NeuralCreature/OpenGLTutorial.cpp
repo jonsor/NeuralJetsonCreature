@@ -157,19 +157,11 @@ void OpenGLTutorial::initView(GLFWwindow* window)
 	glViewport(0, 0, width, height);
 }
 btScalar targetAngle;
+
+
 void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes) {
-
-	btBroadphaseInterface* broadphase = new btDbvtBroadphase();
-
-	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
-	btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
-	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-
-	btDiscreteDynamicsWorld* dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-
-	dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
-
+	PhysicsManager pysMan;
+	pysMan.initPhysics();
 
 	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
 
@@ -177,7 +169,7 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
 	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
 	//groundRigidBody->setFriction(5.0f);
-	dynamicsWorld->addRigidBody(groundRigidBody);
+	pysMan.addBody(groundRigidBody);
 
 	//Hinge stuff
 	//btScalar targetAngle;
@@ -214,7 +206,7 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	const btVector3 rightOrigin(4.0f, 0.5f, 5.0f);
 	rightTransform.setOrigin(rightOrigin);
 	rightRigidBody = createRigidBody(rightCollisionShape, rightMass, rightTransform);
-	dynamicsWorld->addRigidBody(rightRigidBody);
+	pysMan.addBody(rightRigidBody);
 
 	// create middle rigid body
 	const btScalar middleMass = 1.0f;
@@ -223,7 +215,7 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	const btVector3 middleOrigin(4.0f, 0.5f, 5.0f);
 	middleTransform.setOrigin(middleOrigin);
 	middleRigidBody = createRigidBody(middleCollisionShape, middleMass, middleTransform);
-	dynamicsWorld->addRigidBody(middleRigidBody);
+	pysMan.addBody(middleRigidBody);
 
 	// create left rigid body
 	const btScalar leftMass = 10.0f;
@@ -232,7 +224,7 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	const btVector3 leftOrigin(4.5f, 0.5f, 5.0f);
 	leftTransform.setOrigin(leftOrigin);
 	leftRigidBody = createRigidBody(leftCollisionShape, leftMass, leftTransform);
-	dynamicsWorld->addRigidBody(leftRigidBody);
+	pysMan.addBody(leftRigidBody);
 
 
 	// create right hinge constraint
@@ -275,9 +267,9 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	// add constraint to the world
 	const bool isDisableCollisionsBetweenLinkedBodies = false;
-	dynamicsWorld->addConstraint(rightHingeConstraint,
+	pysMan.addNewConstraint(rightHingeConstraint,
 		isDisableCollisionsBetweenLinkedBodies);
-	dynamicsWorld->addConstraint(leftHingeConstraint,
+	pysMan.addNewConstraint(leftHingeConstraint,
 		isDisableCollisionsBetweenLinkedBodies);
 
 	//Box
@@ -289,7 +281,7 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	fallShape->calculateLocalInertia(mass, fallInertia);
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
 	btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
-	dynamicsWorld->addRigidBody(fallRigidBody);
+	pysMan.addBody(fallRigidBody);
 
 	float fps = 0;
 	float accumilatedTime = 0;
@@ -361,7 +353,7 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		glBindVertexArray(planeVAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		dynamicsWorld->stepSimulation(deltaTime, 1);
+		pysMan.update(deltaTime, 1);
 
 		btTransform trans;
 		fallRigidBody->getMotionState()->getWorldTransform(trans);
@@ -451,25 +443,16 @@ void OpenGLTutorial::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	}
 
-	dynamicsWorld->removeRigidBody(fallRigidBody);
+	pysMan.removeBody(fallRigidBody);
 	delete fallRigidBody->getMotionState();
 	delete fallRigidBody;
 
-	dynamicsWorld->removeRigidBody(groundRigidBody);
+	pysMan.removeBody(groundRigidBody);
 	delete groundRigidBody->getMotionState();
 	delete groundRigidBody;
 
-
 	delete fallShape;
-
 	delete groundShape;
-
-
-	delete dynamicsWorld;
-	delete solver;
-	delete collisionConfiguration;
-	delete dispatcher;
-	delete broadphase;
 }
 
 btRigidBody* OpenGLTutorial::createRigidBody(btCollisionShape* collisionShape, btScalar mass, const btTransform& transform) const
