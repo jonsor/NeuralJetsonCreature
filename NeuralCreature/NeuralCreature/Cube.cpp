@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Cube.h"
 
-Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass)
+Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
 {
 	// Cubes
 	GLfloat cubeVertices[] = {
@@ -70,7 +70,7 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 
 	glBindVertexArray(0); // Unbind VAO
 
-	mass = 1;
+	//mass = 1;
 	//Set up physics
 	Cube::setUpPhysicsCube();
 
@@ -85,9 +85,15 @@ void Cube::render(Shader shader)
 
 	glm::mat4 model;
 	model = glm::translate(model, position);
+	//Hacky roation fix - doesnt render if axis is equal to zero
+	if (axisOfRotation.x == 0 || axisOfRotation.x == 0 || axisOfRotation.x == 0) {
+		axisOfRotation.x += 0.000000001f;
+		axisOfRotation.y += 0.000000001f;
+		axisOfRotation.z += 0.000000001f;
+	}
 	model = glm::rotate(model, angle, axisOfRotation);
-	GLint modelLoc = glGetUniformLocation(shader.program, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	GLint modelLoc = glGetUniformLocation(shader.program, "model"); 
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); 
 	//GLfloat angle = 20.0f * i;
 	//model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
 	glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -124,17 +130,18 @@ void Cube::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
 
 void Cube::setUpPhysicsCube()
 {
-	//TDOD delete fall shape at the end of game loop
-	btCollisionShape* fallShape = new btBoxShape(btVector3(1, 1, 1));
-
-	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
+	//TODO: delete fall shape at the end of game loop
+	btCollisionShape* fallShape = new btBoxShape(btVector3(width, height, depth));
+	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), Util::convertToBtVector3(position)));
 	btVector3 fallInertia(0, 0, 0);
 	fallShape->calculateLocalInertia(mass, fallInertia);
+
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
 	rigidBody = new btRigidBody(fallRigidBodyCI);
 }
 
-btRigidBody * Cube::getRigidBody()
+
+btRigidBody* Cube::getRigidBody()
 {
 	return rigidBody;
 }
@@ -155,6 +162,38 @@ void Cube::updatePhysics()
 
 	setRotation(angle, glm::vec3(x, y, z));
 }
+
+void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name)
+{
+	bool useReferenceFrameA = false;
+	btHingeConstraint* hingeConstraint = new btHingeConstraint(
+		*rigidBody,
+		*cubeB->getRigidBody(),
+		Util::convertToBtVector3(pivotA),
+		Util::convertToBtVector3(pivotB),
+		Util::convertToBtVector3(axisA),
+		Util::convertToBtVector3(axisB),
+		useReferenceFrameA);
+	
+
+	// set constraint limit
+	const btScalar low = -PI;
+	const btScalar high = PI;
+	hingeConstraint->setLimit(low, high);
+
+	pm->addNewConstraint(hingeConstraint, notCollision);
+
+	//Add to hinge array
+	hinges[name] = hingeConstraint;
+
+	
+}
+
+btHingeConstraint * Cube::getHinge(std::string name)
+{
+	return hinges[name];
+}
+
 
 
 Cube::~Cube()

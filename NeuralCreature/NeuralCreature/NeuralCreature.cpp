@@ -17,6 +17,7 @@ bool keys[1024];
 GLfloat lastX, lastY;
 bool firstMouse = true;
 bool applyImpulse = false;
+btScalar targetAngle;
 
 //Time
 GLfloat deltaTime = 0.0f;
@@ -48,66 +49,37 @@ void NeuralCreature::init() {
 	//Build and compile shader program
 	Shader lightingShader("lightingShader.vs", "lightingShader.frag");
 
+	//Init pysics 
+	pm.initPhysics();
 
-	float s = 50.0f;
-	GLfloat rectangleVertices[] = {
-		s,  s, 0.0f,  // Top Right
-		s, -s, 0.0f,  // Bottom Right
-		-s, -s, 0.0f,  // Bottom Left
-		-s,  s, 0.0f   // Top Left 
-	};
-	GLuint indices[] = {  // Note that we start from 0!
-		0, 1, 3,  // First Triangle
-		1, 2, 3   // Second Triangle
-	};
+	GLuint lightVAO, planeVAO;
+	initPlaneAndLight(& lightVAO, & planeVAO);
 
-	//PLANE STUFF
-	//VBO = vertex buffer objects. Can store a large number of vertices in the GPU memory.
-	//VAO = vertex array object. Stores vertex buffer objects so that they can be easily swapped during rendering.
-	//EBO = element buffer objects. Used to add triangles together to for instance draw a rectangle(avoids overhead).
-	GLuint planeVBO, planeVAO, planeEBO;
-	glGenVertexArrays(1, &planeVAO);
-	glGenBuffers(1, &planeVBO);
-	glGenBuffers(1, &planeEBO);
-	// Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
-	glBindVertexArray(planeVAO);
+	//Populate the world
+	Cube cube1(glm::vec3(6.0f, 60.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 10);
+	Cube cube2(glm::vec3(6.0f, 40.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f, 20);
+	Cube cube3(glm::vec3(6.0f, 20.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.0f, 0.5f, 1);
+	pm.addBody(cube1.getRigidBody());
+	pm.addBody(cube2.getRigidBody());
+	pm.addBody(cube3.getRigidBody());
 
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
+	cube1.addHinge(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(-5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), & cube2, true, & pm, "h1");
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	//Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
-	//Color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
-
-	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
-
-	GLuint lightVAO;
-	glGenVertexArrays(1, &lightVAO);
-	glBindVertexArray(lightVAO);
-	// We only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need.
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	// Set the vertex attributes (only position data for the lamp))
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); // Note that we skip over the normal vectors
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-
-	//Start render loop
-	Cube cube1(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 1);
-	Cube cube2(glm::vec3(5.0f, 2.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f, 1);
-	Cube cube3(glm::vec3(-3.0f, 1.0f, 4.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.0f, 0.5f, 1);
 	std::vector<Cube> cubes;
 	cubes.push_back(cube1);
 	cubes.push_back(cube2);
 	cubes.push_back(cube3);
+
+	//Plane
+	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
+	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
+	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
+	//groundRigidBody->setFriction(5.0f);
+	pm.addBody(groundRigidBody);
+
+	//Start render loop
 	renderLoop(window, planeVAO, lightVAO, lightingShader, cubes);
 
 	// Properly de-allocate all resources once they've outlived their purpose
@@ -115,125 +87,127 @@ void NeuralCreature::init() {
 	glDeleteBuffers(1, &planeVAO);
 	glDeleteBuffers(1, &planeVAO);
 
+	pm.removeBody(groundRigidBody);
+	delete groundRigidBody->getMotionState();
+	delete groundRigidBody;
+
+	//delete fallShape;
+	delete groundShape;
+
 	//Terminate
 	glfwTerminate();
 	return;
 }
-btScalar targetAngle;
 
 
 void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes) {
-	PhysicsManager pysMan;
-	pysMan.initPhysics();
+	
 
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+	
 
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	//groundRigidBody->setFriction(5.0f);
-	pysMan.addBody(groundRigidBody);
-
-	//Hinge stuff
-	//btScalar targetAngle;
-	btCollisionShape* rightCollisionShape;
-	btCollisionShape* middleCollisionShape;
-	btCollisionShape* leftCollisionShape;
-	btRigidBody* rightRigidBody;
-	btRigidBody* middleRigidBody;
-	btRigidBody* leftRigidBody;
-	btHingeConstraint* rightHingeConstraint;
-	btHingeConstraint* leftHingeConstraint;
-
-	//Init hinge stuff
-	targetAngle = 0.0f;
-	btScalar oldAngle = 0.0f;
-	// create collision shapes
-	const btVector3 rightBoxHalfExtents(0.5f, 0.5f, 0.2f);
-	rightCollisionShape = new btBoxShape(rightBoxHalfExtents);
-	Cube hinge1(glm::vec3(5.0f, 1.0f, 2.0f), glm::vec3(0.4f, 0.8f, 0.3f), 0.5f, 0.5f, 0.2f, 1);
-
-	const btVector3 middleBoxHalfExtents(0.5f, 0.5f, 0.2f);
-	middleCollisionShape = new btBoxShape(middleBoxHalfExtents);
-	Cube hinge2(glm::vec3(8.0f, 1.0f, 2.0f), glm::vec3(0.7f, 0.3f, 0.4f), 0.5f, 0.5f, 0.2f, 1);
-
-	const btVector3 leftBoxHalfExtents(0.5f, 0.5f, 0.2f);
-	leftCollisionShape = new btBoxShape(leftBoxHalfExtents);
-	Cube hinge3(glm::vec3(8.0f, 1.0f, 2.0f), glm::vec3(0.1f, 0.3f, 0.4f), 0.5f, 0.5f, 0.2f, 1);
-
-	// create right rigid body
-	const btScalar rightMass = 10.0f;
-	btTransform rightTransform;
-	rightTransform.setIdentity();
-	//x z y
-	const btVector3 rightOrigin(4.0f, 0.5f, 5.0f);
-	rightTransform.setOrigin(rightOrigin);
-	rightRigidBody = createRigidBody(rightCollisionShape, rightMass, rightTransform);
-	pysMan.addBody(rightRigidBody);
-
-	// create middle rigid body
-	const btScalar middleMass = 1.0f;
-	btTransform middleTransform;
-	middleTransform.setIdentity();
-	const btVector3 middleOrigin(4.0f, 0.5f, 5.0f);
-	middleTransform.setOrigin(middleOrigin);
-	middleRigidBody = createRigidBody(middleCollisionShape, middleMass, middleTransform);
-	pysMan.addBody(middleRigidBody);
-
-	// create left rigid body
-	const btScalar leftMass = 10.0f;
-	btTransform leftTransform;
-	leftTransform.setIdentity();
-	const btVector3 leftOrigin(4.5f, 0.5f, 5.0f);
-	leftTransform.setOrigin(leftOrigin);
-	leftRigidBody = createRigidBody(leftCollisionShape, leftMass, leftTransform);
-	pysMan.addBody(leftRigidBody);
+	////Hinge stuff
+	////btScalar targetAngle;
+	//btCollisionShape* rightCollisionShape;
+	//btCollisionShape* middleCollisionShape;
+	//btCollisionShape* leftCollisionShape;
+	//btRigidBody* rightRigidBody;
+	//btRigidBody* middleRigidBody;
+	//btRigidBody* leftRigidBody;
 
 
-	// create right hinge constraint
-	const btVector3 pivotInA(1.0f, 0.0f, 0.0f);
-	const btVector3 pivotInB(-1.0f, 0.0f, 0.0f);
-	btVector3 axisInA(0.0f, 0.0f, 1.0f);
-	btVector3 axisInB(0.0f, 0.0f, 1.0f);
-	bool useReferenceFrameA = false;
-	rightHingeConstraint = new btHingeConstraint(
-		*rightRigidBody,
-		*middleRigidBody,
-		pivotInA,
-		pivotInB,
-		axisInA,
-		axisInB,
-		useReferenceFrameA);
+	//btHingeConstraint* rightHingeConstraint;
+	//btHingeConstraint* leftHingeConstraint;
 
-	const double PI = 3.141592653589793238463;
+	////Init hinge stuff
+	//targetAngle = 0.0f;
+	//btScalar oldAngle = 0.0f;
 
-	// set constraint limit
-	const btScalar low = -PI;
-	const btScalar high = PI;
-	rightHingeConstraint->setLimit(low, high);
-	//hingeConstraint->setLimit(0, 0.2f);
+	//// create collision shapes
+	//const btVector3 rightBoxHalfExtents(0.5f, 0.5f, 0.2f);
+	//rightCollisionShape = new btBoxShape(rightBoxHalfExtents);
+	//Cube hinge1(glm::vec3(5.0f, 10.0f, 2.0f), glm::vec3(0.4f, 0.8f, 0.3f), 0.5f, 0.5f, 0.2f, 1);
 
-	//Create left hinge constraint
+	//const btVector3 middleBoxHalfExtents(0.5f, 0.5f, 0.2f);
+	//middleCollisionShape = new btBoxShape(middleBoxHalfExtents);
+	//Cube hinge2(glm::vec3(8.0f, 1.0f, 2.0f), glm::vec3(0.7f, 0.3f, 0.4f), 0.5f, 0.5f, 0.2f, 1);
+
+	//const btVector3 leftBoxHalfExtents(0.5f, 0.5f, 0.2f);
+	//leftCollisionShape = new btBoxShape(leftBoxHalfExtents);
+	//Cube hinge3(glm::vec3(8.0f, 1.0f, 2.0f), glm::vec3(0.1f, 0.3f, 0.4f), 0.5f, 0.5f, 0.2f, 1);
+
+	//// create right rigid body
+	//const btScalar rightMass = 10.0f;
+	//btTransform rightTransform;
+	//rightTransform.setIdentity();
+	////x z y
+	//const btVector3 rightOrigin(4.0f, 0.5f, 5.0f);
+	//rightTransform.setOrigin(rightOrigin);
+	//rightRigidBody = createRigidBody(rightCollisionShape, rightMass, rightTransform);
+	//pm.addBody(rightRigidBody);
+
+	//// create middle rigid body
+	//const btScalar middleMass = 1.0f;
+	//btTransform middleTransform;
+	//middleTransform.setIdentity();
+	//const btVector3 middleOrigin(4.0f, 0.5f, 5.0f);
+	//middleTransform.setOrigin(middleOrigin);
+	//middleRigidBody = createRigidBody(middleCollisionShape, middleMass, middleTransform);
+	//pm.addBody(middleRigidBody);
+
+	//// create left rigid body
+	//const btScalar leftMass = 10.0f;
+	//btTransform leftTransform;
+	//leftTransform.setIdentity();
+	//const btVector3 leftOrigin(4.5f, 0.5f, 5.0f);
+	//leftTransform.setOrigin(leftOrigin);
+	//leftRigidBody = createRigidBody(leftCollisionShape, leftMass, leftTransform);
+	//pm.addBody(leftRigidBody);
+
+
+	//// create right hinge constraint
 	//const btVector3 pivotInA(1.0f, 0.0f, 0.0f);
 	//const btVector3 pivotInB(-1.0f, 0.0f, 0.0f);
-	//btVector3 axisInA(0.0f, 0.0f, 1.0f);
-	//btVector3 axisInB(0.0f, 0.0f, 1.0f);
+	//btVector3 axisInA(0.0f, 2.0f, 2.0f);
+	//btVector3 axisInB(1.0f, 0.0f, 0.0f);
 	//bool useReferenceFrameA = false;
-	leftHingeConstraint = new btHingeConstraint(
-		*middleRigidBody,
-		*leftRigidBody,
-		pivotInA,
-		pivotInB,
-		axisInA,
-		axisInB,
-		useReferenceFrameA);
+	//rightHingeConstraint = new btHingeConstraint(
+	//	*rightRigidBody,
+	//	*middleRigidBody,
+	//	pivotInA,
+	//	pivotInB,
+	//	axisInA,
+	//	axisInB,
+	//	useReferenceFrameA);
 
-	// add constraint to the world
-	const bool isDisableCollisionsBetweenLinkedBodies = false;
-	pysMan.addNewConstraint(rightHingeConstraint,
-		isDisableCollisionsBetweenLinkedBodies);
-	pysMan.addNewConstraint(leftHingeConstraint,
-		isDisableCollisionsBetweenLinkedBodies);
+	//const double PI = 3.141592653589793238463;
+
+	//// set constraint limit
+	//const btScalar low = -PI;
+	//const btScalar high = PI;
+	//rightHingeConstraint->setLimit(low, high);
+	////hingeConstraint->setLimit(0, 0.2f);
+
+	////Create left hinge constraint
+	////const btVector3 pivotInA(1.0f, 0.0f, 0.0f);
+	////const btVector3 pivotInB(-1.0f, 0.0f, 0.0f);
+	////btVector3 axisInA(0.0f, 0.0f, 1.0f);
+	////btVector3 axisInB(0.0f, 0.0f, 1.0f);
+	////bool useReferenceFrameA = false;
+	//leftHingeConstraint = new btHingeConstraint(
+	//	*middleRigidBody,
+	//	*leftRigidBody,
+	//	pivotInA,
+	//	pivotInB,
+	//	axisInA,
+	//	axisInB,
+	//	useReferenceFrameA);
+
+	//// add constraint to the world
+	//const bool isDisableCollisionsBetweenLinkedBodies = false;
+	//pm.addNewConstraint(rightHingeConstraint,
+	//	isDisableCollisionsBetweenLinkedBodies);
+	//pm.addNewConstraint(leftHingeConstraint,
+	//	isDisableCollisionsBetweenLinkedBodies);
 
 	//Box
 	//btCollisionShape* fallShape = new btBoxShape(btVector3(1, 1, 1));
@@ -246,11 +220,12 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
 
 	Cube fallCube(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
-	pysMan.addBody(fallCube.getRigidBody());
+	pm.addBody(fallCube.getRigidBody());
 
 	float fps = 0;
 	float accumilatedTime = 0;
-	//Start render loop
+	
+	//START RENDER LOOP:
 	while (!glfwWindowShouldClose(window)) {
 		fps++;
 		// Set frame time
@@ -266,7 +241,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 		doMovement();
-		// Render
+		
 		// Clear the colorbuffer
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -318,7 +293,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		glBindVertexArray(planeVAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		pysMan.update(deltaTime, 1);
+		pm.update(deltaTime, 1);
 
 		//btTransform trans;
 		//fallCube.getRigidBody()->getMotionState()->getWorldTransform(trans);
@@ -352,104 +327,100 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 			//	cubes[i].setRotation(angle, glm::vec3(x, y, z));
 			//}
 
+			cubes[i].updatePhysics();
 			cubes[i].render(lightingShader);
 
 		}
 
-		//Rigid body stuff
-		rightRigidBody->activate();
-		middleRigidBody->activate();
+		////Rigid body stuff
+		//rightRigidBody->activate();
+		//middleRigidBody->activate();
 
 		bool isEnableMotor = true;
-		btScalar maxMotorImpulse = 2.0f; // 1.0f / 8.0f is about the minimum
+		btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 
-		rightHingeConstraint->enableMotor(isEnableMotor);
-		rightHingeConstraint->setMaxMotorImpulse(maxMotorImpulse);
+		cubes[0].getHinge("h1")->enableMotor(isEnableMotor);
+		cubes[0].getHinge("h1")->setMaxMotorImpulse(maxMotorImpulse);
 
-		leftHingeConstraint->enableMotor(isEnableMotor);
-		leftHingeConstraint->setMaxMotorImpulse(maxMotorImpulse);
-		//targetAngle += 0.1f * deltaTime;
+		//leftHingeConstraint->enableMotor(isEnableMotor);
+		//leftHingeConstraint->setMaxMotorImpulse(maxMotorImpulse);
+		targetAngle += 1.f * deltaTime;
 
-		//if (oldAngle != targetAngle) {
-			rightHingeConstraint->setMotorTarget(targetAngle, deltaTime);
-			leftHingeConstraint->setMotorTarget(targetAngle, deltaTime);
-			oldAngle = targetAngle;
-		//}
+		////if (oldAngle != targetAngle) {
+		cubes[0].getHinge("h1")->setMotorTarget(targetAngle, deltaTime);
+		//	leftHingeConstraint->setMotorTarget(targetAngle, deltaTime);
+		//	oldAngle = targetAngle;
+		////}
 
-		//std::cout << rightHingeConstraint->getMaxMotorImpulse() << "  target: " << targetAngle << std::endl;
+		////std::cout << rightHingeConstraint->getMaxMotorImpulse() << "  target: " << targetAngle << std::endl;
 
-		//Hinge 1
-		btTransform hinge1Trans;
-		rightRigidBody->getMotionState()->getWorldTransform(hinge1Trans);
+		////Hinge 1
+		//btTransform hinge1Trans;
+		//rightRigidBody->getMotionState()->getWorldTransform(hinge1Trans);
 
-		hinge1.setPosition(glm::vec3(hinge1Trans.getOrigin().getX(), hinge1Trans.getOrigin().getY(), hinge1Trans.getOrigin().getZ()));
-		//hinge1.setPosition(glm::vec3(0.0f, hinge1Trans.getOrigin().getY(), 0.0f));
-		float x = hinge1Trans.getRotation().getX();
-		float y = hinge1Trans.getRotation().getY();
-		float z = hinge1Trans.getRotation().getZ();
-		float angle = hinge1Trans.getRotation().getAngle();
-		hinge1.setRotation(angle, glm::vec3(x, y, z));
+		//hinge1.setPosition(glm::vec3(hinge1Trans.getOrigin().getX(), hinge1Trans.getOrigin().getY(), hinge1Trans.getOrigin().getZ()));
+		////hinge1.setPosition(glm::vec3(0.0f, hinge1Trans.getOrigin().getY(), 0.0f));
+		//float x = hinge1Trans.getRotation().getX();
+		//float y = hinge1Trans.getRotation().getY();
+		//float z = hinge1Trans.getRotation().getZ();
+		//float angle = hinge1Trans.getRotation().getAngle();
+		//hinge1.setRotation(angle, glm::vec3(x, y, z));
 
-		//Hinge 2
+		////Hinge 2
 
-		btTransform hinge2Trans;
-		middleRigidBody->getMotionState()->getWorldTransform(hinge2Trans);
+		//btTransform hinge2Trans;
+		//middleRigidBody->getMotionState()->getWorldTransform(hinge2Trans);
 
-		hinge2.setPosition(glm::vec3(hinge2Trans.getOrigin().getX(), hinge2Trans.getOrigin().getY(), hinge2Trans.getOrigin().getZ()));
-		x = hinge2Trans.getRotation().getX();
-		y = hinge2Trans.getRotation().getY();
-		z = hinge2Trans.getRotation().getZ();
-		angle = hinge2Trans.getRotation().getAngle();
-		hinge2.setRotation(angle, glm::vec3(x, y, z));
+		//hinge2.setPosition(glm::vec3(hinge2Trans.getOrigin().getX(), hinge2Trans.getOrigin().getY(), hinge2Trans.getOrigin().getZ()));
+		//x = hinge2Trans.getRotation().getX();
+		//y = hinge2Trans.getRotation().getY();
+		//z = hinge2Trans.getRotation().getZ();
+		//angle = hinge2Trans.getRotation().getAngle();
+		//hinge2.setRotation(angle, glm::vec3(x, y, z));
 
-		//Hinge 3
-		btTransform hinge3Trans;
-		leftRigidBody->getMotionState()->getWorldTransform(hinge3Trans);
+		////Hinge 3
+		//btTransform hinge3Trans;
+		//leftRigidBody->getMotionState()->getWorldTransform(hinge3Trans);
 
-		hinge3.setPosition(glm::vec3(hinge3Trans.getOrigin().getX(), hinge3Trans.getOrigin().getY(), hinge3Trans.getOrigin().getZ()));
-		x = hinge3Trans.getRotation().getX();
-		y = hinge3Trans.getRotation().getY();
-		z = hinge3Trans.getRotation().getZ();
-		angle = hinge3Trans.getRotation().getAngle();
-		hinge3.setRotation(angle, glm::vec3(x, y, z));
+		//hinge3.setPosition(glm::vec3(hinge3Trans.getOrigin().getX(), hinge3Trans.getOrigin().getY(), hinge3Trans.getOrigin().getZ()));
+		//x = hinge3Trans.getRotation().getX();
+		//y = hinge3Trans.getRotation().getY();
+		//z = hinge3Trans.getRotation().getZ();
+		//angle = hinge3Trans.getRotation().getAngle();
+		//hinge3.setRotation(angle, glm::vec3(x, y, z));
 
-		hinge1.render(lightingShader);
-		hinge2.render(lightingShader);
-		hinge3.render(lightingShader);
+		//hinge1.render(lightingShader);
+		//hinge2.render(lightingShader);
+		//hinge3.render(lightingShader);
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
 
 	}
 
-	pysMan.removeBody(fallCube.getRigidBody());
+	pm.removeBody(fallCube.getRigidBody());
 	delete fallCube.getRigidBody()->getMotionState();
 	delete fallCube.getRigidBody();
 
-	pysMan.removeBody(groundRigidBody);
-	delete groundRigidBody->getMotionState();
-	delete groundRigidBody;
-
-	//delete fallShape;
-	delete groundShape;
+	
 }
 
-btRigidBody* NeuralCreature::createRigidBody(btCollisionShape* collisionShape, btScalar mass, const btTransform& transform) const
-{
-	// calculate inertia
-	btVector3 localInertia(0.0f, 0.0f, 0.0f);
-	collisionShape->calculateLocalInertia(mass, localInertia);
-
-	// create motion state
-	btDefaultMotionState* defaultMotionState
-		= new btDefaultMotionState(transform);
-
-	// create rigid body
-	btRigidBody::btRigidBodyConstructionInfo rigidBodyConstructionInfo(
-		mass, defaultMotionState, collisionShape, localInertia);
-	btRigidBody* rigidBody = new btRigidBody(rigidBodyConstructionInfo);
-
-	return rigidBody;
-}
+//btRigidBody* NeuralCreature::createRigidBody(btCollisionShape* collisionShape, btScalar mass, const btTransform& transform) const
+//{
+//	// calculate inertia
+//	btVector3 localInertia(0.0f, 0.0f, 0.0f);
+//	collisionShape->calculateLocalInertia(mass, localInertia);
+//
+//	// create motion state
+//	//btDefaultMotionState* defaultMotionState = new btDefaultMotionState(transform);
+//	btDefaultMotionState* defaultMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), transform.getOrigin()));
+//
+//
+//	// create rigid body
+//	btRigidBody::btRigidBodyConstructionInfo rigidBodyConstructionInfo( mass, defaultMotionState, collisionShape, localInertia);
+//	btRigidBody* rigidBody = new btRigidBody(rigidBodyConstructionInfo);
+//
+//	return rigidBody;
+//}
 
 // Moves/alters the camera positions based on user input
 void NeuralCreature::doMovement()
@@ -463,6 +434,59 @@ void NeuralCreature::doMovement()
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (keys[GLFW_KEY_D])
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
+{
+	float s = 50.0f;
+	GLfloat rectangleVertices[] = {
+		s,  s, 0.0f,  // Top Right
+		s, -s, 0.0f,  // Bottom Right
+		-s, -s, 0.0f,  // Bottom Left
+		-s,  s, 0.0f   // Top Left 
+	};
+	GLuint indices[] = {  // Note that we start from 0!
+		0, 1, 3,  // First Triangle
+		1, 2, 3   // Second Triangle
+	};
+
+	//PLANE STUFF
+	//VBO = vertex buffer objects. Can store a large number of vertices in the GPU memory.
+	//VAO = vertex array object. Stores vertex buffer objects so that they can be easily swapped during rendering.
+	//EBO = element buffer objects. Used to add triangles together to for instance draw a rectangle(avoids overhead).
+	GLuint planeVBO, planeEBO;
+	glGenVertexArrays(1, planeVAO);
+	glGenBuffers(1, &planeVBO);
+	glGenBuffers(1, &planeEBO);
+	// Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+	glBindVertexArray(*planeVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	//Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	//Color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
+
+	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
+
+	glGenVertexArrays(1, lightVAO);
+	glBindVertexArray(*lightVAO);
+	// We only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need.
+	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+	// Set the vertex attributes (only position data for the lamp))
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0); // Note that we skip over the normal vectors
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
 }
 
 // Is called whenever a key is pressed/released via GLFW

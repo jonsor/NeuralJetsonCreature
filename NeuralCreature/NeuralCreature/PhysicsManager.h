@@ -2,7 +2,7 @@
 
 //Additional includes
 #include <iostream>
-#include "Cube.h"
+#include <GL/glew.h>
 #include <vector>
 #include <math.h>
 #include <btBulletDynamicsCommon.h>
