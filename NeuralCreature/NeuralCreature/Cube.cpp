@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Cube.h"
 
-Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth) : position(position), color(color)
+Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass)
 {
 	// Cubes
 	GLfloat cubeVertices[] = {
@@ -70,6 +70,10 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 
 	glBindVertexArray(0); // Unbind VAO
 
+	mass = 1;
+	//Set up physics
+	Cube::setUpPhysicsCube();
+
 }
 
 void Cube::render(Shader shader)
@@ -116,6 +120,40 @@ void Cube::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
 {
 	this->angle = angle;
 	this->axisOfRotation = axisOfRotation;
+}
+
+void Cube::setUpPhysicsCube()
+{
+	//TDOD delete fall shape at the end of game loop
+	btCollisionShape* fallShape = new btBoxShape(btVector3(1, 1, 1));
+
+	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
+	btVector3 fallInertia(0, 0, 0);
+	fallShape->calculateLocalInertia(mass, fallInertia);
+	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+	rigidBody = new btRigidBody(fallRigidBodyCI);
+}
+
+btRigidBody * Cube::getRigidBody()
+{
+	return rigidBody;
+}
+
+void Cube::updatePhysics()
+{
+	btTransform trans;
+	rigidBody->getMotionState()->getWorldTransform(trans);
+	float mat[16];
+	trans.getOpenGLMatrix(mat);
+	trans.getRotation().getX();
+	setPosition(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+	
+	float x = trans.getRotation().getX();
+	float y = trans.getRotation().getY();
+	float z = trans.getRotation().getZ();
+	float angle = trans.getRotation().getAngle();
+
+	setRotation(angle, glm::vec3(x, y, z));
 }
 
 

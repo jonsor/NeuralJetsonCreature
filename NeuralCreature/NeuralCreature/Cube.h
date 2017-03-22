@@ -15,6 +15,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "Camera.h"
+#include <btBulletDynamicsCommon.h>
 
 class Cube
 {
@@ -25,16 +26,26 @@ private:
 	GLfloat height;
 	GLuint cubeVAO;
 	GLfloat angle;
+	btScalar mass;
 	glm::vec3 axisOfRotation;
 
+	//Bullet physics variables
+
+	btCollisionShape* collisionShape;
+	btRigidBody* rigidBody;
+
+
 public:
-	Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth);
+	Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass);
 	void render(Shader shader);
 	void setColor(glm::vec3 color);
 	glm::vec3 getColor();
 	void setPosition(glm::vec3 position);
 	glm::vec3 getPosition();
 	void setRotation(GLfloat angle, glm::vec3 angleMatrix);
+	void setUpPhysicsCube();
+	btRigidBody* getRigidBody();
+	void updatePhysics();
 	
 	~Cube();
 };

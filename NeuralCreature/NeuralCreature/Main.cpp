@@ -6,7 +6,6 @@
 #include <btBulletDynamicsCommon.h>
 
 #include <iostream>
-#include "BulletTest.h"
 #include "NeuralCreature.h"
 
 int main(void) {
