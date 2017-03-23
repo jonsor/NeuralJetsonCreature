@@ -134,7 +134,7 @@ void Cube::setUpPhysicsCube()
 	btCollisionShape* fallShape = new btBoxShape(btVector3(width, height, depth));
 	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), Util::convertToBtVector3(position)));
 	btVector3 fallInertia(0, 0, 0);
-	fallShape->calculateLocalInertia(mass, fallInertia);
+	if(mass != 0) fallShape->calculateLocalInertia(mass, fallInertia);
 
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
 	rigidBody = new btRigidBody(fallRigidBodyCI);
@@ -180,7 +180,7 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 	const btScalar low = -PI;
 	const btScalar high = PI;
 	hingeConstraint->setLimit(low, high);
-
+	std::cout << pm << std::endl;
 	pm->addNewConstraint(hingeConstraint, notCollision);
 
 	//Add to hinge array

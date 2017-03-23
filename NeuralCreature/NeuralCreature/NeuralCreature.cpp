@@ -219,8 +219,16 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
 	//btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
 
+	//Creature
+	Creature creature(&pm);
+
+
+
 	Cube fallCube(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
 	pm.addBody(fallCube.getRigidBody());
+
+	Cube cameraCollisionBox(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
+	pm.addBody(cameraCollisionBox.getRigidBody());
 
 	float fps = 0;
 	float accumilatedTime = 0;
@@ -307,6 +315,18 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//float angleC = trans.getRotation().getAngle();
 
 		//fallCube.setRotation(angleC, glm::vec3(xC, yC, zC));
+		//Camera box
+		cameraCollisionBox.setPosition(glm::vec3(camera.Position.x, camera.Position.y, camera.Position.z));
+		btDefaultMotionState* ms = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(camera.Position.x, camera.Position.y, camera.Position.z)));
+		cameraCollisionBox.getRigidBody()->setMotionState(ms);
+		cameraCollisionBox.updatePhysics();
+
+
+		//Update and render Creature
+		creature.updatePhysics();
+		creature.render(lightingShader);
+
+
 		fallCube.updatePhysics();
 		fallCube.render(lightingShader);
 
@@ -339,15 +359,15 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		bool isEnableMotor = true;
 		btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 
-		cubes[0].getHinge("h1")->enableMotor(isEnableMotor);
-		cubes[0].getHinge("h1")->setMaxMotorImpulse(maxMotorImpulse);
+		//cubes[0].getHinge("h1")->enableMotor(isEnableMotor);
+		//cubes[0].getHinge("h1")->setMaxMotorImpulse(maxMotorImpulse);
 
-		//leftHingeConstraint->enableMotor(isEnableMotor);
-		//leftHingeConstraint->setMaxMotorImpulse(maxMotorImpulse);
-		targetAngle += 1.f * deltaTime;
+		////leftHingeConstraint->enableMotor(isEnableMotor);
+		////leftHingeConstraint->setMaxMotorImpulse(maxMotorImpulse);
+		//targetAngle += 1.f * deltaTime;
 
-		////if (oldAngle != targetAngle) {
-		cubes[0].getHinge("h1")->setMotorTarget(targetAngle, deltaTime);
+		//////if (oldAngle != targetAngle) {
+		//cubes[0].getHinge("h1")->setMotorTarget(targetAngle, deltaTime);
 		//	leftHingeConstraint->setMotorTarget(targetAngle, deltaTime);
 		//	oldAngle = targetAngle;
 		////}

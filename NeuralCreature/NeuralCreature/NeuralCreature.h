@@ -22,6 +22,7 @@
 #include <btBulletDynamicsCommon.h>
 #include "PhysicsManager.h"
 #include "RenderManager.h"
+#include "Creature.h"
 
 #define _USE_MATH_DEFINES
 
