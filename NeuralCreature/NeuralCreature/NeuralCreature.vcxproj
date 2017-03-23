@@ -151,8 +151,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BulletTest.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Creature.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="NeuralCreature.h" />
     <ClInclude Include="PhysicsManager.h" />
@@ -160,9 +160,10 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BulletTest.cpp" />
+    <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NeuralCreature.cpp" />
@@ -174,6 +175,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="defaultShader.vs" />

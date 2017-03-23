@@ -177,8 +177,8 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 	
 
 	// set constraint limit
-	const btScalar low = -PI;
-	const btScalar high = PI;
+	const btScalar low = -PI/2;
+	const btScalar high = PI/2;
 	hingeConstraint->setLimit(low, high);
 	std::cout << pm << std::endl;
 	pm->addNewConstraint(hingeConstraint, notCollision);
