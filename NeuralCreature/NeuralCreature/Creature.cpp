@@ -42,15 +42,15 @@ Creature::Creature(PhysicsManager* pm)
 	pm->addBody(leftFoot->getRigidBody());
 
 	//Hinges:
-	bool noCol = false;
-	hips->addHinge(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.5f, 3.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightThigh, noCol, pm, "rightHip");
-	hips->addHinge(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.5f, 3.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftThigh, noCol, pm, "leftHip");
+	bool noCol = true;
+	hips->addHinge(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.5f, 3.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightThigh, noCol, -0.3, 0.5, pm, "rightHip");
+	hips->addHinge(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.5f, 3.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftThigh, noCol, -0.3, 0.5, pm, "leftHip");
 
-	rightThigh->addHinge(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightShin, noCol, pm, "rightKnee");
-	leftThigh->addHinge(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftShin, noCol, pm, "leftKnee");
+	rightThigh->addHinge(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightShin, noCol, -0.1, PI * 0.8, pm, "rightKnee");
+	leftThigh->addHinge(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftShin, noCol, -0.1, PI/1.2, pm, "leftKnee");
 
-	rightShin->addHinge(glm::vec3(0.0f, -2.3f, 0.0f), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightFoot, noCol, pm, "rightAnkle");
-	leftShin->addHinge(glm::vec3(0.0f, -2.3f, 0.0f), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftFoot, noCol, pm, "leftAnkle");
+	rightShin->addHinge(glm::vec3(0.0f, -2.3f, 0.0f), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightFoot, noCol, 0, PI/4, pm, "rightAnkle");
+	leftShin->addHinge(glm::vec3(0.0f, -2.3f, 0.0f), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftFoot, noCol, 0, PI/4, pm, "leftAnkle");
 
 
 }
@@ -92,6 +92,41 @@ void Creature::updatePhysics()
 	leftFoot->updatePhysics();
 
 
+}
+
+Cube* Creature::getHips()
+{
+	return hips;
+}
+
+Cube* Creature::getRightThigh()
+{
+	return rightThigh;
+}
+
+Cube* Creature::getRightShin()
+{
+	return rightShin;
+}
+
+Cube* Creature::getRightFoot()
+{
+	return rightFoot;
+}
+
+Cube* Creature::getLeftThigh()
+{
+	return leftThigh;
+}
+
+Cube* Creature::getLeftShin()
+{
+	return leftShin;
+}
+
+Cube* Creature::getLeftFoot()
+{
+	return leftFoot;
 }
 
 

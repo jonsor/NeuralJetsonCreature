@@ -19,7 +19,6 @@ Purpose: Creates cubes to use in the world. Also renders, updates physics and cr
 	@param height The heigth of the cube.
 	@param depth The depth of the cube.
 	@param mass The Mass of the cube.
-
 */
 Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
 {
@@ -222,11 +221,10 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 		useReferenceFrameA);
 	
 
-	// set constraint limit
-	const btScalar low = -PI/2;
-	const btScalar high = PI/2;
+	//Set constraint limit
+	const btScalar low = -PI;
+	const btScalar high = PI;
 	hingeConstraint->setLimit(low, high);
-	std::cout << pm << std::endl;
 	pm->addNewConstraint(hingeConstraint, notCollision);
 
 	//Add to hinge array
@@ -234,13 +232,61 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 
 	
 }
+/**
+Adds a new hinge to this cube that attaches cubeB.
 
-btHingeConstraint * Cube::getHinge(std::string name)
+@param pivotA
+@param pivotB
+@param axisA The vector direction of rotation of this cube in relation to cubeB.
+@param axisB The vector direction of rotation of cubeB in relation to this cube.
+@param cubeB A pointer to the cube that you want to attach to this one.
+@param notCollision Wether or not the two joint cubes should be able to collide.
+@param minAngle The minimum angle of rotation on the hinge.
+@param maxAngle The maximum angle of rotation on the hinge.
+@param pm A pointer to the Pysics Manager to add the hinges to the world.
+@param name The key for hinge storage.
+
+
+*/
+void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager * pm, std::string name)
+{
+	bool useReferenceFrameA = false;
+	btHingeConstraint* hingeConstraint = new btHingeConstraint(
+		*rigidBody,
+		*cubeB->getRigidBody(),
+		Util::convertToBtVector3(pivotA),
+		Util::convertToBtVector3(pivotB),
+		Util::convertToBtVector3(axisA),
+		Util::convertToBtVector3(axisB),
+		useReferenceFrameA);
+
+
+	//Set constraint limit
+	hingeConstraint->setLimit(minAngle, maxAngle);
+	pm->addNewConstraint(hingeConstraint, notCollision);
+
+	//Add to hinge array
+	hinges[name] = hingeConstraint;
+
+
+}
+
+btHingeConstraint* Cube::getHinge(std::string name)
 {
 	return hinges[name];
 }
 
+/**
+	Sets the maximum and minimum angle for the hinge, should be within +-PI.
 
+	@param name Key name of the hinge.
+	@param minAngle min angle.
+	@param maxAngle max angle.
+*/
+void Cube::setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle)
+{
+	hinges[name]->setLimit(minAngle, maxAngle);
+}
 
 Cube::~Cube()
 {

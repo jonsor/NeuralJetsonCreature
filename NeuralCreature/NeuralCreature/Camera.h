@@ -17,13 +17,16 @@ enum Camera_Movement {
 	FORWARD,
 	BACKWARD,
 	LEFT,
-	RIGHT
+	RIGHT,
+	UP, 
+	DOWN,
+	BOOST
 };
 
 // Default camera values
 const GLfloat YAW = -90.0f;
 const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 3.0f;
+const GLfloat SPEED = 5.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
 
@@ -75,6 +78,7 @@ public:
 	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
 	{
 		GLfloat velocity = this->MovementSpeed * deltaTime;
+		
 		if (direction == FORWARD)
 			this->Position += this->Front * velocity;
 		if (direction == BACKWARD)
@@ -83,6 +87,12 @@ public:
 			this->Position -= this->Right * velocity;
 		if (direction == RIGHT)
 			this->Position += this->Right * velocity;
+		if (direction == UP)
+			this->Position += this->WorldUp * velocity;
+		if (direction == DOWN)
+			this->Position -= this->WorldUp * velocity;
+		if (direction == BOOST)
+			this->MovementSpeed = 15;
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

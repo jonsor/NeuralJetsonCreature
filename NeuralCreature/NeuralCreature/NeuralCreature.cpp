@@ -30,6 +30,11 @@ btScalar targetAngle;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+
+
+bool holdingO = false;
+bool holdingP = false;
+
 //Light attributes
 glm::vec3 lightPos(-21.2f, 5.0f, 2.0f);
 
@@ -118,8 +123,12 @@ void NeuralCreature::init() {
 */
 void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes) {
 	
+	//Init hinge variables:
+	targetAngle = 0.0f;
+	//btScalar oldAngle = 0.0f;
+	bool isEnableMotor = true;
+	btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 
-	
 
 	////Hinge stuff
 	////btScalar targetAngle;
@@ -134,10 +143,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//btHingeConstraint* rightHingeConstraint;
 	//btHingeConstraint* leftHingeConstraint;
 
-	////Init hinge stuff
-	//targetAngle = 0.0f;
-	//btScalar oldAngle = 0.0f;
-
+	
 	//// create collision shapes
 	//const btVector3 rightBoxHalfExtents(0.5f, 0.5f, 0.2f);
 	//rightCollisionShape = new btBoxShape(rightBoxHalfExtents);
@@ -238,8 +244,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//Creates the creature
 	Creature creature(&pm);
 
-
-
 	Cube fallCube(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
 	pm.addBody(fallCube.getRigidBody());
 
@@ -258,7 +262,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		lastFrame = currentFrame;
 		accumilatedTime += deltaTime;
 		if (accumilatedTime > 1.0f) {
-			std::cout << "fps: " << fps << std::endl;
+			//std::cout << "fps: " << fps << std::endl;
 			fps = 0;
 			accumilatedTime = 0;
 		}
@@ -353,15 +357,44 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 		}
 
+		//Update creature's hinge motors: 
+		creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
+		creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
+		creature.getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
+		creature.getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
+		
+		creature.getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
+		creature.getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
+		creature.getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
+		creature.getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
+		
+		if (holdingO) {
+			targetAngle += 0.001f;
+		}
+		if (holdingP) {
+			targetAngle -= 0.001f;
+		}
+		
+		if (targetAngle >= PI) {
+			targetAngle = PI;
+		}
+
+		if (targetAngle <= -PI) {
+			targetAngle = -PI;
+		}
+		//std::cout << targetAngle << std::endl;
+
+		creature.getHips()->getHinge("leftHip")->setMotorTarget(targetAngle, deltaTime);
+		creature.getHips()->getHinge("rightHip")->setMotorTarget(targetAngle, deltaTime);
+		creature.getRightThigh()->getHinge("rightKnee")->setMotorTarget(targetAngle, deltaTime);
+		creature.getLeftThigh()->getHinge("leftKnee")->setMotorTarget(targetAngle, deltaTime);
+
 		////Rigid body stuff
 		//rightRigidBody->activate();
 		//middleRigidBody->activate();
-
-		bool isEnableMotor = true;
-		btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
-
-		//cubes[0].getHinge("h1")->enableMotor(isEnableMotor);
-		//cubes[0].getHinge("h1")->setMaxMotorImpulse(maxMotorImpulse);
+		//creature.getHips()->getRigidBody->activate();
+		//creature.getRightThigh()->getRigidBody->activate();
+		//creature.getLeftThigh()->getRigidBody->activate();
 
 		////leftHingeConstraint->enableMotor(isEnableMotor);
 		////leftHingeConstraint->setMaxMotorImpulse(maxMotorImpulse);
@@ -413,7 +446,8 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//hinge1.render(lightingShader);
 		//hinge2.render(lightingShader);
 		//hinge3.render(lightingShader);
-		// Swap the screen buffers
+
+		//Swap the screen buffers
 		glfwSwapBuffers(window);
 
 	}
@@ -424,24 +458,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	
 }
-
-//btRigidBody* NeuralCreature::createRigidBody(btCollisionShape* collisionShape, btScalar mass, const btTransform& transform) const
-//{
-//	// calculate inertia
-//	btVector3 localInertia(0.0f, 0.0f, 0.0f);
-//	collisionShape->calculateLocalInertia(mass, localInertia);
-//
-//	// create motion state
-//	//btDefaultMotionState* defaultMotionState = new btDefaultMotionState(transform);
-//	btDefaultMotionState* defaultMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), transform.getOrigin()));
-//
-//
-//	// create rigid body
-//	btRigidBody::btRigidBodyConstructionInfo rigidBodyConstructionInfo( mass, defaultMotionState, collisionShape, localInertia);
-//	btRigidBody* rigidBody = new btRigidBody(rigidBodyConstructionInfo);
-//
-//	return rigidBody;
-//}
 
 /**
 	Alters the camera positions based on user input.
@@ -457,6 +473,12 @@ void NeuralCreature::doMovement()
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (keys[GLFW_KEY_D])
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (keys[GLFW_KEY_SPACE])
+		camera.ProcessKeyboard(UP, deltaTime);
+	if (keys[GLFW_KEY_LEFT_CONTROL])
+		camera.ProcessKeyboard(DOWN, deltaTime);
+	if (keys[GLFW_KEY_LEFT_SHIFT])
+		camera.ProcessKeyboard(BOOST, deltaTime);
 }
 
 /**
@@ -518,13 +540,15 @@ void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 	glBindVertexArray(0);
 }
 
+
+
 /**
 	Called whenever a key is pressed or released via GLFW.
 
 	@param window The applications GLFW render window.
 	@param key What key that is being activated.
 	@param scancode
-	@param action What action to do, for instance PRESS or RELEASE.
+	@param action What action to listen for, for instance PRESS or RELEASE.
 	@param mode
 */
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -543,10 +567,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 	if (key == GLFW_KEY_O && action == GLFW_PRESS) {
-		targetAngle += 0.1;
+		holdingO = true;
+	}
+	if (key == GLFW_KEY_O && action == GLFW_RELEASE) {
+		holdingO = false;
 	}
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-		targetAngle -= 0.1;
+		holdingP = true;
+	}
+	if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+		holdingP = false;
 	}
 }
 

@@ -53,7 +53,9 @@ public:
 	btRigidBody* getRigidBody();
 	void updatePhysics();
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name);
+	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
 	btHingeConstraint* getHinge(std::string name);
+	void setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle);
 	~Cube();
 };
 
