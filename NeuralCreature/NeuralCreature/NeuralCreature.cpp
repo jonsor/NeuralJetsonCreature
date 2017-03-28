@@ -30,6 +30,9 @@ NeuralCreature::NeuralCreature()
 {
 }
 
+/**
+	Initializes all the libraries, sets up a window, and calls the main loop.
+*/
 void NeuralCreature::init() {
 	//Create a GLFW Window
 	GLFWwindow* window = rm.initWindow(WIDTH, HEIGHT);
@@ -233,7 +236,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	float fps = 0;
 	float accumilatedTime = 0;
 	
-	//START RENDER LOOP:
+	//START MAIN LOOP:
 	while (!glfwWindowShouldClose(window)) {
 		fps++;
 		// Set frame time
@@ -242,7 +245,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		lastFrame = currentFrame;
 		accumilatedTime += deltaTime;
 		if (accumilatedTime > 1.0f) {
-			//std::cout << "fps: " << fps << std::endl;
+			std::cout << "fps: " << fps << std::endl;
 			fps = 0;
 			accumilatedTime = 0;
 		}
@@ -253,7 +256,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		// Clear the colorbuffer
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//Render here
 
 		if (applyImpulse) {
 			fallCube.getRigidBody()->activate();
@@ -286,8 +288,10 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		// Get their uniform location
 		GLint viewLoc = glGetUniformLocation(lightingShader.program, "view");
 		GLint projLoc = glGetUniformLocation(lightingShader.program, "projection");
+		
 		// Pass them to the shaders
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		
 		// Note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -315,12 +319,12 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//float angleC = trans.getRotation().getAngle();
 
 		//fallCube.setRotation(angleC, glm::vec3(xC, yC, zC));
+		
 		//Camera box
 		cameraCollisionBox.setPosition(glm::vec3(camera.Position.x, camera.Position.y, camera.Position.z));
 		btDefaultMotionState* ms = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(camera.Position.x, camera.Position.y, camera.Position.z)));
 		cameraCollisionBox.getRigidBody()->setMotionState(ms);
 		cameraCollisionBox.updatePhysics();
-
 
 		//Update and render Creature
 		creature.updatePhysics();
@@ -442,7 +446,9 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 //	return rigidBody;
 //}
 
-// Moves/alters the camera positions based on user input
+/**
+	Alters the camera positions based on user input.
+*/
 void NeuralCreature::doMovement()
 {
 	// Camera controls
@@ -456,6 +462,9 @@ void NeuralCreature::doMovement()
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
+/**
+	Initializes the ground plane rendering (and the light source).
+*/
 void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 {
 	float s = 50.0f;
@@ -509,7 +518,9 @@ void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 	glBindVertexArray(0);
 }
 
-// Is called whenever a key is pressed/released via GLFW
+/**
+	Called whenever a key is pressed or released via GLFW.
+*/
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	//cout << key << endl;
@@ -534,6 +545,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 }
 
+/**
+	Called whenever a mouse movement is recognized.	
+*/
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
@@ -552,7 +566,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-
+/**
+	Called whenver the mouse scroller is activated.
+*/
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);

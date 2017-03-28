@@ -1,6 +1,17 @@
 #include "stdafx.h"
 #include "Cube.h"
 
+/**
+	Creates a new OpenGL cube and initializes the physics.
+
+	@param position vector position of the cube.
+	@param color vector color of cube.
+	@param width width of cube.
+	@param height heigth of cube.
+	@param depth depth of cube.
+	@param mass mass of cube.
+
+*/
 Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
 {
 	// Cubes
@@ -76,6 +87,11 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 
 }
 
+/**
+	Renders the cube with OpenGL.
+
+	@param
+*/
 void Cube::render(Shader shader)
 {
 	shader.use();

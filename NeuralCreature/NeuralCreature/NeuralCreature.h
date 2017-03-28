@@ -31,7 +31,7 @@ class NeuralCreature
 private:
 	RenderManager rm;
 	PhysicsManager pm;
-	const GLuint WIDTH = 1280, HEIGHT = 720;
+	const GLuint WIDTH = 3072, HEIGHT = 1728;
 
 public:
 	NeuralCreature();
