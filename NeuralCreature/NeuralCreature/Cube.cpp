@@ -1,15 +1,24 @@
+/**
+Cube.cpp
+Purpose: Creates cubes to use in the world. Also renders, updates physics and creates hinges to attach other cubes.
+
+@author Sjur Barndon, Jonas Sørsdal
+@version 1.0 23.03.2017
+*/
+
+
 #include "stdafx.h"
 #include "Cube.h"
 
 /**
 	Creates a new OpenGL cube and initializes the physics.
 
-	@param position vector position of the cube.
-	@param color vector color of cube.
-	@param width width of cube.
-	@param height heigth of cube.
-	@param depth depth of cube.
-	@param mass mass of cube.
+	@param position Vector position of the cube.
+	@param color Vector color of the cube.
+	@param width The width of the cube.
+	@param height The heigth of the cube.
+	@param depth The depth of the cube.
+	@param mass The Mass of the cube.
 
 */
 Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
@@ -90,7 +99,7 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 /**
 	Renders the cube with OpenGL.
 
-	@param
+	@param shader Shader object for rendering.
 */
 void Cube::render(Shader shader)
 {
@@ -129,7 +138,6 @@ glm::vec3 Cube::getColor()
 
 void Cube::setPosition(glm::vec3 position)
 {
-	//std::cout << position.y << std::endl;
 	this->position = position;
 }
 
@@ -144,6 +152,10 @@ void Cube::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
 	this->axisOfRotation = axisOfRotation;
 }
 
+/**
+	Sets up physics for the cube.
+	Does not add it to the physics world.
+*/
 void Cube::setUpPhysicsCube()
 {
 	//TODO: delete fall shape at the end of game loop
@@ -162,6 +174,10 @@ btRigidBody* Cube::getRigidBody()
 	return rigidBody;
 }
 
+/**
+	Calculates and applies the next phyical step for the Cube.
+	Should be called in the main loop.
+*/
 void Cube::updatePhysics()
 {
 	btTransform trans;
@@ -179,6 +195,20 @@ void Cube::updatePhysics()
 	setRotation(angle, glm::vec3(x, y, z));
 }
 
+/**
+	Adds a new hinge to this cube that attaches cubeB.
+
+	@param pivotA
+	@param pivotB
+	@param axisA The vector direction of rotation of this cube in relation to cubeB.
+	@param axisB The vector direction of rotation of cubeB in relation to this cube.
+	@param cubeB A pointer to the cube that you want to attach to this one.
+	@param notCollision Wether or not the two joint cubes should be able to collide.
+	@param pm A pointer to the Pysics Manager to add the hinges to the world.
+	@param name The key for hinge storage.
+
+
+*/
 void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name)
 {
 	bool useReferenceFrameA = false;

@@ -34,7 +34,6 @@ private:
 	const GLuint WIDTH = 3072, HEIGHT = 1728;
 
 public:
-	NeuralCreature();
 	void init();
 	void renderLoop(GLFWwindow * window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes);
 	//btRigidBody * createRigidBody(btCollisionShape * collisionShape, btScalar mass, const btTransform & transform) const;

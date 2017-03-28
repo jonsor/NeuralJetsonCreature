@@ -1,10 +1,18 @@
+/**
+PhysicsManager.cpp
+Purpose: Sets up and manages the physics simulation with the Bullet Library.
+
+@author Sjur Barndon, Jonas Sørsdal
+@version 1.0 23.03.2017
+*/
+
 #include "stdafx.h"
 #include "PhysicsManager.h"
 
-PhysicsManager::PhysicsManager()
-{
-}
 
+/**
+	Initializes the physics library and sets up a few of the settings in the world.
+*/
 void PhysicsManager::initPhysics()
 {
 	broadphase = new btDbvtBroadphase();
@@ -16,6 +24,12 @@ void PhysicsManager::initPhysics()
 
 }
 
+/**
+	Steps to the next stage of the physics simulation.
+
+	@param deltaTime
+	@param steps Number of steps to take.
+*/
 void PhysicsManager::update(GLfloat deltaTime, int steps)
 {
 	dynamicsWorld->stepSimulation(deltaTime, steps);

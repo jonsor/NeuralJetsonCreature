@@ -1,37 +1,40 @@
+/**
+NeuralCerature.cpp
+Purpose: Main application file. Initializes all the libraries and sets up the world, then starts the main game loop.
+
+@author Sjur Barndon, Jonas Sørsdal
+@version 1.0 23.03.2017
+*/
+
 #include "stdafx.h"
 #include "NeuralCreature.h"
 #define GLEW_STATIC
 
 //Prototypes
 //TODO: Fix the callbacks so that they are in it's own class or they can be used in the header. Hard because they wont work as class methods...
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 
-//Variables
-//Camera and controls
+//Variables for camera, controls and time:
+
 Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
 bool keys[1024];
 GLfloat lastX, lastY;
 bool firstMouse = true;
 bool applyImpulse = false;
 btScalar targetAngle;
-
-//Time
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
-// Light attributes
+//Light attributes
 glm::vec3 lightPos(-21.2f, 5.0f, 2.0f);
 
-NeuralCreature::NeuralCreature()
-{
-}
-
 /**
-	Initializes all the libraries, sets up a window, and calls the main loop.
+	Initializes all the libraries, sets up a window, and starts the main loop.
 */
 void NeuralCreature::init() {
 	//Create a GLFW Window
@@ -45,7 +48,7 @@ void NeuralCreature::init() {
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	//OpenGL Options
+	//OpenGL options
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glEnable(GL_DEPTH_TEST);
 
@@ -58,7 +61,8 @@ void NeuralCreature::init() {
 	GLuint lightVAO, planeVAO;
 	initPlaneAndLight(& lightVAO, & planeVAO);
 
-	//Populate the world
+	//Populate the world with cubes:
+
 	Cube cube1(glm::vec3(6.0f, 60.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 10);
 	Cube cube2(glm::vec3(6.0f, 40.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f, 20);
 	Cube cube3(glm::vec3(6.0f, 20.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.0f, 0.5f, 1);
@@ -102,7 +106,16 @@ void NeuralCreature::init() {
 	return;
 }
 
+/**
+	Sets up a few render objects and starts the main game loop.
 
+	@param window The applications GLFW render window.
+	@param planeVAO Vertex Array Object for the ground plane.
+	@param ligthVAO Vertex Array Object for the light source.
+	@param lightingShader Shader object for the fragment shader and the vertex shader.
+	@param cubes Vector of cubes to place in the world.
+		
+*/
 void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes) {
 	
 
@@ -222,7 +235,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
 	//btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
 
-	//Creature
+	//Creates the creature
 	Creature creature(&pm);
 
 
@@ -335,22 +348,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		fallCube.render(lightingShader);
 
 		for (int i = 0; i < cubes.size(); i++) {
-			//if (i == 0) {
-			//	float mat[16];
-			//	trans.getOpenGLMatrix(mat);
-			//	trans.getRotation().getX();
-			//	//Model = glm::rotate(Model, angle_in_degrees, glm::vec3(x, y, z));
-			//	//trans.getRotation().angle();
-			//	//std::cout << trans.getRotation().getAngle() << "   " << trans.getRotation().getX() << "  " << trans.getRotation().getY() << "   " << trans.getRotation().getZ() << "  " << trans.getRotation().getW()<< std::endl;
-			//	cubes[i].setPosition(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-			//	float x = trans.getRotation().getX();
-			//	float y = trans.getRotation().getY();
-			//	float z = trans.getRotation().getZ();
-			//	float angle = trans.getRotation().getAngle();
-			//	//std::cout << angle << "   " << x << " " << y << " " << z << std::endl;
-			//	cubes[i].setRotation(angle, glm::vec3(x, y, z));
-			//}
-
 			cubes[i].updatePhysics();
 			cubes[i].render(lightingShader);
 
@@ -464,6 +461,9 @@ void NeuralCreature::doMovement()
 
 /**
 	Initializes the ground plane rendering (and the light source).
+
+	@param lightVAO Pointer to the lights Vertex Array Object.
+	@param planeVAO Pointer to the planes Vertex Array Objectm.
 */
 void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 {
@@ -520,10 +520,15 @@ void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 
 /**
 	Called whenever a key is pressed or released via GLFW.
+
+	@param window The applications GLFW render window.
+	@param key What key that is being activated.
+	@param scancode
+	@param action What action to do, for instance PRESS or RELEASE.
+	@param mode
 */
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	//cout << key << endl;
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	if (key >= 0 && key < 1024)
@@ -547,6 +552,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 /**
 	Called whenever a mouse movement is recognized.	
+
+	@param window The applications GLFW render window.
+	@param xpos The x position of the mouse pointer.
+	@param ypos The y position of the mouse pointer.
 */
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -568,6 +577,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 /**
 	Called whenver the mouse scroller is activated.
+
+	@param window The applications GLFW render window.
+	@param xoffset
+	@param yoffset
 */
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {

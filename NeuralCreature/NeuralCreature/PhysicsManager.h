@@ -18,7 +18,6 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 public:
-	PhysicsManager();
 	void initPhysics();
 	void update(GLfloat deltaTime, int steps);
 	btDiscreteDynamicsWorld* getDynamicsWorld();

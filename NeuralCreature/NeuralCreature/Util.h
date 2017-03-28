@@ -12,8 +12,7 @@
 class Util
 {
 public:
-	Util();
 	static btVector3 convertToBtVector3(glm::vec3 vector);
-	~Util();
+
 };
 

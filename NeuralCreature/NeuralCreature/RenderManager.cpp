@@ -1,12 +1,22 @@
+/**
+RenderManager.cpp
+Purpose: Sets up and manages the render library OpenGL.
+
+@author Sjur Barndon, Jonas Sørsdal
+@version 1.0 23.03.2017
+*/
+
+
 #include "stdafx.h"
 #include "RenderManager.h"
 
 
+/**
+	Initializes a GLFW render window for the application to draw to.
 
-RenderManager::RenderManager()
-{
-}
-
+	@param width The height of the window in pixels.
+	@param height The width of the window in pixels.
+*/
 GLFWwindow* RenderManager::initWindow(GLuint width, GLuint height)
 {
 	initGLFW();
@@ -21,6 +31,9 @@ GLFWwindow* RenderManager::initWindow(GLuint width, GLuint height)
 	return window;
 }
 
+/**
+	Sets up and initilalizes the GLFW library. 
+*/
 void RenderManager::initGLFW()
 {
 	glfwInit();
@@ -32,6 +45,11 @@ void RenderManager::initGLFW()
 	glfwSwapInterval(1);
 }
 
+/**
+	Sets up and initializes the Glew library.
+
+	@param window The applications GLFW render window.
+*/
 void RenderManager::initGLEW(GLFWwindow* window) {
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
@@ -41,6 +59,11 @@ void RenderManager::initGLEW(GLFWwindow* window) {
 	initView(window);
 }
 
+/**
+	Sets up the viewport and a few other OpenGL options.
+
+	@param window The applications GLFW render window.
+*/
 void RenderManager::initView(GLFWwindow* window)
 {
 	//Set Viewport
