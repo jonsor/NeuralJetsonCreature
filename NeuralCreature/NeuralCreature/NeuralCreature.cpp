@@ -8,11 +8,10 @@ Purpose: Main application file. Initializes all the libraries and sets up the wo
 
 #include "stdafx.h"
 #include "NeuralCreature.h"
+
 #define GLEW_STATIC
 
 //Prototypes
-//TODO: Fix the callbacks so that they are in it's own class or they can be used in the header. Hard because they wont work as class methods...
-
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -26,17 +25,26 @@ bool keys[1024];
 GLfloat lastX, lastY;
 bool firstMouse = true;
 bool applyImpulse = false;
-btScalar targetAngle;
+
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+//Leg control:
 
+btScalar targetAngle;
+btScalar targetAngleRightKnee;
+btScalar targetAngleLeftKnee;
+btScalar targetAngleAbdomen;
 
 bool holdingO = false;
 bool holdingP = false;
+bool holdingR = false;
+bool holdingT = false;
+bool holdingY = false;
+bool holdingI = false;
 
 //Light attributes
-glm::vec3 lightPos(-21.2f, 5.0f, 2.0f);
+glm::vec3 lightPos(-30.0f, 20.0f, 0.0f);
 
 /**
 	Initializes all the libraries, sets up a window, and starts the main loop.
@@ -67,6 +75,7 @@ void NeuralCreature::init() {
 	initPlaneAndLight(& lightVAO, & planeVAO);
 
 	//Populate the world with cubes:
+	
 
 	Cube cube1(glm::vec3(6.0f, 60.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 10);
 	Cube cube2(glm::vec3(6.0f, 40.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f, 20);
@@ -78,9 +87,9 @@ void NeuralCreature::init() {
 	cube1.addHinge(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(-5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), & cube2, true, & pm, "h1");
 
 	std::vector<Cube> cubes;
-	cubes.push_back(cube1);
-	cubes.push_back(cube2);
-	cubes.push_back(cube3);
+	//cubes.push_back(cube1);
+	//cubes.push_back(cube2);
+	//cubes.push_back(cube3);
 
 	//Plane
 	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
@@ -125,124 +134,18 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	
 	//Init hinge variables:
 	targetAngle = 0.0f;
-	//btScalar oldAngle = 0.0f;
+	targetAngleRightKnee = 0.0f;
+	targetAngleLeftKnee = 0.0f;
+	targetAngleAbdomen = 0.0f;
+
 	bool isEnableMotor = true;
 	btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 
-
-	////Hinge stuff
-	////btScalar targetAngle;
-	//btCollisionShape* rightCollisionShape;
-	//btCollisionShape* middleCollisionShape;
-	//btCollisionShape* leftCollisionShape;
-	//btRigidBody* rightRigidBody;
-	//btRigidBody* middleRigidBody;
-	//btRigidBody* leftRigidBody;
-
-
-	//btHingeConstraint* rightHingeConstraint;
-	//btHingeConstraint* leftHingeConstraint;
-
-	
-	//// create collision shapes
-	//const btVector3 rightBoxHalfExtents(0.5f, 0.5f, 0.2f);
-	//rightCollisionShape = new btBoxShape(rightBoxHalfExtents);
-	//Cube hinge1(glm::vec3(5.0f, 10.0f, 2.0f), glm::vec3(0.4f, 0.8f, 0.3f), 0.5f, 0.5f, 0.2f, 1);
-
-	//const btVector3 middleBoxHalfExtents(0.5f, 0.5f, 0.2f);
-	//middleCollisionShape = new btBoxShape(middleBoxHalfExtents);
-	//Cube hinge2(glm::vec3(8.0f, 1.0f, 2.0f), glm::vec3(0.7f, 0.3f, 0.4f), 0.5f, 0.5f, 0.2f, 1);
-
-	//const btVector3 leftBoxHalfExtents(0.5f, 0.5f, 0.2f);
-	//leftCollisionShape = new btBoxShape(leftBoxHalfExtents);
-	//Cube hinge3(glm::vec3(8.0f, 1.0f, 2.0f), glm::vec3(0.1f, 0.3f, 0.4f), 0.5f, 0.5f, 0.2f, 1);
-
-	//// create right rigid body
-	//const btScalar rightMass = 10.0f;
-	//btTransform rightTransform;
-	//rightTransform.setIdentity();
-	////x z y
-	//const btVector3 rightOrigin(4.0f, 0.5f, 5.0f);
-	//rightTransform.setOrigin(rightOrigin);
-	//rightRigidBody = createRigidBody(rightCollisionShape, rightMass, rightTransform);
-	//pm.addBody(rightRigidBody);
-
-	//// create middle rigid body
-	//const btScalar middleMass = 1.0f;
-	//btTransform middleTransform;
-	//middleTransform.setIdentity();
-	//const btVector3 middleOrigin(4.0f, 0.5f, 5.0f);
-	//middleTransform.setOrigin(middleOrigin);
-	//middleRigidBody = createRigidBody(middleCollisionShape, middleMass, middleTransform);
-	//pm.addBody(middleRigidBody);
-
-	//// create left rigid body
-	//const btScalar leftMass = 10.0f;
-	//btTransform leftTransform;
-	//leftTransform.setIdentity();
-	//const btVector3 leftOrigin(4.5f, 0.5f, 5.0f);
-	//leftTransform.setOrigin(leftOrigin);
-	//leftRigidBody = createRigidBody(leftCollisionShape, leftMass, leftTransform);
-	//pm.addBody(leftRigidBody);
-
-
-	//// create right hinge constraint
-	//const btVector3 pivotInA(1.0f, 0.0f, 0.0f);
-	//const btVector3 pivotInB(-1.0f, 0.0f, 0.0f);
-	//btVector3 axisInA(0.0f, 2.0f, 2.0f);
-	//btVector3 axisInB(1.0f, 0.0f, 0.0f);
-	//bool useReferenceFrameA = false;
-	//rightHingeConstraint = new btHingeConstraint(
-	//	*rightRigidBody,
-	//	*middleRigidBody,
-	//	pivotInA,
-	//	pivotInB,
-	//	axisInA,
-	//	axisInB,
-	//	useReferenceFrameA);
-
-	//const double PI = 3.141592653589793238463;
-
-	//// set constraint limit
-	//const btScalar low = -PI;
-	//const btScalar high = PI;
-	//rightHingeConstraint->setLimit(low, high);
-	////hingeConstraint->setLimit(0, 0.2f);
-
-	////Create left hinge constraint
-	////const btVector3 pivotInA(1.0f, 0.0f, 0.0f);
-	////const btVector3 pivotInB(-1.0f, 0.0f, 0.0f);
-	////btVector3 axisInA(0.0f, 0.0f, 1.0f);
-	////btVector3 axisInB(0.0f, 0.0f, 1.0f);
-	////bool useReferenceFrameA = false;
-	//leftHingeConstraint = new btHingeConstraint(
-	//	*middleRigidBody,
-	//	*leftRigidBody,
-	//	pivotInA,
-	//	pivotInB,
-	//	axisInA,
-	//	axisInB,
-	//	useReferenceFrameA);
-
-	//// add constraint to the world
-	//const bool isDisableCollisionsBetweenLinkedBodies = false;
-	//pm.addNewConstraint(rightHingeConstraint,
-	//	isDisableCollisionsBetweenLinkedBodies);
-	//pm.addNewConstraint(leftHingeConstraint,
-	//	isDisableCollisionsBetweenLinkedBodies);
-
-	//Box
-	//btCollisionShape* fallShape = new btBoxShape(btVector3(1, 1, 1));
-
-	//btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 50, 0)));
-	//btScalar mass = 1;
-	//btVector3 fallInertia(0, 0, 0);
-	//fallShape->calculateLocalInertia(mass, fallInertia);
-	//btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
-	//btRigidBody* fallRigidBody = new btRigidBody(fallRigidBodyCI);
-
 	//Creates the creature
 	Creature creature(&pm);
+
+	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
+	pm.addBody(lightPosMarker.getRigidBody());
 
 	Cube fallCube(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
 	pm.addBody(fallCube.getRigidBody());
@@ -324,19 +227,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 		pm.update(deltaTime, 1);
 
-		//btTransform trans;
-		//fallCube.getRigidBody()->getMotionState()->getWorldTransform(trans);
-		//float mat[16];
-		//trans.getOpenGLMatrix(mat);
-		//trans.getRotation().getX();
-		//fallCube.setPosition(glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-		//float xC = trans.getRotation().getX();
-		//float yC = trans.getRotation().getY();
-		//float zC = trans.getRotation().getZ();
-		//float angleC = trans.getRotation().getAngle();
-
-		//fallCube.setRotation(angleC, glm::vec3(xC, yC, zC));
-		
 		//Camera box
 		cameraCollisionBox.setPosition(glm::vec3(camera.Position.x, camera.Position.y, camera.Position.z));
 		btDefaultMotionState* ms = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(camera.Position.x, camera.Position.y, camera.Position.z)));
@@ -347,6 +237,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		creature.updatePhysics();
 		creature.render(lightingShader);
 
+		lightPosMarker.render(lightingShader);
 
 		fallCube.updatePhysics();
 		fallCube.render(lightingShader);
@@ -358,94 +249,25 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		}
 
 		//Update creature's hinge motors: 
+		creature.getChest()->getHinge("abdomen")->enableMotor(isEnableMotor);
 		creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
 		creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
 		creature.getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
 		creature.getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
 		
+		creature.getChest()->getHinge("abdomen")->setMaxMotorImpulse(maxMotorImpulse);
 		creature.getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
 		creature.getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
 		creature.getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
 		creature.getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
 		
-		if (holdingO) {
-			targetAngle += 0.001f;
-		}
-		if (holdingP) {
-			targetAngle -= 0.001f;
-		}
-		
-		if (targetAngle >= PI) {
-			targetAngle = PI;
-		}
+		incrementTargetAngles();
 
-		if (targetAngle <= -PI) {
-			targetAngle = -PI;
-		}
-		//std::cout << targetAngle << std::endl;
-
+		creature.getChest()->getHinge("abdomen")->setMotorTarget(targetAngleAbdomen, deltaTime);
 		creature.getHips()->getHinge("leftHip")->setMotorTarget(targetAngle, deltaTime);
 		creature.getHips()->getHinge("rightHip")->setMotorTarget(targetAngle, deltaTime);
-		creature.getRightThigh()->getHinge("rightKnee")->setMotorTarget(targetAngle, deltaTime);
-		creature.getLeftThigh()->getHinge("leftKnee")->setMotorTarget(targetAngle, deltaTime);
-
-		////Rigid body stuff
-		//rightRigidBody->activate();
-		//middleRigidBody->activate();
-		//creature.getHips()->getRigidBody->activate();
-		//creature.getRightThigh()->getRigidBody->activate();
-		//creature.getLeftThigh()->getRigidBody->activate();
-
-		////leftHingeConstraint->enableMotor(isEnableMotor);
-		////leftHingeConstraint->setMaxMotorImpulse(maxMotorImpulse);
-		//targetAngle += 1.f * deltaTime;
-
-		//////if (oldAngle != targetAngle) {
-		//cubes[0].getHinge("h1")->setMotorTarget(targetAngle, deltaTime);
-		//	leftHingeConstraint->setMotorTarget(targetAngle, deltaTime);
-		//	oldAngle = targetAngle;
-		////}
-
-		////std::cout << rightHingeConstraint->getMaxMotorImpulse() << "  target: " << targetAngle << std::endl;
-
-		////Hinge 1
-		//btTransform hinge1Trans;
-		//rightRigidBody->getMotionState()->getWorldTransform(hinge1Trans);
-
-		//hinge1.setPosition(glm::vec3(hinge1Trans.getOrigin().getX(), hinge1Trans.getOrigin().getY(), hinge1Trans.getOrigin().getZ()));
-		////hinge1.setPosition(glm::vec3(0.0f, hinge1Trans.getOrigin().getY(), 0.0f));
-		//float x = hinge1Trans.getRotation().getX();
-		//float y = hinge1Trans.getRotation().getY();
-		//float z = hinge1Trans.getRotation().getZ();
-		//float angle = hinge1Trans.getRotation().getAngle();
-		//hinge1.setRotation(angle, glm::vec3(x, y, z));
-
-		////Hinge 2
-
-		//btTransform hinge2Trans;
-		//middleRigidBody->getMotionState()->getWorldTransform(hinge2Trans);
-
-		//hinge2.setPosition(glm::vec3(hinge2Trans.getOrigin().getX(), hinge2Trans.getOrigin().getY(), hinge2Trans.getOrigin().getZ()));
-		//x = hinge2Trans.getRotation().getX();
-		//y = hinge2Trans.getRotation().getY();
-		//z = hinge2Trans.getRotation().getZ();
-		//angle = hinge2Trans.getRotation().getAngle();
-		//hinge2.setRotation(angle, glm::vec3(x, y, z));
-
-		////Hinge 3
-		//btTransform hinge3Trans;
-		//leftRigidBody->getMotionState()->getWorldTransform(hinge3Trans);
-
-		//hinge3.setPosition(glm::vec3(hinge3Trans.getOrigin().getX(), hinge3Trans.getOrigin().getY(), hinge3Trans.getOrigin().getZ()));
-		//x = hinge3Trans.getRotation().getX();
-		//y = hinge3Trans.getRotation().getY();
-		//z = hinge3Trans.getRotation().getZ();
-		//angle = hinge3Trans.getRotation().getAngle();
-		//hinge3.setRotation(angle, glm::vec3(x, y, z));
-
-		//hinge1.render(lightingShader);
-		//hinge2.render(lightingShader);
-		//hinge3.render(lightingShader);
+		creature.getRightThigh()->getHinge("rightKnee")->setMotorTarget(targetAngleRightKnee, deltaTime);
+		creature.getLeftThigh()->getHinge("leftKnee")->setMotorTarget(targetAngleLeftKnee, deltaTime);
 
 		//Swap the screen buffers
 		glfwSwapBuffers(window);
@@ -540,7 +362,43 @@ void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 	glBindVertexArray(0);
 }
 
-
+/**
+	Helper method to change target angle of hinges.
+*/
+void NeuralCreature::incrementTargetAngles()
+{
+	if (holdingO) {
+		if (targetAngleRightKnee <= PI) {
+			targetAngleRightKnee += 0.003f;
+		}
+	}
+	if (holdingP) {
+		if (targetAngleRightKnee >= -0.1f) {
+			targetAngleRightKnee -= 0.003f;
+		}
+	}
+	if (holdingR) {
+		if (targetAngleLeftKnee <= PI) {
+			targetAngleLeftKnee += 0.003f;
+		}
+	}
+	if (holdingT) {
+		if (targetAngleLeftKnee >= -0.1f) {
+			targetAngleLeftKnee -= 0.003f;
+		}
+	}
+	if (holdingY) {
+		if (targetAngleAbdomen <= PI) {
+			targetAngleAbdomen += 0.003f;
+		}
+	}
+	if (holdingI) {
+		if (targetAngleAbdomen >= -PI) {
+			targetAngleAbdomen -= 0.003f;
+		}
+	}
+	std::cout << targetAngleLeftKnee << std::endl;
+}
 
 /**
 	Called whenever a key is pressed or released via GLFW.
@@ -577,6 +435,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
 		holdingP = false;
+	}
+	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+		holdingR = true;
+	}
+	if (key == GLFW_KEY_R && action == GLFW_RELEASE) {
+		holdingR = false;
+	}
+	if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+		holdingT = true;
+	}
+	if (key == GLFW_KEY_T && action == GLFW_RELEASE) {
+		holdingT = false;
+	}
+	if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
+		holdingY = true;
+	}
+	if (key == GLFW_KEY_Y && action == GLFW_RELEASE) {
+		holdingY = false;
+	}
+	if (key == GLFW_KEY_I && action == GLFW_PRESS) {
+		holdingI = true;
+	}
+	if (key == GLFW_KEY_I && action == GLFW_RELEASE) {
+		holdingI = false;
 	}
 }
 
@@ -616,6 +498,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
 }
+
+
 
 NeuralCreature::~NeuralCreature()
 {

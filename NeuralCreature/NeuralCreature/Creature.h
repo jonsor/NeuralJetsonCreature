@@ -6,6 +6,7 @@ class Creature
 {
 
 private:
+	Cube* chest;
 	Cube* hips;
 	Cube* rightThigh;
 	Cube* rightShin;
@@ -19,6 +20,7 @@ public:
 	Creature(PhysicsManager* pm);
 	void render(Shader shader);
 	void updatePhysics();
+	Cube* getChest();
 	Cube* getHips();
 	Cube* getRightThigh();
 	Cube* getRightShin();

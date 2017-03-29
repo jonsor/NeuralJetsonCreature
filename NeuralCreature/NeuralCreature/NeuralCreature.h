@@ -34,6 +34,7 @@ private:
 	//const GLuint WIDTH = 3072, HEIGHT = 1728;	//Sjurs Laptop.
 	const GLuint WIDTH = 1920, HEIGHT = 1080;	//Normal
 	const double PI = 3.141592653589793238463;
+	void incrementTargetAngles();
 
 public:
 	void init();
@@ -42,6 +43,7 @@ public:
 	//GLint initShaders();
 	void doMovement();
 	void initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO);
+
 	~NeuralCreature();
 };
 
