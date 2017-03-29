@@ -233,20 +233,18 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 	
 }
 /**
-Adds a new hinge to this cube that attaches cubeB.
+	Adds a new hinge to this cube that attaches cubeB.
 
-@param pivotA
-@param pivotB
-@param axisA The vector direction of rotation of this cube in relation to cubeB.
-@param axisB The vector direction of rotation of cubeB in relation to this cube.
-@param cubeB A pointer to the cube that you want to attach to this one.
-@param notCollision Wether or not the two joint cubes should be able to collide.
-@param minAngle The minimum angle of rotation on the hinge.
-@param maxAngle The maximum angle of rotation on the hinge.
-@param pm A pointer to the Pysics Manager to add the hinges to the world.
-@param name The key for hinge storage.
-
-
+	@param pivotA
+	@param pivotB
+	@param axisA The vector direction of rotation of this cube in relation to cubeB.
+	@param axisB The vector direction of rotation of cubeB in relation to this cube.
+	@param cubeB A pointer to the cube that you want to attach to this one.
+	@param notCollision Wether or not the two joint cubes should be able to collide.
+	@param minAngle The minimum angle of rotation on the hinge.
+	@param maxAngle The maximum angle of rotation on the hinge.
+	@param pm A pointer to the Pysics Manager to add the hinges to the world.
+	@param name The key for hinge storage.
 */
 void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager * pm, std::string name)
 {
@@ -270,10 +268,31 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 
 
 }
+/**
+	Adds a new hinge to this cube that attaches cubeB.
+
+	@param pivotA
+	@param pivotB
+	@param cubeB A pointer to the cube that you want to attach to this one.
+	@param notCollision Wether or not the two joint cubes should be able to collide.
+	@param pm A pointer to the Pysics Manager to add the hinges to the world.
+	@param name The key for joint storage.
+*/
+void Cube::addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name)
+{
+	btPoint2PointConstraint* jointConstraint = new btPoint2PointConstraint(*rigidBody, *cubeB->getRigidBody(), Util::convertToBtVector3(pivotA), Util::convertToBtVector3(pivotB));
+	pm->addNewConstraint(jointConstraint, notCollision);
+	joints[name] = jointConstraint;
+}
 
 btHingeConstraint* Cube::getHinge(std::string name)
 {
 	return hinges[name];
+}
+
+btPoint2PointConstraint* Cube::getJoint(std::string name)
+{
+	return joints[name];
 }
 
 /**

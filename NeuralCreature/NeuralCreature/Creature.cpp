@@ -1,6 +1,6 @@
 /**
 Creature.cpp
-Purpose: Sets up, renders and updates a complete hardcoded creature.
+Purpose: Sets up, renders and updates a complete, hardcoded creature.
 
 @author Sjur Barndon, Jonas Sørsdal
 @version 1.0 23.03.2017
@@ -79,7 +79,7 @@ void Creature::render(Shader shader)
 
 /**
 	Updates the physics for each limb in the creature. 
-	Also sets dampening and restitution.
+	Also sets dampening and restitution?
 */
 void Creature::updatePhysics()
 {

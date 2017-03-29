@@ -23,6 +23,7 @@ public:
 	btDiscreteDynamicsWorld* getDynamicsWorld();
 	void addBody(btRigidBody* rigidBody);
 	void addNewConstraint(btHingeConstraint* hingeConstraint, bool isDisableCollisionsBetweenLinkedBodies);
+	void addNewConstraint(btPoint2PointConstraint* jointConstraint, bool isDisableCollisionsBetweenLinkedBodies);
 	void removeBody(btRigidBody* rigidBody);
 	~PhysicsManager();
 };

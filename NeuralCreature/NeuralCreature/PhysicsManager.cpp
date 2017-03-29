@@ -49,6 +49,11 @@ void PhysicsManager::addNewConstraint(btHingeConstraint * hingeConstraint, bool 
 {
 	dynamicsWorld->addConstraint(hingeConstraint, isDisableCollisionsBetweenLinkedBodies);
 }
+void PhysicsManager::addNewConstraint(btPoint2PointConstraint* jointConstraint, bool isDisableCollisionsBetweenLinkedBodies)
+{
+	dynamicsWorld->addConstraint(jointConstraint, isDisableCollisionsBetweenLinkedBodies);
+}
+
 
 void PhysicsManager::removeBody(btRigidBody * rigidBody)
 {

@@ -38,6 +38,8 @@ private:
 	btCollisionShape* collisionShape;
 	btRigidBody* rigidBody;
 	std::map<std::string, btHingeConstraint*> hinges;
+	std::map<std::string, btPoint2PointConstraint*> joints;
+
 	const double PI = 3.141592653589793238463;
 
 
@@ -54,7 +56,9 @@ public:
 	void updatePhysics();
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name);
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
+	void addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name);
 	btHingeConstraint* getHinge(std::string name);
+	btPoint2PointConstraint* getJoint(std::string name);
 	void setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle);
 	~Cube();
 };

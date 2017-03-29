@@ -143,6 +143,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	//Creates the creature
 	Creature creature(&pm);
+	Spider spider(&pm);
 
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
 	pm.addBody(lightPosMarker.getRigidBody());
@@ -236,6 +237,9 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//Update and render Creature
 		creature.updatePhysics();
 		creature.render(lightingShader);
+
+		spider.updatePhysics();
+		spider.render(lightingShader);
 
 		lightPosMarker.render(lightingShader);
 
