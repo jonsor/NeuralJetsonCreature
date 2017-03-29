@@ -19,7 +19,7 @@ Purpose: Sets up, renders and updates a complete, hardcoded spider creature.
 Spider::Spider(PhysicsManager* pm)
 {
 	//Limbs:
-	body = new Cube(glm::vec3(-5.0f, 50.0f, -5.0f), glm::vec3(0.1f, 0.9f, 0.9f), 1.0f, 0.3f, 1.5f, 10);
+	body = new Cube(glm::vec3(-5.0f, 10.0f, -5.0f), glm::vec3(0.1f, 0.9f, 0.9f), 1.0f, 0.2f, 1.5f, 0);
 	
 	leftFrontUpper = new Cube(glm::vec3(-5.0f, 10.0f, -5.0f), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
 	leftFrontLower = new Cube(glm::vec3(-5.0f, 10.0f, -5.0f), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
@@ -54,22 +54,22 @@ Spider::Spider(PhysicsManager* pm)
 	//Hinges:
 	bool noCol = true;
 
-	body->addJoint(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(1.0f, 1.8f, 1.0f), leftFrontUpper, noCol, pm, "leftFront");
-	body->addJoint(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(0.0f, 1.8f, 1.0f), leftMiddleUpper, noCol, pm, "leftMiddle");
-	body->addJoint(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(-1.0f, 1.8f, 1.0f), leftBackUpper, noCol, pm, "leftBack");
+	body->addJoint(glm::vec3(1.0f, -0.7f, 1.0f), glm::vec3(0.0f, 0.7f, 0.0f), leftFrontUpper, noCol, pm, "leftFront");
+	body->addJoint(glm::vec3(1.0f, -0.7f, 0.0f), glm::vec3(0.0f, 0.7f, 0.0f), leftMiddleUpper, noCol, pm, "leftMiddle");
+	body->addJoint(glm::vec3(1.0f, -0.7f, -1.0f), glm::vec3(0.0f, 0.7f, 0.0f), leftBackUpper, noCol, pm, "leftBack");
 	
-	body->addJoint(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(1.0f, 1.8f, -1.0f), rightFrontUpper, noCol, pm, "rightFront");
-	body->addJoint(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(0.0f, 1.8f, -1.0f), rightMiddleUpper, noCol, pm, "rightMiddle");
-	body->addJoint(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(-1.0f, 1.8f, -1.0f), rightBackUpper, noCol, pm, "rightBack");
+	body->addJoint(glm::vec3(-1.0f, -0.7f, 1.0f), glm::vec3(0.0f, 0.7f, 0.0f), rightFrontUpper, noCol, pm, "rightFront");
+	body->addJoint(glm::vec3(-1.0f, -0.7f, 0.0f), glm::vec3(0.0f, 0.7f, 0.0f), rightMiddleUpper, noCol, pm, "rightMiddle");
+	body->addJoint(glm::vec3(-1.0f, -0.7f, -1.0f), glm::vec3(0.0f, 0.7f, 0.0f), rightBackUpper, noCol, pm, "rightBack");
 
 
-	leftFrontUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), leftFrontLower, noCol, pm, "leftFront");
-	leftMiddleUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), leftMiddleLower, noCol, pm, "leftMiddle");
-	leftBackUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), leftBackLower, noCol, pm, "leftBack");
+	leftFrontUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), leftFrontLower, noCol, pm, "leftFrontKnee");
+	leftMiddleUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), leftMiddleLower, noCol, pm, "leftKnee");
+	leftBackUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), leftBackLower, noCol, pm, "leftBackKnee");
 
-	rightFrontUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), rightFrontLower, noCol, pm, "rightFront");
-	rightMiddleUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), rightMiddleLower, noCol, pm, "rightMiddle");
-	rightBackUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), rightBackLower, noCol, pm, "rightBack");
+	rightFrontUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), rightFrontLower, noCol, pm, "rightFrontKnee");
+	rightMiddleUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), rightMiddleLower, noCol, pm, "rightMiddleKnee");
+	rightBackUpper->addJoint(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), rightBackLower, noCol, pm, "rightBackKnee");
 	
 	
 }
@@ -103,9 +103,10 @@ void Spider::render(Shader shader)
 */
 void Spider::updatePhysics()
 {
+	
+	body->getRigidBody()->setDamping(2000, 2000);
+	body->getRigidBody()->setRestitution(2000);
 	body->updatePhysics();
-	body->getRigidBody()->setDamping(20, 10);
-	body->getRigidBody()->setRestitution(20);
 
 	leftFrontUpper->updatePhysics();
 	leftFrontLower->updatePhysics();
