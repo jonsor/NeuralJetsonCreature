@@ -25,6 +25,7 @@ bool keys[1024];
 GLfloat lastX, lastY;
 bool firstMouse = true;
 bool applyImpulse = false;
+bool motorImpulses = false;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
@@ -156,7 +157,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	float fps = 0;
 	float accumilatedTime = 0;
-	
+	bool simulate = true;
 	//START MAIN LOOP:
 	while (!glfwWindowShouldClose(window)) {
 		fps++;
@@ -185,6 +186,12 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 			//float rand = std::rand() % 360;
 			//targetAngle = glm::radians(rand);
 			//std::cout << targetAngle << std::endl;
+			if (simulate) {
+				simulate = false;
+			}
+			else {
+				simulate = true;
+			}
 		}
 
 		//Use shader
@@ -226,7 +233,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		glBindVertexArray(planeVAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		pm.update(deltaTime, 1);
+		if(simulate) pm.update(deltaTime, 1);
 
 		//Camera box
 		cameraCollisionBox.setPosition(glm::vec3(camera.Position.x, camera.Position.y, camera.Position.z));
@@ -235,6 +242,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		cameraCollisionBox.updatePhysics();
 
 		//Update and render Creature
+		creature.activate();
 		creature.updatePhysics();
 		creature.render(lightingShader);
 
@@ -252,27 +260,28 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 		}
 
-		//Update creature's hinge motors: 
-		creature.getChest()->getHinge("abdomen")->enableMotor(isEnableMotor);
-		creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
-		creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
-		creature.getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
-		creature.getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
-		
-		creature.getChest()->getHinge("abdomen")->setMaxMotorImpulse(maxMotorImpulse);
-		creature.getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
-		creature.getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
-		creature.getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
-		creature.getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
-		
-		incrementTargetAngles();
+		if (motorImpulses) {
+			//Update creature's hinge motors: 
+			//creature.getChest()->getHinge("abdomen")->enableMotor(isEnableMotor);
+			creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
+			creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
+			creature.getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
+			creature.getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
 
-		creature.getChest()->getHinge("abdomen")->setMotorTarget(targetAngleAbdomen, deltaTime);
-		creature.getHips()->getHinge("leftHip")->setMotorTarget(targetAngle, deltaTime);
-		creature.getHips()->getHinge("rightHip")->setMotorTarget(targetAngle, deltaTime);
-		creature.getRightThigh()->getHinge("rightKnee")->setMotorTarget(targetAngleRightKnee, deltaTime);
-		creature.getLeftThigh()->getHinge("leftKnee")->setMotorTarget(targetAngleLeftKnee, deltaTime);
+			//creature.getChest()->getHinge("abdomen")->setMaxMotorImpulse(maxMotorImpulse);
+			creature.getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
+			creature.getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
+			creature.getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
+			creature.getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
 
+			incrementTargetAngles();
+
+			//creature.getChest()->getHinge("abdomen")->setMotorTarget(targetAngleAbdomen, deltaTime);
+			creature.getHips()->getHinge("leftHip")->setMotorTarget(targetAngle, deltaTime);
+			creature.getHips()->getHinge("rightHip")->setMotorTarget(targetAngle, deltaTime);
+			creature.getRightThigh()->getHinge("rightKnee")->setMotorTarget(targetAngleRightKnee, deltaTime);
+			creature.getLeftThigh()->getHinge("leftKnee")->setMotorTarget(targetAngleLeftKnee, deltaTime);
+		}
 		//Swap the screen buffers
 		glfwSwapBuffers(window);
 
@@ -371,34 +380,35 @@ void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 */
 void NeuralCreature::incrementTargetAngles()
 {
+	float factor = 0.2f;
 	if (holdingO) {
 		if (targetAngleRightKnee <= PI) {
-			targetAngleRightKnee += 0.003f;
+			targetAngleRightKnee += factor;
 		}
 	}
 	if (holdingP) {
 		if (targetAngleRightKnee >= -0.1f) {
-			targetAngleRightKnee -= 0.003f;
+			targetAngleRightKnee -= factor;
 		}
 	}
 	if (holdingR) {
 		if (targetAngleLeftKnee <= PI) {
-			targetAngleLeftKnee += 0.003f;
+			targetAngleLeftKnee += factor;
 		}
 	}
 	if (holdingT) {
 		if (targetAngleLeftKnee >= -0.1f) {
-			targetAngleLeftKnee -= 0.003f;
+			targetAngleLeftKnee -= factor;
 		}
 	}
 	if (holdingY) {
 		if (targetAngleAbdomen <= PI) {
-			targetAngleAbdomen += 0.003f;
+			targetAngleAbdomen += factor;
 		}
 	}
 	if (holdingI) {
 		if (targetAngleAbdomen >= -PI) {
-			targetAngleAbdomen -= 0.003f;
+			targetAngleAbdomen -= factor;
 		}
 	}
 	std::cout << targetAngleLeftKnee << std::endl;
@@ -426,6 +436,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_F && action == GLFW_PRESS) {
 		applyImpulse = true;
+	}
+
+	if (key == GLFW_KEY_G && action == GLFW_PRESS) {
+		if (motorImpulses) {
+			motorImpulses = false;
+		}
+		else {
+			motorImpulses = true;
+		}
 	}
 
 	if (key == GLFW_KEY_O && action == GLFW_PRESS) {

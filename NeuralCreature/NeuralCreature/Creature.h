@@ -28,6 +28,7 @@ public:
 	Cube* getLeftThigh();
 	Cube* getLeftShin();
 	Cube* getLeftFoot();
+	void activate();
 	~Creature();
 };
 
