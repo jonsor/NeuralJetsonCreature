@@ -157,7 +157,12 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	float fps = 0;
 	float accumilatedTime = 0;
-	bool simulate = true;
+	bool simulate = false;
+	int numLoops = 0;
+	std::vector<double> resultVec;
+	resultVec.push_back(0.0);
+	resultVec.push_back(0.0);
+
 	//START MAIN LOOP:
 	while (!glfwWindowShouldClose(window)) {
 		fps++;
@@ -260,6 +265,49 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 		}
 
+		if (numLoops >= 200 || numLoops == 0) {
+		//Finn posisjon relativt til seg selv
+		std::vector<int> topology{ 4, 5, 4 };
+		NeuralNetwork neuralNet(topology);
+		float rtx = creature.getRelativePosition(creature.getRightThigh()).x;
+		float rty = creature.getRelativePosition(creature.getRightThigh()).y;
+		float rtz = creature.getRelativePosition(creature.getRightThigh()).z;
+
+		float ltx = creature.getRelativePosition(creature.getLeftThigh()).x;
+		float lty = creature.getRelativePosition(creature.getLeftThigh()).y;
+		float ltz = creature.getRelativePosition(creature.getLeftThigh()).z;
+
+		double rha = creature.getHips()->getHinge("rightHip")->getHingeAngle();
+		double lha = creature.getHips()->getHinge("leftHip")->getHingeAngle();
+
+		double rka = creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle();
+		double lka = creature.getLeftThigh()->getHinge("leftKnee")->getHingeAngle();
+
+
+		std::vector<double> inputs{lha, rha, rka, lka};
+		neuralNet.forward(inputs);
+
+		neuralNet.getResults(resultVec);
+		//std::cout << resultVec[0] << "    " << resultVec[1] << "    " << resultVec[2] << "    " << resultVec[3] << std::endl;
+		std::cout << creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle()* (180.0 / 3.14) << std::endl;
+		numLoops = 1;
+		}
+		creature.getCenterPosition();
+		numLoops++;
+		//std::cout << "right: " << creature.getRelativePosition(creature.getRightThigh()).x << " left: " << creature.getRelativePosition(creature.getLeftThigh()).x << std::endl;
+		creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
+		creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
+		
+		creature.getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
+		creature.getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
+
+		creature.getHips()->getHinge("leftHip")->setMotorTargetVelocity(resultVec[0]);
+		creature.getHips()->getHinge("rightHip")->setMotorTargetVelocity(resultVec[1]);
+
+		creature.getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity(resultVec[2]);
+		creature.getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity(resultVec[3]);
+
+		//creature.getHips()->getPosition().x;
 		if (motorImpulses) {
 			//Update creature's hinge motors: 
 			//creature.getChest()->getHinge("abdomen")->enableMotor(isEnableMotor);
@@ -411,7 +459,7 @@ void NeuralCreature::incrementTargetAngles()
 			targetAngleAbdomen -= factor;
 		}
 	}
-	std::cout << targetAngleLeftKnee << std::endl;
+	//std::cout << targetAngleLeftKnee << std::endl;
 }
 
 /**

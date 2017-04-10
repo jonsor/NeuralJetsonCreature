@@ -307,6 +307,21 @@ void Cube::setHingeAngles(std::string name, const btScalar minAngle, const btSca
 	hinges[name]->setLimit(minAngle, maxAngle);
 }
 
+GLfloat Cube::getWidth()
+{
+	return width;
+}
+
+GLfloat Cube::getHeight()
+{
+	return height;
+}
+
+GLfloat Cube::getDepth()
+{
+	return depth;
+}
+
 Cube::~Cube()
 {
 }

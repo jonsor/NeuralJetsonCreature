@@ -24,6 +24,7 @@
 #include "RenderManager.h"
 #include "Creature.h"
 #include "Spider.h"
+#include "NeuralNetwork.h"
 
 #define _USE_MATH_DEFINES
 

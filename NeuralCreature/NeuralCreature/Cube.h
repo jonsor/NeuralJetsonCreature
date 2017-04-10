@@ -60,6 +60,9 @@ public:
 	btHingeConstraint* getHinge(std::string name);
 	btPoint2PointConstraint* getJoint(std::string name);
 	void setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle);
+	GLfloat getWidth();
+	GLfloat getHeight();
+	GLfloat getDepth();
 	~Cube();
 };
 

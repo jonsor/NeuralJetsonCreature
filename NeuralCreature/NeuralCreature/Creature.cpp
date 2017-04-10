@@ -22,7 +22,8 @@ Creature::Creature(PhysicsManager* pm)
 {
 	//Limbs:
 	//chest = new Cube(glm::vec3(6.0f, 15.0f, 1.0f), glm::vec3(0.9f, 0.9f, 0.1f), 1.5f, 2.5f, 0.2f, 20);
-	hips = new Cube(glm::vec3(6.0f, 20.0f, 1.0f), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 10);
+	hips = new Cube(glm::vec3(6.0f, 12, 1.0f), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 10);
+	std::cout << hips->getPosition().y << std::endl;
 	
 	rightThigh = new Cube(glm::vec3(4.5f, 8.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightShin = new Cube(glm::vec3(4.5f, 4.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
@@ -43,6 +44,7 @@ Creature::Creature(PhysicsManager* pm)
 	pm->addBody(leftShin->getRigidBody());
 	pm->addBody(leftFoot->getRigidBody());
 
+	getCenterPosition();
 	//Hinges:
 	bool noCol = true;
 	//chest->addHinge(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(0.0f, 1.8f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), hips, noCol, -PI/2, PI/2, pm, "abdomen");
@@ -83,6 +85,7 @@ void Creature::render(Shader shader)
 */
 void Creature::updatePhysics()
 {
+	getCenterPosition();
 	//chest->updatePhysics();
 	hips->getRigidBody()->setDamping(0, 0);
 	hips->getRigidBody()->setRestitution(0);
@@ -137,6 +140,27 @@ Cube* Creature::getLeftShin()
 Cube* Creature::getLeftFoot()
 {
 	return leftFoot;
+}
+
+void Creature::getCenterPosition()
+{
+	centerPosition = hips->getPosition();
+	centerPosition.y -= hips->getHeight();
+	centerPosition.x += hips->getWidth() / 2;
+	centerPosition.z += hips->getDepth() / 2;
+	//std::cout << centerPosition.z << std::endl;
+}
+
+glm::vec3 Creature::getRelativePosition(Cube* cube) {
+	glm::vec3 relativePosition;
+	relativePosition.x = cube->getPosition().x - centerPosition.x;
+	relativePosition.y = cube->getPosition().y - centerPosition.y;
+	relativePosition.z = cube->getPosition().z - centerPosition.z;
+	return relativePosition;
+}
+
+double Creature::get2DAngle(Cube* cube1, Cube* cube2) {
+	return 0.0;
 }
 
 void Creature::activate(){

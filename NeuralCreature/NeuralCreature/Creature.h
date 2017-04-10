@@ -15,6 +15,7 @@ private:
 	Cube* leftShin;
 	Cube* leftFoot;
 	const double PI = 3.141592653589793238463;
+	glm::vec3 centerPosition;
 
 public:
 	Creature(PhysicsManager* pm);
@@ -28,6 +29,9 @@ public:
 	Cube* getLeftThigh();
 	Cube* getLeftShin();
 	Cube* getLeftFoot();
+	void getCenterPosition();
+	glm::vec3 getRelativePosition(Cube* cube);
+	double get2DAngle(Cube * cube1, Cube* cube2);
 	void activate();
 	~Creature();
 };
