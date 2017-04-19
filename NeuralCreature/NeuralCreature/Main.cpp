@@ -14,6 +14,7 @@ Purpose: Defines the entry point for the console application.
 #include "NeuralNetwork.h"
 int main(void) {
 	//To get true random variables
+	//TODO save seeds
 	srand(time(0));
 
 

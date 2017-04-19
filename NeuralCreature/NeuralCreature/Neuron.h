@@ -3,6 +3,9 @@
 #include <iostream>
 #include <cmath>
 #include <ctime>
+#include <chrono>
+#include <random>
+
 class Neuron
 {
 private:

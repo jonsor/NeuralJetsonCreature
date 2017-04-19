@@ -33,17 +33,28 @@ void Neuron::forward(Layer & prevLayer)
 
 double Neuron::getRandomWeight()
 {
-	return  rand() / double(RAND_MAX);
+
+	//TODO change to <random> library
+	//double ran = rand() / double(RAND_MAX);
+	//std::cout << ran << std::endl;
+	//return  ran;
+
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	std::default_random_engine generator(seed);
+	std::uniform_real_distribution<double> distribution(-1.0, 1.0);
+	double randomNumber = distribution(generator);
+	//std::cout << randomNumber << std::endl;
+	return randomNumber;
 }
 
 double Neuron::activationFunction(double value)
 {
 	//fast sigmoid output function
-	//return value / (1 + abs(value));
+	return value / (1 + abs(value));
 	//std::cout << "outputValsssssss: " << value << std::endl;
 
 	//Use tanh for -1 .. 1 range
-	return tanh(value);
+	//return tanh(value);
 }
 
 Neuron::~Neuron()
