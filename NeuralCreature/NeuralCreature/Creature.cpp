@@ -173,6 +173,69 @@ void Creature::activate(){
 	leftFoot->getRigidBody()->activate();
 }
 
+std::vector<double> Creature::getAllAngles()
+{
+
+	double rha = (getHips()->getHinge("rightHip")->getHingeAngle() - getHips()->getHinge("rightHip")->getLowerLimit()) / (getHips()->getHinge("rightHip")->getUpperLimit() - getHips()->getHinge("rightHip")->getLowerLimit());
+	double lha = (getHips()->getHinge("leftHip")->getHingeAngle() - getHips()->getHinge("leftHip")->getLowerLimit()) / (getHips()->getHinge("leftHip")->getUpperLimit() - getHips()->getHinge("leftHip")->getLowerLimit());
+
+	double rka = (getRightThigh()->getHinge("rightKnee")->getHingeAngle() - getRightThigh()->getHinge("rightKnee")->getLowerLimit()) / (getRightThigh()->getHinge("rightKnee")->getUpperLimit() - getRightThigh()->getHinge("rightKnee")->getLowerLimit());
+	double lka = (getLeftThigh()->getHinge("leftKnee")->getHingeAngle() - getLeftThigh()->getHinge("leftKnee")->getLowerLimit()) / (getLeftThigh()->getHinge("leftKnee")->getUpperLimit() - getLeftThigh()->getHinge("leftKnee")->getLowerLimit());
+
+	double raa = (getRightShin()->getHinge("rightAnkle")->getHingeAngle() - getRightShin()->getHinge("rightAnkle")->getLowerLimit()) / (getRightShin()->getHinge("rightAnkle")->getUpperLimit() - getRightShin()->getHinge("rightAnkle")->getLowerLimit());
+	double laa = (getLeftShin()->getHinge("leftAnkle")->getHingeAngle() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit()) / (getLeftShin()->getHinge("leftAnkle")->getUpperLimit() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit());
+	rha = (rha < 0) ? 0.0 : rha;
+	lha = (lha < 0) ? 0.0 : lha;
+	rka = (rka < 0) ? 0.0 : rka;
+	lka = (lka < 0) ? 0.0 : lka;
+	raa = (raa < 0) ? 0.0 : raa;
+	laa = (laa < 0) ? 0.0 : laa;
+
+	return{ rha, lha, rka, lka, raa, laa };
+}
+
+void Creature::setAllTargetVelocities(std::vector<double>& resultVec)
+{
+	double m = 5;
+	double mU = 0.0;
+	//HIPS
+	getHips()->getHinge("leftHip")->setMotorTargetVelocity((resultVec[0] - mU) * m);
+	getHips()->getHinge("rightHip")->setMotorTargetVelocity((resultVec[1] - mU) * m);
+
+	//KnEES
+	getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity((resultVec[2] - mU) * m);
+	getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity((resultVec[3] - mU) * m);
+
+	//FEETS
+	getRightShin()->getHinge("rightAnkle")->setMotorTargetVelocity((resultVec[4] - mU) * m);
+	getLeftShin()->getHinge("leftAnkle")->setMotorTargetVelocity((resultVec[5] - mU) * m);
+}
+
+void Creature::setMaxMotorImpulses(double maxMotorImpulse)
+{
+	bool isEnableMotor = true;
+	//THEM HIPS
+	getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
+	getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
+	//double mU = 0.0;
+	getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
+	getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
+
+
+	//KnEES
+	getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
+	getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
+	getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
+	getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
+
+
+	//FEETS
+	getRightShin()->getHinge("rightAnkle")->enableMotor(isEnableMotor);
+	getLeftShin()->getHinge("leftAnkle")->enableMotor(isEnableMotor);
+	getRightShin()->getHinge("rightAnkle")->setMaxMotorImpulse(maxMotorImpulse);
+	getLeftShin()->getHinge("leftAnkle")->setMaxMotorImpulse(maxMotorImpulse);
+}
+
 Creature::~Creature()
 {
 	delete hips;

@@ -33,6 +33,9 @@ public:
 	glm::vec3 getRelativePosition(Cube* cube);
 	double get2DAngle(Cube * cube1, Cube* cube2);
 	void activate();
+	std::vector<double> getAllAngles();
+	void setAllTargetVelocities(std::vector<double> &resultVec);
+	void setMaxMotorImpulses(double maxMotorImpulse);
 	~Creature();
 };
 

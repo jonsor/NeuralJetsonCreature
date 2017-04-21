@@ -265,57 +265,73 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 		}
 
-		if (numLoops >= 200 || numLoops == 0) {
+		//if (numLoops >= 10000 || numLoops == 0) {
 		//Finn posisjon relativt til seg selv
-		std::vector<int> topology{ 4, 5, 4, 4 };
+		std::vector<int> topology{ 6, 10, 7, 6 };
 		NeuralNetwork neuralNet(topology);
-		float rtx = creature.getRelativePosition(creature.getRightThigh()).x;
-		float rty = creature.getRelativePosition(creature.getRightThigh()).y;
-		float rtz = creature.getRelativePosition(creature.getRightThigh()).z;
+		//}
 
-		float ltx = creature.getRelativePosition(creature.getLeftThigh()).x;
-		float lty = creature.getRelativePosition(creature.getLeftThigh()).y;
-		float ltz = creature.getRelativePosition(creature.getLeftThigh()).z;
+		//double rha = (creature.getHips()->getHinge("rightHip")->getHingeAngle() - creature.getHips()->getHinge("rightHip")->getLowerLimit()) / (creature.getHips()->getHinge("rightHip")->getUpperLimit() - creature.getHips()->getHinge("rightHip")->getLowerLimit());
+		//double lha = (creature.getHips()->getHinge("leftHip")->getHingeAngle() - creature.getHips()->getHinge("leftHip")->getLowerLimit()) / (creature.getHips()->getHinge("leftHip")->getUpperLimit() - creature.getHips()->getHinge("leftHip")->getLowerLimit());
 
+		//double rka = (creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle() - creature.getRightThigh()->getHinge("rightKnee")->getLowerLimit()) / (creature.getRightThigh()->getHinge("rightKnee")->getUpperLimit() - creature.getRightThigh()->getHinge("rightKnee")->getLowerLimit());
+		//double lka = (creature.getLeftThigh()->getHinge("leftKnee")->getHingeAngle() - creature.getLeftThigh()->getHinge("leftKnee")->getLowerLimit()) / (creature.getLeftThigh()->getHinge("leftKnee")->getUpperLimit() - creature.getLeftThigh()->getHinge("leftKnee")->getLowerLimit());
 
-		creature.getHips()->getHinge("rightHip")->getHingeAngle();
-		double rha = (creature.getHips()->getHinge("rightHip")->getHingeAngle() - creature.getHips()->getHinge("rightHip")->getLowerLimit()) / (creature.getHips()->getHinge("rightHip")->getUpperLimit() - creature.getHips()->getHinge("rightHip")->getLowerLimit());
-		double lha = (creature.getHips()->getHinge("leftHip")->getHingeAngle() - creature.getHips()->getHinge("leftHip")->getLowerLimit()) / (creature.getHips()->getHinge("leftHip")->getUpperLimit() - creature.getHips()->getHinge("leftHip")->getLowerLimit());
+		//double raa = (creature.getRightShin()->getHinge("rightAnkle")->getHingeAngle() - creature.getRightShin()->getHinge("rightAnkle")->getLowerLimit()) / (creature.getRightShin()->getHinge("rightAnkle")->getUpperLimit() - creature.getRightShin()->getHinge("rightAnkle")->getLowerLimit());
+		//double laa = (creature.getLeftShin()->getHinge("leftAnkle")->getHingeAngle() - creature.getLeftShin()->getHinge("leftAnkle")->getLowerLimit()) / (creature.getLeftShin()->getHinge("leftAnkle")->getUpperLimit() - creature.getLeftShin()->getHinge("leftAnkle")->getLowerLimit());
+		//rha = (rha < 0) ? 0.0 : rha;
+		//lha = (lha < 0) ? 0.0 : lha;
+		//rka = (rka < 0) ? 0.0 : rka;
+		//lka = (lka < 0) ? 0.0 : lka;
+		//raa = (raa < 0) ? 0.0 : raa;
+		//laa = (laa < 0) ? 0.0 : laa;
 
-		double rka = (creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle() - creature.getRightThigh()->getHinge("rightKnee")->getLowerLimit()) / (creature.getRightThigh()->getHinge("rightKnee")->getUpperLimit() - creature.getRightThigh()->getHinge("rightKnee")->getLowerLimit());
-		double lka = (creature.getLeftThigh()->getHinge("leftKnee")->getHingeAngle() - creature.getLeftThigh()->getHinge("leftKnee")->getLowerLimit()) / (creature.getLeftThigh()->getHinge("leftKnee")->getUpperLimit() - creature.getLeftThigh()->getHinge("leftKnee")->getLowerLimit());
-
-		rha = (rha < 0) ? 0.0 : rha;
-		lha = (lha < 0) ? 0.0 : lha;
-		rka = (rka < 0) ? 0.0 : rka;
-		lka = (lka < 0) ? 0.0 : lka;
+		std::vector<double> inputAngles = creature.getAllAngles();
 
 		//std::cout << rha << "   " << lha << "  " << rka << "  " << lka << std::endl;
 
-		std::vector<double> inputs{lha, rha, rka, lka};
-		neuralNet.forward(inputs);
+		//std::vector<double> inputs{lha, rha, rka, lka, raa, laa};
+		neuralNet.forward(inputAngles);
 
 		neuralNet.getResults(resultVec);
 		double mU = 0.0;
 		std::cout << resultVec[0]- mU << "    " << resultVec[1]- mU << "    " << resultVec[2]- mU << "    " << resultVec[3]- mU << std::endl;
 		//std::cout << creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle() << std::endl;
 		numLoops = 1;
-		}
+		
 		creature.getCenterPosition();
 		numLoops++;
 		//std::cout << "right: " << creature.getRelativePosition(creature.getRightThigh()).x << " left: " << creature.getRelativePosition(creature.getLeftThigh()).x << std::endl;
+		
 		creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
 		creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
-		double mU = 0.0;
+		//double mU = 0.0;
 		creature.getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
 		creature.getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
 
 		creature.getHips()->getHinge("leftHip")->setMotorTargetVelocity((resultVec[0]- mU)*5);
 		creature.getHips()->getHinge("rightHip")->setMotorTargetVelocity((resultVec[1]- mU)*5);
 
+		//KnEES
+		creature.getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
+		creature.getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
+		creature.getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
+		creature.getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
+
 		creature.getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity((resultVec[2]- mU)*5);
 		creature.getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity((resultVec[3]- mU)*5);
 
+		//FEETS
+		creature.getRightShin()->getHinge("rightAnkle")->enableMotor(isEnableMotor);
+		creature.getLeftShin()->getHinge("leftAnkle")->enableMotor(isEnableMotor);
+		creature.getRightShin()->getHinge("rightAnkle")->setMaxMotorImpulse(maxMotorImpulse);
+		creature.getLeftShin()->getHinge("leftAnkle")->setMaxMotorImpulse(maxMotorImpulse);
+
+		creature.getRightShin()->getHinge("rightAnkle")->setMotorTargetVelocity((resultVec[4] - mU) * 5);
+		creature.getLeftShin()->getHinge("leftAnkle")->setMotorTargetVelocity((resultVec[5] - mU) * 5);
+
+		creature.setMaxMotorImpulses(maxMotorImpulse);
+		creature.setAllTargetVelocities(resultVec);
 		//creature.getHips()->getPosition().x;
 		if (motorImpulses) {
 			//Update creature's hinge motors: 

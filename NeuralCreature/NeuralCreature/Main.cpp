@@ -18,16 +18,16 @@ int main(void) {
 	srand(time(0));
 
 
-	std::vector<int> v{5, 4, 3};
-	NeuralNetwork nn(v);
-	std::vector<double> inputs{ 0.5, 0.8, 0.1, 0.4, 0.9};
-	nn.forward(inputs);
-	std::vector<double> resultVec;
-	nn.getResults(resultVec);
-	for (int i = 0; i < resultVec.size(); i++) {
-		std::cout << resultVec[i] << " ";
-	}
-	std::cout << std::endl;
+	//std::vector<int> v{5, 4, 3};
+	//NeuralNetwork nn(v);
+	//std::vector<double> inputs{ 0.5, 0.8, 0.1, 0.4, 0.9};
+	//nn.forward(inputs);
+	//std::vector<double> resultVec;
+	//nn.getResults(resultVec);
+	//for (int i = 0; i < resultVec.size(); i++) {
+	//	std::cout << resultVec[i] << " ";
+	//}
+	//std::cout << std::endl;
 
 	NeuralCreature world;
 	world.init();
