@@ -1,5 +1,6 @@
 #pragma once
 #include "Cube.h"
+#include "NeuralNetwork.h"
 
 
 class Creature
@@ -16,9 +17,14 @@ private:
 	Cube* leftFoot;
 	const double PI = 3.141592653589793238463;
 	glm::vec3 centerPosition;
+	glm::vec3 m_startPosition;
+
+	NeuralNetwork* m_neuralNetwork;
+	std::vector<double> resultVec;
+	int yo = 0;
 
 public:
-	Creature(PhysicsManager* pm);
+	Creature(PhysicsManager* pm, glm::vec3 startPosition);
 	void render(Shader shader);
 	void updatePhysics();
 	Cube* getChest();
@@ -36,6 +42,10 @@ public:
 	std::vector<double> getAllAngles();
 	void setAllTargetVelocities(std::vector<double> &resultVec);
 	void setMaxMotorImpulses(double maxMotorImpulse);
+	void createNeuralNetwork(std::vector<int> topology);
+	void setNeuralNetwork(NeuralNetwork neuralNetwork);
+	void updateNeuralNetwork();
+
 	~Creature();
 };
 

@@ -21,6 +21,7 @@ public:
 	void setOutputVal(double value);
 	double getOutputVal() const;
 	void forward(Layer& prevLayer);
+	void mutate(double mutationRate);
 	~Neuron();
 };
 

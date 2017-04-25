@@ -1,48 +1,22 @@
-﻿  NeuralCreature.cpp
+﻿  Creature.cpp
 k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(169): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(170): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(171): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(170): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(262): warning C4018: '<': signed/unsigned mismatch
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(312): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(313): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(321): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(322): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(330): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(331): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(572): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(573): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(577): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(578): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(580): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(581): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\neuralcreature.cpp(595): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-  Creature.cpp
-k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(169): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(170): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\bullet3-2.86\src\linearmath\btidebugdraw.h(171): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(51): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(52): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(54): warning C4244: 'argument': conversion from 'double' to 'const btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(54): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(53): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(55): warning C4244: 'argument': conversion from 'double' to 'const btScalar', possible loss of data
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(55): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(57): warning C4244: 'argument': conversion from 'double' to 'const btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(56): warning C4244: 'argument': conversion from 'double' to 'const btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(56): warning C4305: 'argument': truncation from 'double' to 'const btScalar'
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(58): warning C4244: 'argument': conversion from 'double' to 'const btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(202): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(203): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(59): warning C4244: 'argument': conversion from 'double' to 'const btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(191): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(192): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(206): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(207): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(210): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(211): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(213): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(214): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
+k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(220): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
 k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(221): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(222): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(228): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(229): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(235): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-k:\github repositories\neuraljetsoncreature\neuralcreature\neuralcreature\creature.cpp(236): warning C4244: 'argument': conversion from 'double' to 'btScalar', possible loss of data
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  Main.cpp
   NeuralCreature.vcxproj -> K:\GitHub Repositories\NeuralJetsonCreature\NeuralCreature\Debug\NeuralCreature.exe
   NeuralCreature.vcxproj -> K:\GitHub Repositories\NeuralJetsonCreature\NeuralCreature\Debug\NeuralCreature.pdb (Full PDB)

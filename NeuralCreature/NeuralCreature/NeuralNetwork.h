@@ -13,6 +13,7 @@ public:
 	NeuralNetwork(const std::vector<int> &topology);
 	void forward(const std::vector<double>& inputVals);
 	void getResults(std::vector<double>& resultsVals) const;
+	void mutate(double mutationRate);
 	~NeuralNetwork();
 };
 

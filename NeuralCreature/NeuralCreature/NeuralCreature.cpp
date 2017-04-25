@@ -143,7 +143,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 
 	//Creates the creature
-	Creature creature(&pm);
+	Creature creature(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
 	Spider spider(&pm);
 
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
@@ -171,10 +171,12 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		accumilatedTime += deltaTime;
-		if (accumilatedTime > 1.0f) {
+		if (accumilatedTime > 0.2f) {
 			//std::cout << "fps: " << fps << std::endl;
 			fps = 0;
 			accumilatedTime = 0;
+			//double time = sin(0.000002 * std::chrono::system_clock::now().time_since_epoch().count() );
+			//std::cout << time << std::endl;
 		}
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
@@ -246,11 +248,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		cameraCollisionBox.getRigidBody()->setMotionState(ms);
 		cameraCollisionBox.updatePhysics();
 
-		//Update and render Creature
-		creature.activate();
-		creature.updatePhysics();
-		creature.render(lightingShader);
-
 		spider.updatePhysics();
 		spider.render(lightingShader);
 
@@ -267,8 +264,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 		//if (numLoops >= 10000 || numLoops == 0) {
 		//Finn posisjon relativt til seg selv
-		std::vector<int> topology{ 6, 10, 7, 6 };
-		NeuralNetwork neuralNet(topology);
+
 		//}
 
 		//double rha = (creature.getHips()->getHinge("rightHip")->getHingeAngle() - creature.getHips()->getHinge("rightHip")->getLowerLimit()) / (creature.getHips()->getHinge("rightHip")->getUpperLimit() - creature.getHips()->getHinge("rightHip")->getLowerLimit());
@@ -286,53 +282,36 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//raa = (raa < 0) ? 0.0 : raa;
 		//laa = (laa < 0) ? 0.0 : laa;
 
-		std::vector<double> inputAngles = creature.getAllAngles();
-
-		//std::cout << rha << "   " << lha << "  " << rka << "  " << lka << std::endl;
-
 		//std::vector<double> inputs{lha, rha, rka, lka, raa, laa};
-		neuralNet.forward(inputAngles);
 
-		neuralNet.getResults(resultVec);
-		double mU = 0.0;
-		std::cout << resultVec[0]- mU << "    " << resultVec[1]- mU << "    " << resultVec[2]- mU << "    " << resultVec[3]- mU << std::endl;
-		//std::cout << creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle() << std::endl;
-		numLoops = 1;
-		
-		creature.getCenterPosition();
-		numLoops++;
-		//std::cout << "right: " << creature.getRelativePosition(creature.getRightThigh()).x << " left: " << creature.getRelativePosition(creature.getLeftThigh()).x << std::endl;
-		
-		creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
-		creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
+		//Update and render Creature
+		creature.activate();
+		creature.updatePhysics();
+		creature.render(lightingShader);
+
+		////Neural Network
+		//std::vector<int> topology{ 6, 10, 7, 6 };
+		//NeuralNetwork neuralNet(topology);
+		//std::vector<double> inputAngles = creature.getAllAngles();
+		//neuralNet.forward(inputAngles);
+
+		////Update motor impulses
+		//neuralNet.getResults(resultVec);
+		//creature.setMaxMotorImpulses(maxMotorImpulse);
+		//creature.setAllTargetVelocities(resultVec);
+
 		//double mU = 0.0;
-		creature.getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
-		creature.getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
+		//std::cout << resultVec[0]- mU << "    " << resultVec[1]- mU << "    " << resultVec[2]- mU << "    " << resultVec[3]- mU << std::endl;
+		////std::cout << creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle() << std::endl;
+		//numLoops = 1;
+		//
+		//creature.getCenterPosition();
+		//numLoops++;
 
-		creature.getHips()->getHinge("leftHip")->setMotorTargetVelocity((resultVec[0]- mU)*5);
-		creature.getHips()->getHinge("rightHip")->setMotorTargetVelocity((resultVec[1]- mU)*5);
 
-		//KnEES
-		creature.getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
-		creature.getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
-		creature.getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
-		creature.getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
 
-		creature.getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity((resultVec[2]- mU)*5);
-		creature.getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity((resultVec[3]- mU)*5);
-
-		//FEETS
-		creature.getRightShin()->getHinge("rightAnkle")->enableMotor(isEnableMotor);
-		creature.getLeftShin()->getHinge("leftAnkle")->enableMotor(isEnableMotor);
-		creature.getRightShin()->getHinge("rightAnkle")->setMaxMotorImpulse(maxMotorImpulse);
-		creature.getLeftShin()->getHinge("leftAnkle")->setMaxMotorImpulse(maxMotorImpulse);
-
-		creature.getRightShin()->getHinge("rightAnkle")->setMotorTargetVelocity((resultVec[4] - mU) * 5);
-		creature.getLeftShin()->getHinge("leftAnkle")->setMotorTargetVelocity((resultVec[5] - mU) * 5);
-
-		creature.setMaxMotorImpulses(maxMotorImpulse);
-		creature.setAllTargetVelocities(resultVec);
-		//creature.getHips()->getPosition().x;
+		//std::cout << "right: " << creature.getRelativePosition(creature.getRightThigh()).x << " left: " << creature.getRelativePosition(creature.getLeftThigh()).x << std::endl;
+	
 		if (motorImpulses) {
 			//Update creature's hinge motors: 
 			//creature.getChest()->getHinge("abdomen")->enableMotor(isEnableMotor);

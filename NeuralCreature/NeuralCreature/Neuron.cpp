@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Neuron.h"
 
+#include <iomanip>
+
 Neuron::Neuron(int numOutputs, int neuronIndex) : neuronIndex(neuronIndex)
 {
 	//Set random weights on neuron outputs
@@ -28,7 +30,24 @@ void Neuron::forward(Layer & prevLayer)
 	}
 
 	outputVal = Neuron::activationFunction(sum);
-	//std::cout << "outputVal: " << outputVal << std::endl;
+	
+	/*std::cout << std::fixed;
+	std::cout << std::setprecision(3);
+	if (neuronIndex == 9 && outputVal < 0) {
+		std::cout << "outputVal: " << outputVal << " sum: " << sum << std::endl;
+	}
+	else if (neuronIndex == 9) {
+		std::cout << "outputVal:  " << outputVal << " sum: " << sum << std::endl;
+	}*/
+	
+
+}
+
+void Neuron::mutate(double mutationRate)
+{
+	for (int i = 0; i < outputWeights.size(); i++) {
+		outputWeights[i] += getRandomWeight() * mutationRate;
+	}
 }
 
 double Neuron::getRandomWeight()
@@ -50,11 +69,11 @@ double Neuron::getRandomWeight()
 double Neuron::activationFunction(double value)
 {
 	//fast sigmoid output function
-	return value / (1 + abs(value));
+	//return value / (1 + abs(value));
 	//std::cout << "outputValsssssss: " << value << std::endl;
 
 	//Use tanh for -1 .. 1 range
-	//return tanh(value);
+	return tanh(value);
 }
 
 Neuron::~Neuron()
