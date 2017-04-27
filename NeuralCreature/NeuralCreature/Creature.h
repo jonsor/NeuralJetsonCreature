@@ -1,7 +1,7 @@
 #pragma once
 #include "Cube.h"
 #include "NeuralNetwork.h"
-
+#include "Util.h"
 
 class Creature
 {
@@ -23,6 +23,7 @@ private:
 	std::vector<double> resultVec;
 	int yo = 0;
 
+
 public:
 	Creature(PhysicsManager* pm, glm::vec3 startPosition);
 	void render(Shader shader);
@@ -35,17 +36,18 @@ public:
 	Cube* getLeftThigh();
 	Cube* getLeftShin();
 	Cube* getLeftFoot();
-	void getCenterPosition();
+	void calcCenterPosition();
 	glm::vec3 getRelativePosition(Cube* cube);
 	double get2DAngle(Cube * cube1, Cube* cube2);
 	void activate();
 	std::vector<double> getAllAngles();
+	std::vector<double> calculateInputs();
+	std::vector<double> getAllAngularVelocities();
 	void setAllTargetVelocities(std::vector<double> &resultVec);
 	void setMaxMotorImpulses(double maxMotorImpulse);
 	void createNeuralNetwork(std::vector<int> topology);
 	void setNeuralNetwork(NeuralNetwork neuralNetwork);
 	void updateNeuralNetwork();
-
 	~Creature();
 };
 

@@ -308,8 +308,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//creature.getCenterPosition();
 		//numLoops++;
 
-
-
 		//std::cout << "right: " << creature.getRelativePosition(creature.getRightThigh()).x << " left: " << creature.getRelativePosition(creature.getLeftThigh()).x << std::endl;
 	
 		if (motorImpulses) {
@@ -334,6 +332,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 			creature.getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity(targetAngleRightKnee);
 			creature.getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity(targetAngleLeftKnee);
 		}
+
 		//Swap the screen buffers
 		glfwSwapBuffers(window);
 

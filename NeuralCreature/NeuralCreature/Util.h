@@ -13,6 +13,7 @@ class Util
 {
 public:
 	static btVector3 convertToBtVector3(glm::vec3 vector);
+	static double normalize(double x, double min, double max);
 
 };
 
