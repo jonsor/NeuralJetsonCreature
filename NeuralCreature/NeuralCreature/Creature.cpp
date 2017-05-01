@@ -23,16 +23,19 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 {
 	//Limbs:
 	//chest = new Cube(glm::vec3(6.0f, 15.0f, 1.0f), glm::vec3(0.9f, 0.9f, 0.1f), 1.5f, 2.5f, 0.2f, 20);
-	hips = new Cube(glm::vec3(6.0f, 12, 1.0f), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 10);
-	std::cout << hips->getPosition().y << std::endl;
+	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 10);
 	
-	rightThigh = new Cube(glm::vec3(4.5f, 8.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	rightShin = new Cube(glm::vec3(4.5f, 4.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	rightFoot = new Cube(glm::vec3(4.5f, 1.8f, 1.3f), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
+	rightThigh = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	rightShin = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	rightFoot = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
 	
-	leftThigh = new Cube(glm::vec3(7.5f, 8.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	leftShin = new Cube(glm::vec3(7.5f, 4.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	leftFoot = new Cube(glm::vec3(7.5f, 1.8f, 1.3f), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
+	leftThigh = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	leftShin = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	leftFoot = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
+	
+	m_startPosition.x += hips->getWidth() / 2;
+	m_startPosition.y -= hips->getHeight() / 2;
+	m_startPosition.z += hips->getDepth() / 2;
 	
 	//pm->addBody(chest->getRigidBody());
 	pm->addBody(hips->getRigidBody());
@@ -300,7 +303,7 @@ void Creature::setNeuralNetwork(NeuralNetwork neuralNetwork)
 void Creature::updateNeuralNetwork()
 {
 	std::vector<double> inputs = calculateInputs();
-	std::cout << inputs.size() << std::endl;
+	//std::cout << inputs.size() << std::endl;
 	m_neuralNetwork->forward(inputs);
 
 	m_neuralNetwork->getResults(resultVec);
