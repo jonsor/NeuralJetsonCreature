@@ -17,14 +17,15 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Cube.h"
-#include <vector>
+//#include <vector>
 #include <math.h>
 #include <btBulletDynamicsCommon.h>
 #include "PhysicsManager.h"
 #include "RenderManager.h"
-#include "Creature.h"
+//#include "Creature.h"
 #include "Spider.h"
 #include "NeuralNetwork.h"
+#include "GeneticAlgorithm.h"
 
 #define _USE_MATH_DEFINES
 

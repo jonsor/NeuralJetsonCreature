@@ -146,6 +146,9 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	Creature creature(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
 	Spider spider(&pm);
 
+	//Create genetic algorithm
+	GeneticAlgorithm ga(0.03, 0.1, 10, 1, &pm);
+
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
 	pm.addBody(lightPosMarker.getRigidBody());
 
@@ -288,7 +291,11 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		creature.activate();
 		creature.updatePhysics();
 		creature.render(lightingShader);
-
+		
+		ga.updateCreatures();
+		if (numLoops >= 20000) {
+			//ga.createNewGenetation();
+		}
 		////Neural Network
 		//std::vector<int> topology{ 6, 10, 7, 6 };
 		//NeuralNetwork neuralNet(topology);
