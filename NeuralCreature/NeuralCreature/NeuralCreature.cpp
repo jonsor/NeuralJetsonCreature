@@ -144,7 +144,18 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 	//Creates the creature
 	Creature creature(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Creature creature2(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Creature creature3(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Creature creature4(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Creature creature5(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Creature creature6(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
+
+
+
+
 	Spider spider(&pm);
+	//std::vector<Creature> teset;
+	//teset.push_back(creature);
 
 	//Create genetic algorithm
 	GeneticAlgorithm ga(0.03, 0.1, 10, 1, &pm);
@@ -291,8 +302,28 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		creature.activate();
 		creature.updatePhysics();
 		creature.render(lightingShader);
+
+		//creature2.activate();
+		//creature2.updatePhysics();
+		//creature2.render(lightingShader);
+
+		//creature3.activate();
+		//creature3.updatePhysics();
+		//creature3.render(lightingShader);
+
+		//creature4.activate();
+		//creature4.updatePhysics();
+		//creature4.render(lightingShader);
+
+		//creature5.activate();
+		//creature5.updatePhysics();
+		//creature5.render(lightingShader);
+
+		//creature6.activate();
+		//creature6.updatePhysics();
+		//creature6.render(lightingShader);
 		
-		ga.updateCreatures();
+		ga.updateCreatures(lightingShader);
 		if (numLoops >= 20000) {
 			//ga.createNewGenetation();
 		}

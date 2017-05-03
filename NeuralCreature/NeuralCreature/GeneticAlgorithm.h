@@ -8,14 +8,14 @@ private:
 	double m_crossoverProb;
 	int m_populationSize;
 	int m_numElites;
-	std::vector<Creature> creatures;
+	std::vector<Creature*> creatures;
 public:
 	GeneticAlgorithm(double mutationRate, double crossoverProb, int populationSize, int numElites, PhysicsManager * pm);
 	void initCreatures(PhysicsManager * pm);
 	void crossOver();
 	double evaluateFitness();
 	void mutate();
-	void updateCreatures();
+	void updateCreatures(Shader shader);
 	void createNewGeneration();
 	~GeneticAlgorithm();
 };

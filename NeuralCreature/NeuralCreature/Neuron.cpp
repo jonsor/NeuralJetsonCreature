@@ -58,8 +58,8 @@ double Neuron::getRandomWeight()
 	//std::cout << ran << std::endl;
 	//return  ran;
 
-	//unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	unsigned seed = 1;
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	//unsigned seed = 1;
 	std::default_random_engine generator(seed);
 	std::uniform_real_distribution<double> distribution(-1.0, 1.0);
 	double randomNumber = distribution(generator);

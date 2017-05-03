@@ -9,10 +9,15 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double crossoverProb, in
 
 void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 {
-	
+
+	//std::vector<Creature> testVec(m_populationSize);
+	creatures.reserve(m_populationSize);
 	for (int i = 0; i < m_populationSize; i++) {
-		//Creature tempCret(pm, glm::vec3(20.0f, 20.0f, 20.0f));
-		//creatures.push_back(Creature(pm, glm::vec3(0.0f, 0.0f, 0.0f)));
+		
+	
+		Creature* tempCret = new Creature(pm, glm::vec3(20.0f, 20.0f, 20.0f));
+		creatures.push_back(tempCret);
+
 	}
 }
 
@@ -29,8 +34,18 @@ void GeneticAlgorithm::mutate()
 {
 }
 
-void GeneticAlgorithm::updateCreatures()
+void GeneticAlgorithm::updateCreatures(Shader shader)
 {
+	for (int i = 0; i < creatures.size(); i++) {
+
+		std::cout << creatures[i] << std::endl;
+			creatures.at(i)->activate();
+
+			creatures.at(i)->updatePhysics();
+
+			creatures[i]->render(shader);
+	}
+	//system("pause");
 }
 
 void GeneticAlgorithm::createNewGeneration()

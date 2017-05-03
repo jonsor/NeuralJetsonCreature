@@ -7,7 +7,7 @@ class Creature
 {
 
 private:
-	Cube* chest;
+	//Cube* chest;
 	Cube* hips;
 	Cube* rightThigh;
 	Cube* rightShin;
