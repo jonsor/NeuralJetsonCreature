@@ -45,6 +45,12 @@ void PhysicsManager::addBody(btRigidBody* rigidBody)
 	dynamicsWorld->addRigidBody(rigidBody);
 }
 
+void PhysicsManager::addBody(btRigidBody* rigidBody, int id, int collidesWith)
+{
+	dynamicsWorld->addRigidBody(rigidBody, id, collidesWith);
+}
+
+
 void PhysicsManager::addNewConstraint(btHingeConstraint * hingeConstraint, bool isDisableCollisionsBetweenLinkedBodies)
 {
 	dynamicsWorld->addConstraint(hingeConstraint, isDisableCollisionsBetweenLinkedBodies);

@@ -36,15 +36,15 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 	m_startPosition.y -= hips->getHeight() / 2;
 	m_startPosition.z += hips->getDepth() / 2;
 
-	pm->addBody(hips->getRigidBody());
+	pm->addBody(hips->getRigidBody(),1, 2);
 
-	pm->addBody(rightThigh->getRigidBody());
-	pm->addBody(rightShin->getRigidBody());
-	pm->addBody(rightFoot->getRigidBody());
+	pm->addBody(rightThigh->getRigidBody(),1,2);
+	pm->addBody(rightShin->getRigidBody(),1,2);
+	pm->addBody(rightFoot->getRigidBody(),1,2);
 
-	pm->addBody(leftThigh->getRigidBody());
-	pm->addBody(leftShin->getRigidBody());
-	pm->addBody(leftFoot->getRigidBody());
+	pm->addBody(leftThigh->getRigidBody(),1,2);
+	pm->addBody(leftShin->getRigidBody(),1,2);
+	pm->addBody(leftFoot->getRigidBody(),1,2);
 
 	calcCenterPosition();
 
@@ -304,7 +304,7 @@ void Creature::setNeuralNetwork(NeuralNetwork neuralNetwork)
 void Creature::updateNeuralNetwork()
 {
 	std::vector<double> inputs = calculateInputs();
-	std::cout << inputs.size() << std::endl;
+	//std::cout << inputs.size() << std::endl;
 	m_neuralNetwork->forward(inputs);
 
 	m_neuralNetwork->getResults(resultVec);

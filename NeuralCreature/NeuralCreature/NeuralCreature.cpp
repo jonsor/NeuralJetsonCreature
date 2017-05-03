@@ -99,7 +99,7 @@ void NeuralCreature::init() {
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
 	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
 	//groundRigidBody->setFriction(5.0f);
-	pm.addBody(groundRigidBody);
+	pm.addBody(groundRigidBody, 2, 1);
 
 	//Start render loop
 	renderLoop(window, planeVAO, lightVAO, lightingShader, cubes);
