@@ -143,29 +143,19 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 
 	//Creates the creature
-	Creature creature(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Creature creature2(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Creature creature3(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Creature creature4(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Creature creature5(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Creature creature6(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
-
-
-
-
-	Spider spider(&pm);
-	//std::vector<Creature> teset;
-	//teset.push_back(creature);
-
+	//Ceature creature(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Spider spider(&pm);
+	
 	//Create genetic algorithm
 	GeneticAlgorithm ga(0.03, 0.1, 10, 1, &pm);
 
+/*
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
 	pm.addBody(lightPosMarker.getRigidBody());
 
 	Cube fallCube(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
 	pm.addBody(fallCube.getRigidBody());
-
+*/
 	Cube cameraCollisionBox(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
 	pm.addBody(cameraCollisionBox.getRigidBody());
 
@@ -201,8 +191,8 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (applyImpulse) {
-			fallCube.getRigidBody()->activate();
-			fallCube.getRigidBody()->applyImpulse(btVector3(5, 10, 3), btVector3(1, 0, 0));
+			//fallCube.getRigidBody()->activate();
+			//fallCube.getRigidBody()->applyImpulse(btVector3(5, 10, 3), btVector3(1, 0, 0));
 			applyImpulse = false;
 			//float rand = std::rand() % 360;
 			//targetAngle = glm::radians(rand);
@@ -262,6 +252,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		cameraCollisionBox.getRigidBody()->setMotionState(ms);
 		cameraCollisionBox.updatePhysics();
 
+		/*
 		spider.updatePhysics();
 		spider.render(lightingShader);
 
@@ -269,64 +260,23 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 
 		fallCube.updatePhysics();
 		fallCube.render(lightingShader);
-
+		*/
 		for (int i = 0; i < cubes.size(); i++) {
 			cubes[i].updatePhysics();
 			cubes[i].render(lightingShader);
 
 		}
 
-		//if (numLoops >= 10000 || numLoops == 0) {
-		//Finn posisjon relativt til seg selv
-
-		//}
-
-		//double rha = (creature.getHips()->getHinge("rightHip")->getHingeAngle() - creature.getHips()->getHinge("rightHip")->getLowerLimit()) / (creature.getHips()->getHinge("rightHip")->getUpperLimit() - creature.getHips()->getHinge("rightHip")->getLowerLimit());
-		//double lha = (creature.getHips()->getHinge("leftHip")->getHingeAngle() - creature.getHips()->getHinge("leftHip")->getLowerLimit()) / (creature.getHips()->getHinge("leftHip")->getUpperLimit() - creature.getHips()->getHinge("leftHip")->getLowerLimit());
-
-		//double rka = (creature.getRightThigh()->getHinge("rightKnee")->getHingeAngle() - creature.getRightThigh()->getHinge("rightKnee")->getLowerLimit()) / (creature.getRightThigh()->getHinge("rightKnee")->getUpperLimit() - creature.getRightThigh()->getHinge("rightKnee")->getLowerLimit());
-		//double lka = (creature.getLeftThigh()->getHinge("leftKnee")->getHingeAngle() - creature.getLeftThigh()->getHinge("leftKnee")->getLowerLimit()) / (creature.getLeftThigh()->getHinge("leftKnee")->getUpperLimit() - creature.getLeftThigh()->getHinge("leftKnee")->getLowerLimit());
-
-		//double raa = (creature.getRightShin()->getHinge("rightAnkle")->getHingeAngle() - creature.getRightShin()->getHinge("rightAnkle")->getLowerLimit()) / (creature.getRightShin()->getHinge("rightAnkle")->getUpperLimit() - creature.getRightShin()->getHinge("rightAnkle")->getLowerLimit());
-		//double laa = (creature.getLeftShin()->getHinge("leftAnkle")->getHingeAngle() - creature.getLeftShin()->getHinge("leftAnkle")->getLowerLimit()) / (creature.getLeftShin()->getHinge("leftAnkle")->getUpperLimit() - creature.getLeftShin()->getHinge("leftAnkle")->getLowerLimit());
-		//rha = (rha < 0) ? 0.0 : rha;
-		//lha = (lha < 0) ? 0.0 : lha;
-		//rka = (rka < 0) ? 0.0 : rka;
-		//lka = (lka < 0) ? 0.0 : lka;
-		//raa = (raa < 0) ? 0.0 : raa;
-		//laa = (laa < 0) ? 0.0 : laa;
-
-		//std::vector<double> inputs{lha, rha, rka, lka, raa, laa};
-
 		//Update and render Creature
-		creature.activate();
-		creature.updatePhysics();
-		creature.render(lightingShader);
+		//creature.activate();
+		//creature.updatePhysics();
+		//creature.render(lightingShader);
 
-		//creature2.activate();
-		//creature2.updatePhysics();
-		//creature2.render(lightingShader);
-
-		//creature3.activate();
-		//creature3.updatePhysics();
-		//creature3.render(lightingShader);
-
-		//creature4.activate();
-		//creature4.updatePhysics();
-		//creature4.render(lightingShader);
-
-		//creature5.activate();
-		//creature5.updatePhysics();
-		//creature5.render(lightingShader);
-
-		//creature6.activate();
-		//creature6.updatePhysics();
-		//creature6.render(lightingShader);
-		
 		ga.updateCreatures(lightingShader);
 		if (numLoops >= 20000) {
 			//ga.createNewGenetation();
 		}
+		
 		////Neural Network
 		//std::vector<int> topology{ 6, 10, 7, 6 };
 		//NeuralNetwork neuralNet(topology);
@@ -347,10 +297,11 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//numLoops++;
 
 		//std::cout << "right: " << creature.getRelativePosition(creature.getRightThigh()).x << " left: " << creature.getRelativePosition(creature.getLeftThigh()).x << std::endl;
-	
+	/*
 		if (motorImpulses) {
 			//Update creature's hinge motors: 
 			//creature.getChest()->getHinge("abdomen")->enableMotor(isEnableMotor);
+			
 			creature.getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
 			creature.getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
 			creature.getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
@@ -369,16 +320,17 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 			creature.getHips()->getHinge("rightHip")->setMotorTargetVelocity(targetAngle);
 			creature.getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity(targetAngleRightKnee);
 			creature.getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity(targetAngleLeftKnee);
+		
 		}
-
+		*/
 		//Swap the screen buffers
 		glfwSwapBuffers(window);
 
 	}
 
-	pm.removeBody(fallCube.getRigidBody());
-	delete fallCube.getRigidBody()->getMotionState();
-	delete fallCube.getRigidBody();
+	//pm.removeBody(fallCube.getRigidBody());
+	//delete fallCube.getRigidBody()->getMotionState();
+	//delete fallCube.getRigidBody();
 
 	
 }

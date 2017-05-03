@@ -14,8 +14,7 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 	creatures.reserve(m_populationSize);
 	for (int i = 0; i < m_populationSize; i++) {
 		
-	
-		Creature* tempCret = new Creature(pm, glm::vec3(20.0f, 20.0f, 20.0f));
+		Creature* tempCret = new Creature(pm, glm::vec3(i*5, 12.0, 0.0));
 		creatures.push_back(tempCret);
 
 	}
@@ -37,15 +36,10 @@ void GeneticAlgorithm::mutate()
 void GeneticAlgorithm::updateCreatures(Shader shader)
 {
 	for (int i = 0; i < creatures.size(); i++) {
-
-		std::cout << creatures[i] << std::endl;
-			creatures.at(i)->activate();
-
-			creatures.at(i)->updatePhysics();
-
-			creatures[i]->render(shader);
+		creatures.at(i)->activate();
+		creatures.at(i)->updatePhysics();
+		creatures[i]->render(shader);
 	}
-	//system("pause");
 }
 
 void GeneticAlgorithm::createNewGeneration()
