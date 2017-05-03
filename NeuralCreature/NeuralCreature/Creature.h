@@ -48,6 +48,8 @@ public:
 	void createNeuralNetwork(std::vector<int> topology);
 	void setNeuralNetwork(NeuralNetwork neuralNetwork);
 	void updateNeuralNetwork();
+	void mutate(double mutationRate);
+	void reset();
 	~Creature();
 };
 

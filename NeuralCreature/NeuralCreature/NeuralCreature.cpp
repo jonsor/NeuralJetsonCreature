@@ -273,9 +273,12 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//creature.render(lightingShader);
 
 		ga.updateCreatures(lightingShader);
-		if (numLoops >= 20000) {
-			//ga.createNewGenetation();
+		if (numLoops >= 1000) {
+			ga.createNewGeneration();
+			numLoops = 0;
 		}
+		numLoops++;
+		std::cout << numLoops << std::endl;
 		
 		////Neural Network
 		//std::vector<int> topology{ 6, 10, 7, 6 };

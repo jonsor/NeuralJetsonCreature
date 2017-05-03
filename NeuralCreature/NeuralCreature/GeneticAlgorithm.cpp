@@ -5,6 +5,7 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double crossoverProb, in
 	: m_mutationRate(mutationRate), m_crossoverProb(crossoverProb), m_populationSize(populationSize), m_numElites(numElites)
 {
 	initCreatures(pm);
+	generation = 0;
 }
 
 void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
@@ -14,23 +15,40 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 	creatures.reserve(m_populationSize);
 	for (int i = 0; i < m_populationSize; i++) {
 		
-		Creature* tempCret = new Creature(pm, glm::vec3(i*5, 12.0, 0.0));
+		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 12.0, 0.0));
 		creatures.push_back(tempCret);
 
 	}
+}
+
+void GeneticAlgorithm::createNewGeneration()
+{
+	for (int i = 0; i < creatures.size(); i++) {
+		Creature* tempCret = creatures[i];
+		evaluateFitness(creatures[i]);
+		//crossOver(tempCret, Bounds);
+		mutate(creatures[i]);
+
+		creatures[i]->reset();
+	}
+	generation++;
+	std::cout << "Generation: " << generation << std::endl;
+
 }
 
 void GeneticAlgorithm::crossOver()
 {
 }
 
-double GeneticAlgorithm::evaluateFitness()
+
+double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
 	return 0.0;
 }
 
-void GeneticAlgorithm::mutate()
+void GeneticAlgorithm::mutate(Creature* creature)
 {
+	creature->mutate(m_mutationRate);
 }
 
 void GeneticAlgorithm::updateCreatures(Shader shader)
@@ -40,10 +58,6 @@ void GeneticAlgorithm::updateCreatures(Shader shader)
 		creatures.at(i)->updatePhysics();
 		creatures[i]->render(shader);
 	}
-}
-
-void GeneticAlgorithm::createNewGeneration()
-{
 }
 
 GeneticAlgorithm::~GeneticAlgorithm()

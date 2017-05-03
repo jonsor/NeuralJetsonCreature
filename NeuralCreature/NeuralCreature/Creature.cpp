@@ -312,6 +312,27 @@ void Creature::updateNeuralNetwork()
 	//std::cout << resultVec[0] << "  " << resultVec[1]<< std::endl;
 }
 
+void Creature::mutate(double mutationRate)
+{
+	m_neuralNetwork->mutate(mutationRate);
+}
+
+void Creature::reset()
+{
+	hips->setPosition(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z));
+	rightThigh->setPosition(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z));
+	rightShin->setPosition(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z));
+	rightFoot->setPosition(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3));
+
+	leftThigh->setPosition(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z));
+	leftShin->setPosition(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z));
+	leftFoot->setPosition(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3));
+
+	std::vector<double> resetVals = {0,0,0,0,0,0};
+	setAllTargetVelocities(resetVals);
+
+}
+
 //Cube* Creature::getChest()
 //{
 //	return chest;
