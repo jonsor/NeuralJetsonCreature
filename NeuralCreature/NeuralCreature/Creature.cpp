@@ -319,14 +319,14 @@ void Creature::mutate(double mutationRate)
 
 void Creature::reset()
 {
-	hips->setPosition(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z));
-	rightThigh->setPosition(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z));
-	rightShin->setPosition(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z));
-	rightFoot->setPosition(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3));
+	hips->reset();
+	rightThigh->reset();
+	rightShin->reset();
+	rightFoot->reset();
 
-	leftThigh->setPosition(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z));
-	leftShin->setPosition(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z));
-	leftFoot->setPosition(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3));
+	leftThigh->reset();
+	leftShin->reset();
+	leftFoot->reset();
 
 	std::vector<double> resetVals = {0,0,0,0,0,0};
 	setAllTargetVelocities(resetVals);

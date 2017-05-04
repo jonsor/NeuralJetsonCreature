@@ -93,6 +93,8 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 	//Set up physics
 	Cube::setUpPhysicsCube();
 
+	rigidBody->getMotionState()->getWorldTransform(startPos);
+
 }
 
 /**
@@ -140,6 +142,11 @@ void Cube::setPosition(glm::vec3 position)
 	this->position = position;
 }
 
+void Cube::reset() {
+
+	rigidBody->getMotionState()->setWorldTransform(startPos);
+	rigidBody->setWorldTransform(startPos);
+}
 glm::vec3 Cube::getPosition()
 {
 	return position;

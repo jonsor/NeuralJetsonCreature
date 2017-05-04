@@ -41,6 +41,7 @@ private:
 	std::map<std::string, btPoint2PointConstraint*> joints;
 
 	const double PI = 3.141592653589793238463;
+	btTransform startPos;
 
 
 public:
@@ -63,6 +64,7 @@ public:
 	GLfloat getWidth();
 	GLfloat getHeight();
 	GLfloat getDepth();
+	void reset();
 	~Cube();
 };
 

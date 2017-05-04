@@ -273,7 +273,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//creature.render(lightingShader);
 
 		ga.updateCreatures(lightingShader);
-		if (numLoops >= 1000) {
+		if (numLoops >= 400) {
 			ga.createNewGeneration();
 			numLoops = 0;
 		}
