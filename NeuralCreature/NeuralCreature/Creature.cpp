@@ -129,6 +129,16 @@ void Creature::calcCenterPosition()
 	//std::cout << centerPosition.z << std::endl;
 }
 
+glm::vec3 Creature::getPosition()
+{
+	return centerPosition;
+}
+
+glm::vec3 Creature::getStartPosition()
+{
+	return m_startPosition;
+}
+
 glm::vec3 Creature::getRelativePosition(Cube* cube) {
 	glm::vec3 relativePosition;
 	relativePosition.x = cube->getPosition().x - centerPosition.x;

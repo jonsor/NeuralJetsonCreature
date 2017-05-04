@@ -36,6 +36,13 @@ void GeneticAlgorithm::createNewGeneration()
 
 }
 
+double GeneticAlgorithm::getDistanceWalked(Creature* creature)
+{
+	glm::vec3 end = creature->getPosition();
+	glm::vec3 start = creature->getStartPosition();
+	return glm::distance(end, start);
+}
+
 void GeneticAlgorithm::crossOver()
 {
 }
@@ -43,8 +50,7 @@ void GeneticAlgorithm::crossOver()
 
 double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
-	glm::vec3 test = creature->calcCenterPosition;
-	return test.x;
+	return getDistanceWalked();
 }
 
 void GeneticAlgorithm::mutate(Creature* creature)

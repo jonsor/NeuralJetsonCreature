@@ -18,6 +18,7 @@ public:
 	void mutate(Creature* creature);
 	void updateCreatures(Shader shader);
 	void createNewGeneration();
+	double getDistanceWalked(Creature* creature);
 	~GeneticAlgorithm();
 };
 

@@ -37,6 +37,8 @@ public:
 	Cube* getLeftShin();
 	Cube* getLeftFoot();
 	void calcCenterPosition();
+	glm::vec3 getPosition();
+	glm::vec3 getStartPosition();
 	glm::vec3 getRelativePosition(Cube* cube);
 	double get2DAngle(Cube * cube1, Cube* cube2);
 	void activate();
