@@ -43,7 +43,8 @@ void GeneticAlgorithm::crossOver()
 
 double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
-	return 0.0;
+	glm::vec3 test = creature->calcCenterPosition;
+	return test.x;
 }
 
 void GeneticAlgorithm::mutate(Creature* creature)
