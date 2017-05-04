@@ -278,7 +278,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 			numLoops = 0;
 		}
 		numLoops++;
-		std::cout << numLoops << std::endl;
+		//std::cout << numLoops << std::endl;
 		
 		////Neural Network
 		//std::vector<int> topology{ 6, 10, 7, 6 };

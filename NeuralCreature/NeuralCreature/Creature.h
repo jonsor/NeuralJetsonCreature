@@ -23,12 +23,13 @@ private:
 	std::vector<double> resultVec;
 	int yo = 0;
 
+	double m_fitness;
+
 
 public:
 	Creature(PhysicsManager* pm, glm::vec3 startPosition);
 	void render(Shader shader);
 	void updatePhysics();
-	Cube* getChest();
 	Cube* getHips();
 	Cube* getRightThigh();
 	Cube* getRightShin();
@@ -52,6 +53,8 @@ public:
 	void updateNeuralNetwork();
 	void mutate(double mutationRate);
 	void reset();
+	void setFitness(double fitness);
+	double getFitness();
 	~Creature();
 };
 

@@ -343,10 +343,15 @@ void Creature::reset()
 
 }
 
-//Cube* Creature::getChest()
-//{
-//	return chest;
-//}
+void Creature::setFitness(double fitness)
+{
+	m_fitness = fitness;
+}
+
+double Creature::getFitness()
+{
+	return m_fitness;
+}
 
 Cube* Creature::getHips()
 {

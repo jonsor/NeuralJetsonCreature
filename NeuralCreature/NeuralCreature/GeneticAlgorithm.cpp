@@ -23,14 +23,61 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 
 void GeneticAlgorithm::createNewGeneration()
 {
+
+	std::vector<Creature*> fitCret;
+	fitCret.reserve(m_populationSize/2);
+	double lowest = 0.0;
+	int unfittestIndex = 0;
+
 	for (int i = 0; i < creatures.size(); i++) {
-		Creature* tempCret = creatures[i];
-		evaluateFitness(creatures[i]);
+		//Creature* tempCret = creatures[i];
+		double tempFit = evaluateFitness(creatures[i]);
+		if (i == 0) {
+			lowest = tempFit;
+		}
+		if (fitCret.size() < m_populationSize/2) {
+				fitCret.push_back(creatures[i]);
+				if (tempFit <= lowest) {
+					lowest = tempFit;
+					unfittestIndex = i;
+				}
+		}
+		else {
+			if (tempFit >= lowest) {
+				fitCret[unfittestIndex] = creatures[i];
+				
+				double lowestFit = fitCret[0]->getFitness();		
+				for (int k = 0; k < fitCret.size(); k++) {
+					double fitFinder = fitCret[k]->getFitness();
+					if (fitFinder < lowestFit) {
+						lowestFit = fitFinder;
+						lowest = lowestFit;
+						unfittestIndex = k;
+					}
+
+				}
+
+				std::cout << "tempFit: " << tempFit << " Lowest: " << lowest << std::endl;
+			}
+		}
+		
 		//crossOver(tempCret, Bounds);
+
+
 		mutate(creatures[i]);
 
 		creatures[i]->reset();
 	}
+
+	for (int i = 0; i < fitCret.size(); i++) {
+		std::cout << fitCret[i]->getFitness() << " ";
+	}
+	std::cout << "\n************************************************" << std::endl;
+
+	for (int i = 0; i < creatures.size(); i++) {
+		std::cout << creatures[i]->getFitness() << " " ;
+	}
+	std::cout << std::endl;
 	generation++;
 	std::cout << "Generation: " << generation << std::endl;
 
@@ -50,7 +97,9 @@ void GeneticAlgorithm::crossOver()
 
 double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
-	return getDistanceWalked();
+	double fitness = getDistanceWalked(creature);
+	creature->setFitness(fitness);
+	return fitness;
 }
 
 void GeneticAlgorithm::mutate(Creature* creature)
