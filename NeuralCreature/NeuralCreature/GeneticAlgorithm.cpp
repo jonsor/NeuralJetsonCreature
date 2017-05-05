@@ -26,41 +26,43 @@ void GeneticAlgorithm::createNewGeneration()
 
 	std::vector<Creature*> fitCret;
 	fitCret.reserve(m_populationSize/2);
-	double lowest = 0.0;
-	int unfittestIndex = 0;
+	double lowestOfBest = 0.0;
+	int unfittestOfBestIndex = 0;
 
 	for (int i = 0; i < creatures.size(); i++) {
-		//Creature* tempCret = creatures[i];
 		double tempFit = evaluateFitness(creatures[i]);
+		creatures[i]->setFitness(tempFit);
+
+
 		if (i == 0) {
-			lowest = tempFit;
+			lowestOfBest = tempFit;
 		}
 		if (fitCret.size() < m_populationSize/2) {
 				fitCret.push_back(creatures[i]);
-				if (tempFit <= lowest) {
-					lowest = tempFit;
-					unfittestIndex = i;
+				if (tempFit <= lowestOfBest) {
+					lowestOfBest = tempFit;
+					unfittestOfBestIndex = i;
 				}
 		}
 		else {
-			if (tempFit >= lowest) {
-				fitCret[unfittestIndex] = creatures[i];
+			if (tempFit >= lowestOfBest) {
+				fitCret[unfittestOfBestIndex] = creatures[i];
 				
 				double lowestFit = fitCret[0]->getFitness();		
 				for (int k = 0; k < fitCret.size(); k++) {
 					double fitFinder = fitCret[k]->getFitness();
-					if (fitFinder < lowestFit) {
+					if (fitFinder <= lowestFit) {
 						lowestFit = fitFinder;
-						lowest = lowestFit;
-						unfittestIndex = k;
+						lowestOfBest = lowestFit;
+						unfittestOfBestIndex = k;
 					}
 
 				}
 
-				std::cout << "tempFit: " << tempFit << " Lowest: " << lowest << std::endl;
+				//std::cout << "tempFit: " << tempFit << " Lowest: " << lowestOfBest << std::endl;
 			}
 		}
-		
+		std::cout << "tempFit: " << tempFit << " LowestOfBest: " << lowestOfBest << std::endl;
 		//crossOver(tempCret, Bounds);
 
 
