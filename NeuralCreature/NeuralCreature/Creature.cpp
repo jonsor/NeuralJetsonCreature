@@ -201,7 +201,7 @@ std::vector<double> Creature::calculateInputs()
 
 	//target velocities
 	std::vector<double> angularVel = getAllAngularVelocities();
-	inputs.reserve(angularVel.size());
+	//inputs.reserve(angularVel.size());
 	inputs.insert(inputs.end(), angularVel.begin(), angularVel.end());
 
 	//for (int i = 0; i < inputs.size(); i++) {
@@ -211,7 +211,7 @@ std::vector<double> Creature::calculateInputs()
 
 	//Hinge angles
 	std::vector<double> inputAngles = getAllAngles();
-	inputs.reserve(inputAngles.size());
+	//inputs.reserve(inputAngles.size());
 	inputs.insert(inputs.end(), inputAngles.begin(), inputAngles.end());
 	//Foot heights
 	
@@ -451,8 +451,6 @@ void Creature::setColor(glm::vec3 color)
 	leftFoot->setColor(color);
 }
 
-double average = 0;
-double avgSize = 0;
 void Creature::incrementToAverage()
 {
 	double value = getHeight();
@@ -464,6 +462,17 @@ double Creature::getAverageHeight() {
 	return average;
 }
 
+double Creature::getMaxHeight()
+{
+	return maxHeight;
+}
+
+void Creature::updateMaxHeight(double height)
+{
+
+	if (height > maxHeight) maxHeight = height;
+}
+
 Creature::~Creature()
 {
 	delete hips;
@@ -473,4 +482,6 @@ Creature::~Creature()
 	delete leftThigh;
 	delete leftShin;
 	delete leftFoot;
+
+	delete m_neuralNetwork;
 }

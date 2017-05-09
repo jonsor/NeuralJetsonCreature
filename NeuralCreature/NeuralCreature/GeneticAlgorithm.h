@@ -10,7 +10,6 @@ private:
 	int m_populationSize;
 	int m_numElites;
 	std::vector<Creature*> creatures;
-	std::priority_queue<Creature, std::vector<Creature*>, Creature::LessThanByFitness> creaturesQueue;
 	int generation;
 public:
 	GeneticAlgorithm(double mutationRate, double crossoverProb, int populationSize, int numElites, PhysicsManager * pm);

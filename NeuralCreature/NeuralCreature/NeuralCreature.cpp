@@ -291,7 +291,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//creature.render(lightingShader);
 		numLoops++;
 		ga.updateCreatures(lightingShader, render);
-		if (numLoops >= 600) {
+		if (numLoops >= 400) {
 			GLfloat thisTime = glfwGetTime();
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
 			startTime = glfwGetTime();

@@ -24,16 +24,19 @@ private:
 	int yo = 0;
 
 	double m_fitness;
+	double average = 0;
+	double avgSize = 0;
+	double maxHeight = 0;
 
 
 public:
-	static struct LessThanByFitness
-	{
-		bool operator()(const Creature* lhs, const Creature* rhs) const
-		{
-			return lhs->m_fitness < rhs->m_fitness;
-		}
-	};
+	//static struct LessThanByFitness
+	//{
+	//	bool operator()(const Creature* lhs, const Creature* rhs) const
+	//	{
+	//		return lhs->m_fitness < rhs->m_fitness;
+	//	}
+	//};
 
 	Creature(PhysicsManager* pm, glm::vec3 startPosition);
 	void render(Shader shader);
@@ -70,6 +73,8 @@ public:
 	void setColor(glm::vec3 color);
 	void incrementToAverage();
 	double getAverageHeight();
+	double getMaxHeight();
+	void updateMaxHeight(double height);
 	~Creature();
 };
 

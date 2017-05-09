@@ -334,13 +334,6 @@ void Cube::remove(PhysicsManager * pm)
 {
 
 	pm->removeBody(rigidBody);
-
-	delete rigidBody->getMotionState();
-	delete rigidBody;
-
-	//delete fallMotionState;
-
-	//delete fallShape;
 }
 
 void Cube::removeConstraint(PhysicsManager * pm)
@@ -359,6 +352,13 @@ void Cube::removeConstraint(PhysicsManager * pm)
 
 Cube::~Cube()
 {
-	delete fallMotionState;
+
 	delete fallShape;
+	delete collisionShape;
+	delete fallMotionState;
+	delete rigidBody;
+	//rigidBody = nullptr;
+	hinges.clear();
+	joints.clear();
+
 }
