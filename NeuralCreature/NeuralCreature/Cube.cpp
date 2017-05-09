@@ -146,6 +146,7 @@ void Cube::reset() {
 
 	rigidBody->getMotionState()->setWorldTransform(startPos);
 	rigidBody->setWorldTransform(startPos);
+	rigidBody->clearForces();
 }
 glm::vec3 Cube::getPosition()
 {
@@ -165,8 +166,8 @@ void Cube::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
 void Cube::setUpPhysicsCube()
 {
 	//TODO: delete fall shape at the end of game loop
-	btCollisionShape* fallShape = new btBoxShape(btVector3(width, height, depth));
-	btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), Util::convertToBtVector3(position)));
+	fallShape = new btBoxShape(btVector3(width, height, depth));
+	fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), Util::convertToBtVector3(position)));
 	btVector3 fallInertia(0, 0, 0);
 	if(mass != 0) fallShape->calculateLocalInertia(mass, fallInertia);
 
@@ -329,6 +330,35 @@ GLfloat Cube::getDepth()
 	return depth;
 }
 
+void Cube::remove(PhysicsManager * pm)
+{
+
+	pm->removeBody(rigidBody);
+
+	delete rigidBody->getMotionState();
+	delete rigidBody;
+
+	//delete fallMotionState;
+
+	//delete fallShape;
+}
+
+void Cube::removeConstraint(PhysicsManager * pm)
+{
+
+
+	for (std::map<std::string, btHingeConstraint*>::iterator itr = hinges.begin(); itr != hinges.end(); itr++)
+	{
+
+		pm->removeConstraint(itr->second);
+		//delete (&itr->first);
+		delete (itr->second);
+	}
+
+}
+
 Cube::~Cube()
 {
+	delete fallMotionState;
+	delete fallShape;
 }

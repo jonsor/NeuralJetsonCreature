@@ -27,6 +27,14 @@ private:
 
 
 public:
+	static struct LessThanByFitness
+	{
+		bool operator()(const Creature* lhs, const Creature* rhs) const
+		{
+			return lhs->m_fitness < rhs->m_fitness;
+		}
+	};
+
 	Creature(PhysicsManager* pm, glm::vec3 startPosition);
 	void render(Shader shader);
 	void updatePhysics();
@@ -49,12 +57,19 @@ public:
 	void setAllTargetVelocities(std::vector<double> &resultVec);
 	void setMaxMotorImpulses(double maxMotorImpulse);
 	void createNeuralNetwork(std::vector<int> topology);
-	void setNeuralNetwork(NeuralNetwork neuralNetwork);
+	void setNeuralNetwork(NeuralNetwork* neuralNetwork);
+	NeuralNetwork* getNeuralNetwork();
 	void updateNeuralNetwork();
 	void mutate(double mutationRate);
 	void reset();
 	void setFitness(double fitness);
 	double getFitness();
+	double getHeight();
+	void removeBodies(PhysicsManager * pm);
+	void removeConstraints(PhysicsManager * pm);
+	void setColor(glm::vec3 color);
+	void incrementToAverage();
+	double getAverageHeight();
 	~Creature();
 };
 

@@ -22,15 +22,15 @@ Purpose: Sets up, renders and updates a complete, hardcoded creature.
 Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition(startPosition)
 {
 	//Limbs:
-	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 10);
+	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 15);
 
 	rightThigh = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightShin = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	rightFoot = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
+	rightFoot = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
 
 	leftThigh = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	leftShin = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	leftFoot = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
+	leftFoot = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
 
 	m_startPosition.x += hips->getWidth() / 2;
 	m_startPosition.y -= hips->getHeight() / 2;
@@ -63,8 +63,11 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 	setMaxMotorImpulses(20.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 28, 20, 6 };
+	std::vector<int> topology{ 28, 28, 6 };
 	createNeuralNetwork(topology);
+
+	//Set default fitness
+	m_fitness = 0;
 }
 
 /**
@@ -93,20 +96,20 @@ void Creature::render(Shader shader)
 
 void Creature::updatePhysics()
 {
-	if (yo >= 2000) {
-		std::vector<int> topology{ 28, 20, 6 };
-		createNeuralNetwork(topology);
-		std::cout << "NEEEEEEEEEEEEEEEEEEEEW NEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET" << std::endl;
-		yo = 0;
-	}
-	yo++;
+	//if (yo >= 2000) {
+	//	std::vector<int> topology{ 28, 20, 6 };
+	//	createNeuralNetwork(topology);
+	//	//std::cout << "NEEEEEEEEEEEEEEEEEEEEW NEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET" << std::endl;
+	//	yo = 0;
+	//}
+	//yo++;
 
 	updateNeuralNetwork();
 
 	calcCenterPosition();
 	//chest->updatePhysics();
-	hips->getRigidBody()->setDamping(0, 0);
-	hips->getRigidBody()->setRestitution(0);
+	//hips->getRigidBody()->setDamping(0, 0);
+	//hips->getRigidBody()->setRestitution(0);
 	hips->updatePhysics();
 
 	rightThigh->updatePhysics();
@@ -307,8 +310,15 @@ void Creature::createNeuralNetwork(std::vector<int> topology)
 	m_neuralNetwork = new NeuralNetwork(topology);
 }
 
-void Creature::setNeuralNetwork(NeuralNetwork neuralNetwork)
+void Creature::setNeuralNetwork(NeuralNetwork* neuralNetwork)
 {
+	m_neuralNetwork = neuralNetwork;
+}
+
+NeuralNetwork* Creature::getNeuralNetwork()
+{
+	//Creature* tempNN = new Creature(*m_neuralNetwork);
+	return m_neuralNetwork;
 }
 
 void Creature::updateNeuralNetwork()
@@ -386,6 +396,72 @@ Cube* Creature::getLeftShin()
 Cube* Creature::getLeftFoot()
 {
 	return leftFoot;
+}
+
+double Creature::getHeight()
+{
+	return hips->getPosition().y;
+}
+
+void Creature::removeBodies(PhysicsManager * pm)
+{
+
+	hips->remove(pm);
+
+	rightThigh->remove(pm);
+	rightShin->remove(pm);
+	rightFoot->remove(pm);
+
+	leftThigh->remove(pm);
+	leftShin->remove(pm);
+	leftFoot->remove(pm);
+	//delete hips;
+	//std::cout << std::endl;
+
+}
+
+
+void Creature::removeConstraints(PhysicsManager * pm)
+{
+
+	hips->removeConstraint(pm);
+
+	rightThigh->removeConstraint(pm);
+
+	rightShin->removeConstraint(pm);
+	rightFoot->removeConstraint(pm);
+
+	leftThigh->removeConstraint(pm);
+	leftShin->removeConstraint(pm);
+	leftFoot->removeConstraint(pm);
+	//delete hips;
+	//std::cout << std::endl;
+
+}
+
+void Creature::setColor(glm::vec3 color)
+{
+	//hips->setColor(color);
+
+	rightThigh->setColor(color);
+	rightShin->setColor(color);
+	rightFoot->setColor(color);
+	leftThigh->setColor(color);
+	leftShin->setColor(color);
+	leftFoot->setColor(color);
+}
+
+double average = 0;
+double avgSize = 0;
+void Creature::incrementToAverage()
+{
+	double value = getHeight();
+	average = (avgSize * average + value) / (avgSize + 1);
+	avgSize++;
+}
+
+double Creature::getAverageHeight() {
+	return average;
 }
 
 Creature::~Creature()

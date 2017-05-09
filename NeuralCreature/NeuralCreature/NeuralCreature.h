@@ -41,7 +41,7 @@ private:
 
 public:
 	void init();
-	void renderLoop(GLFWwindow * window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes);
+	void renderLoop(GLFWwindow * window, GLint planeVAO, GLint lightVAO, Shader lightingShader);
 	//btRigidBody * createRigidBody(btCollisionShape * collisionShape, btScalar mass, const btTransform & transform) const;
 	//GLint initShaders();
 	void doMovement();

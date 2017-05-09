@@ -44,6 +44,11 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> &topology)
 	}
 }
 
+NeuralNetwork::NeuralNetwork(const NeuralNetwork & neuralNet)
+{
+	layers = neuralNet.layers;
+}
+
 
 void NeuralNetwork::forward(const std::vector<double>& inputVals)
 {

@@ -67,6 +67,11 @@ void PhysicsManager::removeBody(btRigidBody * rigidBody)
 
 }
 
+void PhysicsManager::removeConstraint(btHingeConstraint* hingeConstraint)
+{
+	dynamicsWorld->removeConstraint(hingeConstraint);
+}
+
 PhysicsManager::~PhysicsManager()
 {
 	delete dynamicsWorld;

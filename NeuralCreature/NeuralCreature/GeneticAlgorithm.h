@@ -1,6 +1,7 @@
 #pragma once
 #include "Creature.h"
 #include <vector>
+#include <queue>
 class GeneticAlgorithm
 {
 private:
@@ -9,6 +10,7 @@ private:
 	int m_populationSize;
 	int m_numElites;
 	std::vector<Creature*> creatures;
+	std::priority_queue<Creature, std::vector<Creature*>, Creature::LessThanByFitness> creaturesQueue;
 	int generation;
 public:
 	GeneticAlgorithm(double mutationRate, double crossoverProb, int populationSize, int numElites, PhysicsManager * pm);
@@ -16,8 +18,8 @@ public:
 	void crossOver();
 	double evaluateFitness(Creature* creature);
 	void mutate(Creature* creature);
-	void updateCreatures(Shader shader);
-	void createNewGeneration();
+	void updateCreatures(Shader shader, bool render);
+	void createNewGeneration(PhysicsManager * pm);
 	double getDistanceWalked(Creature* creature);
 	~GeneticAlgorithm();
 };

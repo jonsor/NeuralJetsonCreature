@@ -18,12 +18,17 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 12.0, 0.0));
 		creatures.push_back(tempCret);
 
+		creaturesQueue.push(tempCret);
+
 	}
 }
 
-void GeneticAlgorithm::createNewGeneration()
-{
+bool moreThanByFitness(Creature* lhs, Creature* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
 
+int l = 0;
+void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
+{
+	l = 0;
 	std::vector<Creature*> fitCret;
 	fitCret.reserve(m_populationSize/2);
 	double lowestOfBest = 0.0;
@@ -62,26 +67,92 @@ void GeneticAlgorithm::createNewGeneration()
 				//std::cout << "tempFit: " << tempFit << " Lowest: " << lowestOfBest << std::endl;
 			}
 		}
-		std::cout << "tempFit: " << tempFit << " LowestOfBest: " << lowestOfBest << std::endl;
+		//std::cout << "tempFit: " << tempFit << " LowestOfBest: " << lowestOfBest << std::endl;
 		//crossOver(tempCret, Bounds);
 
 
-		mutate(creatures[i]);
+		//mutate(creatures[i]);
 
-		creatures[i]->reset();
+		//creatures[i]->reset();
 	}
 
-	for (int i = 0; i < fitCret.size(); i++) {
-		std::cout << fitCret[i]->getFitness() << " ";
-	}
-	std::cout << "\n************************************************" << std::endl;
+	//for (int i = 0; i < fitCret.size(); i++) {
+	//	std::cout << fitCret[i]->getFitness() << " ";
+	//}
+	//std::cout << "\n************************************************" << std::endl;
+
+	//for (int i = 0; i < creatures.size(); i++) {
+	//	std::cout << creatures[i]->getFitness() << " " ;
+	//}
+	//std::cout << std::endl;
+
+	//std::cout << "proqueue: " << std::endl;
+	//for (int i = 0; i < creaturesQueue.size(); i++) {
+	//	std::cout << creaturesQueue.top()->getFitness() << std::endl;
+	//	creaturesQueue.pop();
+	//}
 
 	for (int i = 0; i < creatures.size(); i++) {
-		std::cout << creatures[i]->getFitness() << " " ;
+		double tempFit = evaluateFitness(creatures[i]);
+		creatures[i]->setFitness(tempFit);
 	}
-	std::cout << std::endl;
+
+	std::sort(creatures.begin(), creatures.end(), moreThanByFitness);
+	std::cout << "sorted vector: " << std::endl;
+	for (int i = 0; i < creatures.size(); i++) {
+		std::cout << creatures[i]->getFitness() << std::endl;
+	}
+	int bestFitIndex = 0;
+	double bestFit = 0.0;
+	for (int i = 0; i < fitCret.size(); i++) {
+		if (fitCret[i]->getFitness() > bestFit) {
+			bestFit = fitCret[i]->getFitness();
+			bestFitIndex = i;
+		}
+	}
+
+	int j = 0;
+	bool bestFitPreserved = false;
+	for (int i = 0; i < creatures.size(); i++) {
+		if (j == creatures.size()/2) {
+			j = 0;
+		}
+
+		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 12.0, 0.0));
+		if (i == 0) {
+			tempCret->setColor(glm::vec3(0.8f, 0.1f, 0.6f));
+		}
+		tempCret->setNeuralNetwork(new NeuralNetwork(*creatures[j]->getNeuralNetwork()));
+
+ 		creatures[i]->removeConstraints(pm);
+
+		creatures[i]->removeBodies(pm);
+
+		creatures[i] = tempCret;
+		//creatures[i]->setNeuralNetwork(fitCret[j]->getNeuralNetwork());
+		if (i != 0) {
+			mutate(creatures[i]);
+		}
+		else if(!bestFitPreserved) {
+			mutate(creatures[i]);
+			bestFitPreserved = true;
+		}
+		j++;
+
+	}
+
+
+	std::cout << "Generation: " << generation  << " creatures size: " << creatures.size() << std::endl;
 	generation++;
-	std::cout << "Generation: " << generation << std::endl;
+
+	std::cout << "BestFit: " << bestFit << std::endl;
+
+
+	//for (int i = 0; i < creatures.size(); i++) {
+	//	Creature* tempCret = new Creature(pm, glm::vec3(1.0, 12.0, 0.0));
+	//	tempCret->setNeuralNetwork(creatures[i]->getNeuralNetwork());
+	//	creatures[i] = tempCret;
+	//}
 
 }
 
@@ -100,6 +171,7 @@ void GeneticAlgorithm::crossOver()
 double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
 	double fitness = getDistanceWalked(creature);
+	//double fitness = creature->getAverageHeight();
 	creature->setFitness(fitness);
 	return fitness;
 }
@@ -109,12 +181,20 @@ void GeneticAlgorithm::mutate(Creature* creature)
 	creature->mutate(m_mutationRate);
 }
 
-void GeneticAlgorithm::updateCreatures(Shader shader)
+void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 {
+	l++;
+	if (l == 250) {
+		std::cout << creatures[0]->getPosition().y << std::endl;
+		l = 0;
+	}
 	for (int i = 0; i < creatures.size(); i++) {
 		creatures.at(i)->activate();
 		creatures.at(i)->updatePhysics();
-		creatures[i]->render(shader);
+		if (render) {
+			creatures[i]->render(shader);
+		}
+		creatures[i]->incrementToAverage();
 	}
 }
 

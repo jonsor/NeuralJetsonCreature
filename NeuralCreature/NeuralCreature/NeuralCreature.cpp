@@ -24,7 +24,7 @@ Camera camera(glm::vec3(0.0f, 3.0f, 10.0f));
 bool keys[1024];
 GLfloat lastX, lastY;
 bool firstMouse = true;
-bool applyImpulse = false;
+bool applyImpulse = true;
 bool motorImpulses = false;
 
 GLfloat deltaTime = 0.0f;
@@ -43,6 +43,8 @@ bool holdingR = false;
 bool holdingT = false;
 bool holdingY = false;
 bool holdingI = false;
+
+bool render = true;
 
 //Light attributes
 glm::vec3 lightPos(-30.0f, 20.0f, 0.0f);
@@ -78,16 +80,16 @@ void NeuralCreature::init() {
 	//Populate the world with cubes:
 	
 
-	Cube cube1(glm::vec3(6.0f, 60.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 10);
-	Cube cube2(glm::vec3(6.0f, 40.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f, 20);
-	Cube cube3(glm::vec3(6.0f, 20.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.0f, 0.5f, 1);
-	pm.addBody(cube1.getRigidBody());
-	pm.addBody(cube2.getRigidBody());
-	pm.addBody(cube3.getRigidBody());
+	//Cube cube1(glm::vec3(6.0f, 60.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 10);
+	//Cube cube2(glm::vec3(6.0f, 40.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f, 20);
+	//Cube cube3(glm::vec3(6.0f, 20.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.0f, 0.5f, 1);
+	//pm.addBody(cube1.getRigidBody());
+	//pm.addBody(cube2.getRigidBody());
+	//pm.addBody(cube3.getRigidBody());
 
-	cube1.addHinge(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(-5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), & cube2, true, & pm, "h1");
+	//cube1.addHinge(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(-5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), & cube2, true, & pm, "h1");
 
-	std::vector<Cube> cubes;
+	//std::vector<Cube> cubes;
 	//cubes.push_back(cube1);
 	//cubes.push_back(cube2);
 	//cubes.push_back(cube3);
@@ -98,11 +100,11 @@ void NeuralCreature::init() {
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
 	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	//groundRigidBody->setFriction(5.0f);
+	groundRigidBody->setFriction(2.0f);
 	pm.addBody(groundRigidBody, 2, 1);
 
 	//Start render loop
-	renderLoop(window, planeVAO, lightVAO, lightingShader, cubes);
+	renderLoop(window, planeVAO, lightVAO, lightingShader);
 
 	// Properly de-allocate all resources once they've outlived their purpose
 	glDeleteVertexArrays(1, &planeVAO);
@@ -131,7 +133,7 @@ void NeuralCreature::init() {
 	@param cubes Vector of cubes to place in the world.
 		
 */
-void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader, std::vector<Cube> cubes) {
+void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader) {
 	
 	//Init hinge variables:
 	targetAngle = 0.0f;
@@ -147,7 +149,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//Spider spider(&pm);
 	
 	//Create genetic algorithm
-	GeneticAlgorithm ga(0.03, 0.1, 10, 1, &pm);
+	GeneticAlgorithm ga(0.1, 0.1, 10, 1, &pm);
 
 /*
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
@@ -156,32 +158,48 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	Cube fallCube(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
 	pm.addBody(fallCube.getRigidBody());
 */
-	Cube cameraCollisionBox(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
-	pm.addBody(cameraCollisionBox.getRigidBody());
+	//Cube cameraCollisionBox(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
+	//pm.addBody(cameraCollisionBox.getRigidBody());
 
-	float fps = 0;
+	double fps = 0;
 	float accumilatedTime = 0;
 	bool simulate = false;
 	int numLoops = 0;
+	int showFPS = 0;
 	std::vector<double> resultVec;
 	resultVec.push_back(0.0);
 	resultVec.push_back(0.0);
-
+	GLfloat startTime = glfwGetTime();
+	int frameCount = 0;
 	//START MAIN LOOP:
 	while (!glfwWindowShouldClose(window)) {
-		fps++;
+		frameCount++;
 		// Set frame time
 		GLfloat currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		accumilatedTime += deltaTime;
-		if (accumilatedTime > 0.2f) {
-			//std::cout << "fps: " << fps << std::endl;
-			fps = 0;
+		if (accumilatedTime >= 1.0f) {
+			
+			fps++;
 			accumilatedTime = 0;
 			//double time = sin(0.000002 * std::chrono::system_clock::now().time_since_epoch().count() );
 			//std::cout << time << std::endl;
 		}
+		if (currentFrame - startTime >= 1.0)
+		{
+			// Display the frame count here any way you want.
+			//std::cout << frameCount << std::endl;
+			frameCount = 0;
+			/*startTime = glfwGetTime();*/
+		}
+		//if (showFPS == 100) {
+		//	std::cout << "fps: " << fps << std::endl;
+		//	fps = 0;
+		//	showFPS = 0;
+		//}
+
+		showFPS++;
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 		doMovement();
@@ -244,13 +262,13 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		glBindVertexArray(planeVAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		if(simulate) pm.update(deltaTime, 1);
+		if(simulate) pm.update(1, 1);
 
 		//Camera box
-		cameraCollisionBox.setPosition(glm::vec3(camera.Position.x, camera.Position.y, camera.Position.z));
-		btDefaultMotionState* ms = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(camera.Position.x, camera.Position.y, camera.Position.z)));
-		cameraCollisionBox.getRigidBody()->setMotionState(ms);
-		cameraCollisionBox.updatePhysics();
+		//cameraCollisionBox.setPosition(glm::vec3(camera.Position.x, camera.Position.y, camera.Position.z));
+		//btDefaultMotionState* ms = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(camera.Position.x, camera.Position.y, camera.Position.z)));
+		//cameraCollisionBox.getRigidBody()->setMotionState(ms);
+		//cameraCollisionBox.updatePhysics();
 
 		/*
 		spider.updatePhysics();
@@ -261,23 +279,25 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		fallCube.updatePhysics();
 		fallCube.render(lightingShader);
 		*/
-		for (int i = 0; i < cubes.size(); i++) {
-			cubes[i].updatePhysics();
-			cubes[i].render(lightingShader);
+		//for (int i = 0; i < cubes.size(); i++) {
+		//	cubes[i].updatePhysics();
+		//	cubes[i].render(lightingShader);
 
-		}
+		//}
 
 		//Update and render Creature
 		//creature.activate();
 		//creature.updatePhysics();
 		//creature.render(lightingShader);
-
-		ga.updateCreatures(lightingShader);
-		if (numLoops >= 400) {
-			ga.createNewGeneration();
+		numLoops++;
+		ga.updateCreatures(lightingShader, render);
+		if (numLoops >= 600) {
+			GLfloat thisTime = glfwGetTime();
+			std::cout << "Generation time: " << thisTime - startTime << std::endl;
+			startTime = glfwGetTime();
+			ga.createNewGeneration(&pm);
 			numLoops = 0;
 		}
-		numLoops++;
 		//std::cout << numLoops << std::endl;
 		
 		////Neural Network
@@ -526,6 +546,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_I && action == GLFW_RELEASE) {
 		holdingI = false;
+	}
+
+	if (key == GLFW_KEY_V && action == GLFW_PRESS) {
+		if (render) {
+			render = false;
+		}
+		else {
+			render = true;
+		}
 	}
 }
 

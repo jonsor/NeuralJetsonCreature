@@ -20,6 +20,7 @@
 #include <vector>
 #include <map>
 #include "PhysicsManager.h"
+#include <iterator>
 
 class Cube
 {
@@ -33,7 +34,8 @@ private:
 	GLfloat angle;
 	btScalar mass;
 	glm::vec3 axisOfRotation;
-	
+	btCollisionShape* fallShape;
+	btDefaultMotionState* fallMotionState;
 	//Bullet physics variables
 	btCollisionShape* collisionShape;
 	btRigidBody* rigidBody;
@@ -64,6 +66,8 @@ public:
 	GLfloat getWidth();
 	GLfloat getHeight();
 	GLfloat getDepth();
+	void remove(PhysicsManager * pm);
+	void removeConstraint(PhysicsManager * pm);
 	void reset();
 	~Cube();
 };
