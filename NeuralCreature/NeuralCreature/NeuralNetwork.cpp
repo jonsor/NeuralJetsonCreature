@@ -80,8 +80,11 @@ void NeuralNetwork::getResults(std::vector<double>& resultsVals) const
 
 void NeuralNetwork::mutate(double mutationRate)
 {
+	int numLayersTomutate = rand() % layers.size() + 1;
 	for (int i = 0; i < layers.size(); i++) {
 		Layer& tempLayer = layers[i];
+
+		int numNodesToMutate = rand() % tempLayer.size() + 1;
 		for (int j = 0; j < tempLayer.size(); j++) {
 			tempLayer[i].mutate(mutationRate);
 		}

@@ -27,6 +27,7 @@ public:
 	void addNewConstraint(btPoint2PointConstraint* jointConstraint, bool isDisableCollisionsBetweenLinkedBodies);
 	void removeBody(btRigidBody* rigidBody);
 	void removeConstraint(btHingeConstraint * hingeConstraint);
+	void reset();
 	~PhysicsManager();
 };
 

@@ -2,6 +2,7 @@
 #include "Cube.h"
 #include "NeuralNetwork.h"
 #include "Util.h"
+#include <thread>
 
 class Creature
 {
@@ -27,6 +28,8 @@ private:
 	double average = 0;
 	double avgSize = 0;
 	double maxHeight = 0;
+	double timeOnGround = 0;
+	double timeOnTwoLegs = 0;
 
 
 public:
@@ -75,6 +78,12 @@ public:
 	double getAverageHeight();
 	double getMaxHeight();
 	void updateMaxHeight(double height);
+
+	double getTimeOnGround();
+	void setTimeOnGround(double time);
+
+	double getTimeOnTwoLegs();
+	void setTimeOnTwoLegs(double time);
 	~Creature();
 };
 

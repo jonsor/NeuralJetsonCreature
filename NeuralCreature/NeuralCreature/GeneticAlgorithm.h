@@ -2,6 +2,8 @@
 #include "Creature.h"
 #include <vector>
 #include <queue>
+#include <thread>
+
 class GeneticAlgorithm
 {
 private:
@@ -18,6 +20,7 @@ public:
 	double evaluateFitness(Creature* creature);
 	void mutate(Creature* creature);
 	void updateCreatures(Shader shader, bool render);
+	static void updateCreature(Shader shader,Creature * creature);
 	void createNewGeneration(PhysicsManager * pm);
 	double getDistanceWalked(Creature* creature);
 	~GeneticAlgorithm();

@@ -23,7 +23,7 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 {
 	//Limbs:
 	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 15);
-
+	hips->getRigidBody()->setDamping(0.f, 100.f);
 	rightThigh = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightShin = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightFoot = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
@@ -31,6 +31,9 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 	leftThigh = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	leftShin = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	leftFoot = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
+
+	leftFoot->getRigidBody()->setFriction(5.f);
+	rightFoot->getRigidBody()->setFriction(5.f);
 
 	m_startPosition.x += hips->getWidth() / 2;
 	m_startPosition.y -= hips->getHeight() / 2;
@@ -60,10 +63,10 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 	rightShin->addHinge(glm::vec3(0.0f, -2.1f, 0.0f), glm::vec3(0.0f, 0.0f, 0.7f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightFoot, noCol, 0, PI/4, pm, "rightAnkle");
 	leftShin->addHinge(glm::vec3(0.0f, -2.1f, 0.0f), glm::vec3(0.0f, 0.0f, 0.7f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftFoot, noCol, 0, PI/4, pm, "leftAnkle");
 
-	setMaxMotorImpulses(20.0f);
+	setMaxMotorImpulses(40.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 28, 28, 6 };
+	std::vector<int> topology{ 28, 28, 20, 10, 6 };
 	createNeuralNetwork(topology);
 
 	//Set default fitness
@@ -93,7 +96,9 @@ void Creature::render(Shader shader)
 	Updates the physics for each limb in the creature. 
 	Also sets dampening and restitution?
 */
-
+static void updatePhysicsOfLimb(Cube * cube) {
+	cube->updatePhysics();
+}
 void Creature::updatePhysics()
 {
 	//if (yo >= 2000) {
@@ -110,8 +115,25 @@ void Creature::updatePhysics()
 	//chest->updatePhysics();
 	//hips->getRigidBody()->setDamping(0, 0);
 	//hips->getRigidBody()->setRestitution(0);
-	hips->updatePhysics();
+	//std::thread t1(updatePhysicsOfLimb, hips);
 
+	//std::thread t2(updatePhysicsOfLimb, rightThigh);
+	//std::thread t3(updatePhysicsOfLimb, rightShin);
+	//std::thread t4(updatePhysicsOfLimb, rightFoot);
+
+	//std::thread t5(updatePhysicsOfLimb, leftThigh);
+	//std::thread t6(updatePhysicsOfLimb, leftShin);
+	//std::thread t7(updatePhysicsOfLimb, leftFoot);
+
+	//t1.join();
+	//t2.join();
+	//t3.join();
+	//t4.join();
+	//t5.join();
+	//t6.join();
+	//t7.join();
+
+	hips->updatePhysics();
 	rightThigh->updatePhysics();
 	rightShin->updatePhysics();
 	rightFoot->updatePhysics();
@@ -177,12 +199,12 @@ std::vector<double> Creature::getAllAngles()
 
 	double raa = (getRightShin()->getHinge("rightAnkle")->getHingeAngle() - getRightShin()->getHinge("rightAnkle")->getLowerLimit()) / (getRightShin()->getHinge("rightAnkle")->getUpperLimit() - getRightShin()->getHinge("rightAnkle")->getLowerLimit());
 	double laa = (getLeftShin()->getHinge("leftAnkle")->getHingeAngle() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit()) / (getLeftShin()->getHinge("leftAnkle")->getUpperLimit() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit());
-	rha = (rha < 0) ? 0.0 : rha;
-	lha = (lha < 0) ? 0.0 : lha;
-	rka = (rka < 0) ? 0.0 : rka;
-	lka = (lka < 0) ? 0.0 : lka;
-	raa = (raa < 0) ? 0.0 : raa;
-	laa = (laa < 0) ? 0.0 : laa;
+	//rha = (rha < 0) ? 0.0 : rha;
+	//lha = (lha < 0) ? 0.0 : lha;
+	//rka = (rka < 0) ? 0.0 : rka;
+	//lka = (lka < 0) ? 0.0 : lka;
+	//raa = (raa < 0) ? 0.0 : raa;
+	//laa = (laa < 0) ? 0.0 : laa;
 
 
 
@@ -261,7 +283,7 @@ std::vector<double> Creature::getAllAngularVelocities()
 
 void Creature::setAllTargetVelocities(std::vector<double>& resultVec)
 {
-	double m = 5;
+	double m = 10;
 	double mU = 0.0;
 	////HIPS
 	getHips()->getHinge("leftHip")->setMotorTargetVelocity((resultVec[0] - mU) * m);
@@ -471,6 +493,26 @@ void Creature::updateMaxHeight(double height)
 {
 
 	if (height > maxHeight) maxHeight = height;
+}
+
+double Creature::getTimeOnGround()
+{
+	return timeOnGround;
+}
+
+void Creature::setTimeOnGround(double time)
+{
+	timeOnGround = time;
+}
+
+double Creature::getTimeOnTwoLegs()
+{
+	return timeOnTwoLegs;
+}
+
+void Creature::setTimeOnTwoLegs(double time)
+{
+	timeOnTwoLegs = time;
 }
 
 Creature::~Creature()

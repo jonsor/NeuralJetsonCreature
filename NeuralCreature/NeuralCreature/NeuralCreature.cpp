@@ -149,7 +149,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//Spider spider(&pm);
 	
 	//Create genetic algorithm
-	GeneticAlgorithm ga(0.1, 0.1, 10, 1, &pm);
+	GeneticAlgorithm ga(0.2, 0.1, 20, 1, &pm);
 
 /*
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
@@ -291,7 +291,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//creature.render(lightingShader);
 		numLoops++;
 		ga.updateCreatures(lightingShader, render);
-		if (numLoops >= 400) {
+		if (numLoops >= 600) {
 			GLfloat thisTime = glfwGetTime();
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
 			startTime = glfwGetTime();

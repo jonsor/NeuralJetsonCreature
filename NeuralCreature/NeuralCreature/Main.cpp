@@ -14,6 +14,7 @@ Purpose: Defines the entry point for the console application.
 #include "NeuralNetwork.h"
 
 int main(void) {
+	std::srand(time(NULL));
 	NeuralCreature world;
 	world.init();
 
