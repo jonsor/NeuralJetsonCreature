@@ -12,9 +12,11 @@ private:
 public:
 	NeuralNetwork(const std::vector<int> &topology);
 	NeuralNetwork(const NeuralNetwork &neuralNet);
+	NeuralNetwork(const std::vector<Layer> layers);
 	void forward(const std::vector<double>& inputVals);
 	void getResults(std::vector<double>& resultsVals) const;
 	void mutate(double mutationRate);
+	std::vector<Layer> getLayers();
 	~NeuralNetwork();
 };
 

@@ -46,10 +46,11 @@ void Neuron::forward(Layer & prevLayer)
 void Neuron::mutate(double mutationRate)
 {
 	bool contains = false;
-	int numWeightsToMutate = 0;
+	int numWeightsToMutate = 1;
 	std::vector<int> indiciesToMutate;
 	if (outputWeights.size() != 0) {
-		numWeightsToMutate = rand() % outputWeights.size() + 1;
+		numWeightsToMutate = rand() % outputWeights.size()/2 + 1;
+		//std::cout << numWeightsToMutate << "\n";
 		for (int i = 0; i < numWeightsToMutate; i++) {
 			int tempIndex = rand() % outputWeights.size();
 			contains = false;
@@ -63,9 +64,17 @@ void Neuron::mutate(double mutationRate)
 			if(!contains) indiciesToMutate.push_back(tempIndex);
 		}
 	}
+
+	double mutateChance = ((double)rand() / (RAND_MAX));
 	//std::cout << "size " << indiciesToMutate.size() << std::endl;
 	for (int i = 0; i < indiciesToMutate.size(); i++) {
-		outputWeights[indiciesToMutate[i]] += getRandomWeight() * mutationRate;
+		//std::cout << "mutation amout: " << getRandomWeight() * mutationRate << "\n";
+		if (mutateChance <= 0.2) {
+			outputWeights[indiciesToMutate[i]] = getRandomWeight();
+		}
+		else {
+			outputWeights[indiciesToMutate[i]] += getRandomWeight() * mutationRate;
+		}
 	}
 }
 
@@ -89,11 +98,11 @@ double Neuron::getRandomWeight()
 double Neuron::activationFunction(double value)
 {
 	//fast sigmoid output function
-	return value / (1 + abs(value));
+	//return value / (1 + abs(value));
 	//std::cout << "outputValsssssss: " << value << std::endl;
 
 	//Use tanh for -1 .. 1 range
-	//return tanh(value);
+	return tanh(value);
 }
 
 Neuron::~Neuron()

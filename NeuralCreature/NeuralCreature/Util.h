@@ -7,6 +7,7 @@
 
 //Additional includes
 #include <btBulletDynamicsCommon.h>
+#include <vector>
 
 
 class Util
@@ -14,6 +15,7 @@ class Util
 public:
 	static btVector3 convertToBtVector3(glm::vec3 vector);
 	static double normalize(double x, double min, double max);
-
+	static bool intContains(std::vector<int> * vec, int num);
+	static std::vector<int> Util::getRandomIndices(int sizeOfVec, int numIndices);
 };
 

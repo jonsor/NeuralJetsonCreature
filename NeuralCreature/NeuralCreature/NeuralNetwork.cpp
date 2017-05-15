@@ -49,6 +49,11 @@ NeuralNetwork::NeuralNetwork(const NeuralNetwork & neuralNet)
 	layers = neuralNet.layers;
 }
 
+NeuralNetwork::NeuralNetwork(const std::vector<Layer> networkLayers)
+{
+	layers = networkLayers;
+}
+
 
 void NeuralNetwork::forward(const std::vector<double>& inputVals)
 {
@@ -80,15 +85,28 @@ void NeuralNetwork::getResults(std::vector<double>& resultsVals) const
 
 void NeuralNetwork::mutate(double mutationRate)
 {
-	int numLayersTomutate = rand() % layers.size() + 1;
-	for (int i = 0; i < layers.size(); i++) {
+	//TODO one layer doesnt contain weights, exclude it.
+	//std::cout << layers[0][layers[0].size()-1].getOutputVal() << std::endl;
+	int endPoint = rand() % layers.size()+1;
+	int startPoint = rand() % endPoint;
+	//int startPoint = endPoint -1;
+	for (int i = startPoint; i < endPoint; i++) {
 		Layer& tempLayer = layers[i];
 
-		int numNodesToMutate = rand() % tempLayer.size() + 1;
-		for (int j = 0; j < tempLayer.size(); j++) {
+		int endPoint2 = rand() % tempLayer.size() + 1;
+		int startPoint2 = rand() % endPoint;
+		//int startPoint2 = endPoint2 -1;
+		for (int j = startPoint2; j < endPoint2; j++) {
+			//std::cout << "mutateweight";
 			tempLayer[i].mutate(mutationRate);
 		}
 	}
+	//std::cout << "\n";
+}
+
+std::vector<Layer> NeuralNetwork::getLayers()
+{
+	return layers;
 }
 
 NeuralNetwork::~NeuralNetwork()

@@ -30,7 +30,9 @@ private:
 	double maxHeight = 0;
 	double timeOnGround = 0;
 	double timeOnTwoLegs = 0;
-
+	int numTimesLegsCrossed = 0;
+	bool reachedUpperR = false;
+	bool reachedUpperL = false;
 
 public:
 	//static struct LessThanByFitness
@@ -84,6 +86,8 @@ public:
 
 	double getTimeOnTwoLegs();
 	void setTimeOnTwoLegs(double time);
+	void checkIfLegsCrossed();
+	double getNumTimesCrossed();
 	~Creature();
 };
 

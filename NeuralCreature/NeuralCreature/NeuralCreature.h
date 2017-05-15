@@ -35,7 +35,7 @@ private:
 	RenderManager rm;
 	PhysicsManager pm;
 	//const GLuint WIDTH = 3072, HEIGHT = 1728;	//Sjurs Laptop.
-	const GLuint WIDTH = 1920, HEIGHT = 1080;	//Normal
+	const GLuint WIDTH = 1280, HEIGHT = 720;	//Normal
 	const double PI = 3.141592653589793238463;
 	void incrementTargetAngles();
 
