@@ -10,6 +10,7 @@ private:
 
 	std::vector<Layer> layers; //layers[layerNum][neuronNum]
 public:
+	NeuralNetwork();
 	NeuralNetwork(const std::vector<int> &topology);
 	NeuralNetwork(const NeuralNetwork &neuralNet);
 	NeuralNetwork(const std::vector<Layer> layers);

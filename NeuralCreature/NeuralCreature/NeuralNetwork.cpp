@@ -15,6 +15,10 @@ Sets up a neural network
 @param topology Topology of network, the first and last variable in vector are input and output respectively
 
 */
+NeuralNetwork::NeuralNetwork()
+{
+}
+
 NeuralNetwork::NeuralNetwork(const std::vector<int> &topology)
 {
 	int numLayers = topology.size();
