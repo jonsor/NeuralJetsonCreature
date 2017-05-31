@@ -42,12 +42,16 @@ btDiscreteDynamicsWorld * PhysicsManager::getDynamicsWorld()
 
 void PhysicsManager::addBody(btRigidBody* rigidBody)
 {
+
 	dynamicsWorld->addRigidBody(rigidBody);
+
 }
 
 void PhysicsManager::addBody(btRigidBody* rigidBody, int id, int collidesWith)
 {
+
 	dynamicsWorld->addRigidBody(rigidBody, id, collidesWith);
+
 }
 
 

@@ -8,19 +8,22 @@ class Creature
 {
 
 private:
-	//Cube* chest;
 	Cube* hips;
+	//Cube* rightDummyLimb;
+	//Cube* leftDummyLimb;
 	Cube* rightThigh;
 	Cube* rightShin;
 	Cube* rightFoot;
 	Cube* leftThigh;
 	Cube* leftShin;
 	Cube* leftFoot;
-	const double PI = 3.141592653589793238463;
+	double PI = 3.141592653589793238463;
 	glm::vec3 centerPosition;
 	glm::vec3 m_startPosition;
 
-	NeuralNetwork* m_neuralNetwork;
+	PhysicsManager* m_pm;
+
+	NeuralNetwork m_neuralNetwork;
 	std::vector<double> resultVec;
 	int yo = 0;
 
@@ -35,14 +38,9 @@ private:
 	bool reachedUpperL = false;
 
 public:
-	//static struct LessThanByFitness
-	//{
-	//	bool operator()(const Creature* lhs, const Creature* rhs) const
-	//	{
-	//		return lhs->m_fitness < rhs->m_fitness;
-	//	}
-	//};
-
+	Creature();
+	Creature& operator=(const Creature &c);
+	Creature(const Creature &c);
 	Creature(PhysicsManager* pm, glm::vec3 startPosition);
 	void render(Shader shader);
 	void updatePhysics();
@@ -65,8 +63,8 @@ public:
 	void setAllTargetVelocities(std::vector<double> &resultVec);
 	void setMaxMotorImpulses(double maxMotorImpulse);
 	void createNeuralNetwork(std::vector<int> topology);
-	void setNeuralNetwork(NeuralNetwork* neuralNetwork);
-	NeuralNetwork* getNeuralNetwork();
+	void setNeuralNetwork(NeuralNetwork neuralNetwork);
+	NeuralNetwork getNeuralNetwork();
 	void updateNeuralNetwork();
 	void mutate(double mutationRate);
 	void reset();

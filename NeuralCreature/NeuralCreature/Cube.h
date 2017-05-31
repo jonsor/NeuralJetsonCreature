@@ -42,11 +42,14 @@ private:
 	std::map<std::string, btHingeConstraint*> hinges;
 	std::map<std::string, btPoint2PointConstraint*> joints;
 
-	const double PI = 3.141592653589793238463;
+	double PI = 3.141592653589793238463;
 	btTransform startPos;
 
 
 public:
+	Cube();
+	Cube& operator=(const Cube &c);
+	Cube(const Cube &c);
 	Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass);
 	void render(Shader shader);
 	void setColor(glm::vec3 color);
@@ -59,6 +62,7 @@ public:
 	void updatePhysics();
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name);
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
+
 	void addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name);
 	btHingeConstraint* getHinge(std::string name);
 	btPoint2PointConstraint* getJoint(std::string name);
