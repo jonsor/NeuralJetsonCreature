@@ -172,7 +172,6 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	GLfloat startTime = glfwGetTime();
 	int frameCount = 0;
 	int simTime = 600;
-
 	//START MAIN LOOP:
 	while (!glfwWindowShouldClose(window)) {
 		frameCount++;

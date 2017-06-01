@@ -14,25 +14,16 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 {
 
 	//std::vector<Creature> testVec(m_populationSize);
-	creatures.reserve(m_populationSize); //FOR PERFORMANCE
-	
-
-
+	//creatures.reserve(m_populationSize);
 	for (int i = 0; i < m_populationSize; i++) {
 		
-		//Spider* tempCret = new Spider(pm, glm::vec3(1.0, 2.0, 0.0));
-
-		Creature tempCret = Creature(pm, glm::vec3(1.0, 10.0, 0.0));
+		Spider* tempCret = new Spider(pm, glm::vec3(1.0, 2.0, 0.0));
 		creatures.push_back(tempCret);
-
-
 
 	}
 }
 
-//bool moreThanByFitness(Spider* lhs, Spider* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
-bool moreThanByFitness(Creature lhs, Creature rhs) { return (lhs.getFitness() > rhs.getFitness()); }
-
+bool moreThanByFitness(Spider* lhs, Spider* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
 
 int l = 0;
 void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
@@ -41,17 +32,17 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 
 	for (int i = 0; i < creatures.size(); i++) {
 		double tempFit = evaluateFitness(creatures[i]);
-		creatures[i].setFitness(tempFit);
+		creatures[i]->setFitness(tempFit);
 	}
 
 	std::sort(creatures.begin(), creatures.end(), moreThanByFitness);
 	std::cout << "sorted vector: " << std::endl;
 	for (int i = 0; i < creatures.size(); i++) {
-		std::cout << creatures[i].getFitness() << std::endl;
+		std::cout << creatures[i]->getFitness() << std::endl;
 	}
 
 	int bestFitIndex = 0;
-	double bestFit = creatures[0].getFitness();
+	double bestFit = creatures[0]->getFitness();
 	std::cout << "BestFit: " << bestFit << std::endl;
 
 	pm->reset();
@@ -63,8 +54,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 			j = 0;
 		}
 
-		//Spider* tempCret = new Spider(pm, glm::vec3(i*5.0, 2.0, 0.0));
-		Creature tempCret = Creature(pm, glm::vec3(i*5.0, 10.0, 0.0));
+		Spider* tempCret = new Spider(pm, glm::vec3(1.0, 2.0, 0.0));
 		if (i == 0) {
 			//tempCret->setColor(glm::vec3(0.8f, 0.1f, 0.6f));
 		}else if (i == 1) {
@@ -73,29 +63,22 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 
 		if (i != creatures.size() - 1) {
 			if (i < partSize) {
-				tempCret.setNeuralNetwork(NeuralNetwork(creatures[i].getNeuralNetwork()));
+				tempCret->setNeuralNetwork(NeuralNetwork(creatures[i]->getNeuralNetwork()));
 			}
 			else {
 				if (i - partSize == 1) {
-					tempCret.setNeuralNetwork(*crossOver(&creatures[0].getNeuralNetwork(), &creatures[i + 1 - partSize].getNeuralNetwork()));
+					tempCret->setNeuralNetwork(*crossOver(&creatures[0]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
 				}
 				else {
-					tempCret.setNeuralNetwork(*crossOver(&creatures[i - partSize].getNeuralNetwork(), &creatures[i + 1 - partSize].getNeuralNetwork()));
+					tempCret->setNeuralNetwork(*crossOver(&creatures[i - partSize]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
 				}
 
 			}
 		}
 
-		//Spider* oldCret = creatures[i];
-		//Creature* oldCret = creatures[i];
-		
-		creatures[i].removeConstraints(pm);
-		creatures[i].removeBodies(pm);
-
+		Spider* oldCret = creatures[i];
 		creatures[i] = tempCret;
-		//tempCret = nullptr;
-		
-		
+		tempCret = nullptr;
 		//oldCret->removeConstraints(pm);
 		//oldCret->removeBodies(pm);
 		//delete oldCret;
@@ -131,10 +114,10 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 
 }
 
-double GeneticAlgorithm::getDistanceWalked(Creature creature)
+double GeneticAlgorithm::getDistanceWalked(Spider* creature)
 {
-	glm::vec3 end = creature.getPosition();
-	glm::vec3 start = creature.getStartPosition();
+	glm::vec3 end = creature->getPosition();
+	glm::vec3 start = creature->getStartPosition();
 	double distancex = pow((end.x - start.x),2);
 	double distancey = pow((end.z - start.z),2);
 
@@ -174,7 +157,7 @@ NeuralNetwork * GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwor
 }
 
 
-double GeneticAlgorithm::evaluateFitness(Creature creature)
+double GeneticAlgorithm::evaluateFitness(Spider* creature)
 {
 	double fitnessD = getDistanceWalked(creature);
 	//double fitnessH = creature->getAverageHeight();
@@ -192,13 +175,13 @@ double GeneticAlgorithm::evaluateFitness(Creature creature)
 	//double fitness = creature->getNumTimesCrossed();
 	//std::cout << fitness << "\n";
 	double fitness = fitnessD;
-	creature.setFitness(fitness);
+	creature->setFitness(fitness);
 	return fitness;
 }
 
-void GeneticAlgorithm::mutate(Creature creature, double mutationRate)
+void GeneticAlgorithm::mutate(Spider* creature, double mutationRate)
 {
-	creature.mutate(mutationRate);
+	creature->mutate(mutationRate);
 }
 
 void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
@@ -239,15 +222,15 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 		//	creatures[i]->setTimeOnTwoLegs(creatures[i]->getTimeOnTwoLegs() + 0.1);
 		//}
 		if (render) {
-			creatures[i].render(shader);
+			creatures[i]->render(shader);
 		}
 	}
 }
 
-void GeneticAlgorithm::updateCreature(Shader shader, Creature creature)
+void GeneticAlgorithm::updateCreature(Shader shader, Spider* creature)
 {
-	creature.activate();
-	creature.updatePhysics();
+	creature->activate();
+	creature->updatePhysics();
 	//creature->incrementToAverage();
 	//if (creature->getHeight() < 2.f) {
 	//	creature->setTimeOnGround(creature->getTimeOnGround() + 0.1);

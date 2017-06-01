@@ -10,60 +10,6 @@ Purpose: Creates cubes to use in the world. Also renders, updates physics and cr
 #include "stdafx.h"
 #include "Cube.h"
 
-Cube::Cube()
-{
-}
-
-Cube & Cube::operator=(const Cube & c)
-{
-	if (this != &c) {
-		position = c.position;
-		color = c.color;
-		width = c.width;
-		height = c.height;
-		depth = c.depth;
-		cubeVAO = c.cubeVAO;
-		angle = c.angle;
-		mass = c.mass;
-		axisOfRotation = c.axisOfRotation;
-
-		fallShape = c.fallShape;
-		fallMotionState = c.fallMotionState;
-		collisionShape = c.collisionShape;
-		rigidBody = c.rigidBody;
-
-		hinges = c.hinges; //UNSURE ABOUT THESE TWO. OK?
-		joints = c.joints;
-
-		startPos = c.startPos;
-	}
-
-	return *this;
-}
-
-Cube::Cube(const Cube & c)
-{
-	position = c.position;
-	color = c.color;
-	width = c.width;
-	height = c.height;
-	depth = c.depth;
-	cubeVAO = c.cubeVAO;
-	angle = c.angle;
-	mass = c.mass;
-	axisOfRotation = c.axisOfRotation;
-
-	fallShape = c.fallShape;
-	fallMotionState = c.fallMotionState;
-	collisionShape = c.collisionShape;
-	rigidBody = c.rigidBody;
-
-	hinges = c.hinges; //UNSURE ABOUT THESE TWO. OK?
-	joints = c.joints;
-
-	startPos = c.startPos;
-}
-
 /**
 	Creates a new OpenGL cube and initializes the physics.
 

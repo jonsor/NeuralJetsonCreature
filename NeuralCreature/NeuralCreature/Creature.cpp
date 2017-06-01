@@ -12,78 +12,18 @@ Purpose: Sets up, renders and updates a complete, hardcoded creature.
 #include <chrono>
 
 /**
-	Default empty constructor.
-*/
-Creature::Creature() {
+	Constructor for the creature. Sets up a complete hardcoded 
+	creature (a hip and two legs with thighs, shins and feet).
+	Also links them together with mobile joints (hinges).
+	TODO: Create this class customizable, not hardcoded.
 
-}
-
-/**
-	Equals Operator
-	@param c referance to the new creature object to be copied.
+	@param pm pointer to the PhysicsManager class so that the limbs and joints can be added to the world simulation.
 */
-Creature& Creature::operator=(const Creature& c)
+Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition(startPosition)
 {
-	if (this != &c) {
-		hips = c.hips;
-	
-
-		rightThigh = c.rightThigh;
-		rightShin = c.rightShin;
-		rightFoot = c.rightFoot;
-
-		leftThigh = c.leftThigh;
-		leftShin = c.leftShin;
-		leftFoot = c.leftFoot;
-
-		centerPosition = c.centerPosition;
-		m_startPosition = c.m_startPosition;
-		m_neuralNetwork = c.m_neuralNetwork;
-		m_fitness = c.m_fitness;
-		m_pm = c.m_pm;
-	}
-
-	return *this;
-}
-/**
-	Copy Constructor
-	@param c referance to the new creature.
-*/
-Creature::Creature(const Creature &c)
-{
-	hips = c.hips;
-	rightThigh = c.rightThigh;
-	rightShin = c.rightShin;
-	rightFoot = c.rightFoot;
-
-	leftThigh = c.leftThigh;
-	leftShin = c.leftShin;
-	leftFoot = c.leftFoot;
-
-	centerPosition = c.centerPosition;
-	m_startPosition = c.m_startPosition;
-	m_neuralNetwork = c.m_neuralNetwork;
-	m_fitness = c.m_fitness;
-	m_pm = c.m_pm;
-}
-
-/**
-Constructor for the creature. Sets up a complete hardcoded
-creature (a hip and two legs with thighs, shins and feet).
-Also links them together with mobile joints (hinges).
-TODO: Create this class customizable, not hardcoded.
-
-@param pm pointer to the PhysicsManager class so that the limbs and joints can be added to the world simulation.
-*/
-Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition) : m_startPosition(startPosition)
-{
-	m_pm = pm;
 	//Limbs:
 	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 15);
-	//hips->getRigidBody()->setDamping(0, 10000);
-	//rightDummyLimb = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 1);
-	//leftDummyLimb = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 1);
-
+	//hips->getRigidBody()->setDamping(0, 0);
 	rightThigh = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightShin = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightFoot = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
@@ -99,15 +39,15 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition) : m_startPositio
 	m_startPosition.y -= hips->getHeight() / 2;
 	m_startPosition.z += hips->getDepth() / 2;
 
-	pm->addBody(hips->getRigidBody(), 1, 2);
+	pm->addBody(hips->getRigidBody(),1, 2);
 
-	pm->addBody(rightThigh->getRigidBody(), 1, 2);
-	pm->addBody(rightShin->getRigidBody(), 1, 2);
-	pm->addBody(rightFoot->getRigidBody(), 1, 2);
+	pm->addBody(rightThigh->getRigidBody(),1,2);
+	pm->addBody(rightShin->getRigidBody(),1,2);
+	pm->addBody(rightFoot->getRigidBody(),1,2);
 
-	pm->addBody(leftThigh->getRigidBody(), 1, 2);
-	pm->addBody(leftShin->getRigidBody(), 1, 2);
-	pm->addBody(leftFoot->getRigidBody(), 1, 2);
+	pm->addBody(leftThigh->getRigidBody(),1,2);
+	pm->addBody(leftShin->getRigidBody(),1,2);
+	pm->addBody(leftFoot->getRigidBody(),1,2);
 
 	calcCenterPosition();
 
@@ -118,15 +58,15 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition) : m_startPositio
 	hips->addHinge(glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(-1.0f, 1.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftThigh, noCol, -1.5, 0.7, pm, "leftHip");
 
 	rightThigh->addHinge(glm::vec3(0.0f, -1.9f, 0.0f), glm::vec3(0.0f, 1.9f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightShin, noCol, -0.1, PI * 0.8, pm, "rightKnee");
-	leftThigh->addHinge(glm::vec3(0.0f, -1.9f, 0.0f), glm::vec3(0.0f, 1.9f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftShin, noCol, -0.1, PI / 1.2, pm, "leftKnee");
+	leftThigh->addHinge(glm::vec3(0.0f, -1.9f, 0.0f), glm::vec3(0.0f, 1.9f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftShin, noCol, -0.1, PI/1.2, pm, "leftKnee");
 
-	rightShin->addHinge(glm::vec3(0.0f, -2.1f, 0.0f), glm::vec3(0.0f, 0.0f, 0.7f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightFoot, noCol, -0.5, PI / 4, pm, "rightAnkle");
-	leftShin->addHinge(glm::vec3(0.0f, -2.1f, 0.0f), glm::vec3(0.0f, 0.0f, 0.7f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftFoot, noCol, -0.5, PI / 4, pm, "leftAnkle");
+	rightShin->addHinge(glm::vec3(0.0f, -2.1f, 0.0f), glm::vec3(0.0f, 0.0f, 0.7f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightFoot, noCol, -0.5, PI/4, pm, "rightAnkle");
+	leftShin->addHinge(glm::vec3(0.0f, -2.1f, 0.0f), glm::vec3(0.0f, 0.0f, 0.7f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftFoot, noCol, -0.5, PI/4, pm, "leftAnkle");
 
 	setMaxMotorImpulses(10.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 34, 30, 30, 6 };
+	std::vector<int> topology{ 34, 20, 20, 6 };
 	createNeuralNetwork(topology);
 
 	//Set default fitness
@@ -134,9 +74,9 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition) : m_startPositio
 }
 
 /**
-Calls the render function for each limb of the creature.
+	Calls the render function for each limb of the creature.
 
-@param shader takes the shader for rendering puposes.
+	@param shader takes the shader for rendering puposes.
 */
 void Creature::render(Shader shader)
 {
@@ -153,18 +93,45 @@ void Creature::render(Shader shader)
 }
 
 /**
-Updates the physics for each limb in the creature.
-Also sets dampening and restitution?
+	Updates the physics for each limb in the creature. 
+	Also sets dampening and restitution?
 */
 static void updatePhysicsOfLimb(Cube * cube) {
 	cube->updatePhysics();
 }
 void Creature::updatePhysics()
 {
+	//if (yo >= 2000) {
+	//	std::vector<int> topology{ 28, 20, 6 };
+	//	createNeuralNetwork(topology);
+	//	//std::cout << "NEEEEEEEEEEEEEEEEEEEEW NEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET" << std::endl;
+	//	yo = 0;
+	//}
+	//yo++;
 
 	updateNeuralNetwork();
 
 	calcCenterPosition();
+	//chest->updatePhysics();
+	//hips->getRigidBody()->setDamping(0, 0);
+	//hips->getRigidBody()->setRestitution(0);
+	//std::thread t1(updatePhysicsOfLimb, hips);
+
+	//std::thread t2(updatePhysicsOfLimb, rightThigh);
+	//std::thread t3(updatePhysicsOfLimb, rightShin);
+	//std::thread t4(updatePhysicsOfLimb, rightFoot);
+
+	//std::thread t5(updatePhysicsOfLimb, leftThigh);
+	//std::thread t6(updatePhysicsOfLimb, leftShin);
+	//std::thread t7(updatePhysicsOfLimb, leftFoot);
+
+	//t1.join();
+	//t2.join();
+	//t3.join();
+	//t4.join();
+	//t5.join();
+	//t6.join();
+	//t7.join();
 
 	hips->updatePhysics();
 	rightThigh->updatePhysics();
@@ -209,7 +176,7 @@ double Creature::get2DAngle(Cube* cube1, Cube* cube2) {
 	return 0.0;
 }
 
-void Creature::activate() {
+void Creature::activate(){
 
 	hips->getRigidBody()->activate();
 
@@ -223,19 +190,40 @@ void Creature::activate() {
 
 std::vector<double> Creature::getAllAngles()
 {
+
+	//double rha = (getHips()->getHinge("rightHip")->getHingeAngle() - getHips()->getHinge("rightHip")->getLowerLimit()) / (getHips()->getHinge("rightHip")->getUpperLimit() - getHips()->getHinge("rightHip")->getLowerLimit());
+	//double lha = (getHips()->getHinge("leftHip")->getHingeAngle() - getHips()->getHinge("leftHip")->getLowerLimit()) / (getHips()->getHinge("leftHip")->getUpperLimit() - getHips()->getHinge("leftHip")->getLowerLimit());
+
+	//double rka = (getRightThigh()->getHinge("rightKnee")->getHingeAngle() - getRightThigh()->getHinge("rightKnee")->getLowerLimit()) / (getRightThigh()->getHinge("rightKnee")->getUpperLimit() - getRightThigh()->getHinge("rightKnee")->getLowerLimit());
+	//double lka = (getLeftThigh()->getHinge("leftKnee")->getHingeAngle() - getLeftThigh()->getHinge("leftKnee")->getLowerLimit()) / (getLeftThigh()->getHinge("leftKnee")->getUpperLimit() - getLeftThigh()->getHinge("leftKnee")->getLowerLimit());
+
+	//double raa = (getRightShin()->getHinge("rightAnkle")->getHingeAngle() - getRightShin()->getHinge("rightAnkle")->getLowerLimit()) / (getRightShin()->getHinge("rightAnkle")->getUpperLimit() - getRightShin()->getHinge("rightAnkle")->getLowerLimit());
+	//double laa = (getLeftShin()->getHinge("leftAnkle")->getHingeAngle() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit()) / (getLeftShin()->getHinge("leftAnkle")->getUpperLimit() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit());
+	//
 	double rha = Util::normalize(getHips()->getHinge("rightHip")->getHingeAngle(), getHips()->getHinge("rightHip")->getLowerLimit(), getHips()->getHinge("rightHip")->getUpperLimit());
 	double lha = Util::normalize(getHips()->getHinge("leftHip")->getHingeAngle(), getHips()->getHinge("leftHip")->getLowerLimit(), getHips()->getHinge("leftHip")->getUpperLimit());
-
+	
 	double rka = Util::normalize(getRightThigh()->getHinge("rightKnee")->getHingeAngle(), getRightThigh()->getHinge("rightKnee")->getLowerLimit(), getRightThigh()->getHinge("rightKnee")->getUpperLimit());
 	double lka = Util::normalize(getLeftThigh()->getHinge("leftKnee")->getHingeAngle(), getLeftThigh()->getHinge("leftKnee")->getLowerLimit(), getLeftThigh()->getHinge("leftKnee")->getUpperLimit());
-
+	
 	double raa = Util::normalize(getRightShin()->getHinge("rightAnkle")->getHingeAngle(), getRightShin()->getHinge("rightAnkle")->getLowerLimit(), getRightShin()->getHinge("rightAnkle")->getUpperLimit());
 	double laa = Util::normalize(getLeftShin()->getHinge("leftAnkle")->getHingeAngle(), getLeftShin()->getHinge("leftAnkle")->getLowerLimit(), getLeftShin()->getHinge("leftAnkle")->getUpperLimit());
 
+	
+	//rha = (rha < 0) ? 0.0 : rha;
+	//lha = (lha < 0) ? 0.0 : lha;
+	//rka = (rka < 0) ? 0.0 : rka;
+	//lka = (lka < 0) ? 0.0 : lka;
+	//raa = (raa < 0) ? 0.0 : raa;
+	//laa = (laa < 0) ? 0.0 : laa;
+
+
+	//std::cout << rha << lha << rka << lka << raa << laa << std::endl;
 	return{ rha, lha, rka, lka, raa, laa };
+	//std::cout << "NA: " << rka << " " << lka << "\n";
+	//double time = sin(0.0002 * std::chrono::system_clock::now().time_since_epoch().count());
+	//return{rka, lka};
 }
-
-
 int test2 = 0;
 double tempHigh = 0;
 std::vector<double> Creature::calculateInputs()
@@ -267,9 +255,9 @@ std::vector<double> Creature::calculateInputs()
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getX(), -VEL_MAX, VEL_MAX));
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getY(), -VEL_MAX, VEL_MAX));
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getZ(), -VEL_MAX, VEL_MAX));
-
-
-	//Hinge angles
+	
+		
+		//Hinge angles
 	std::vector<double> inputAngles = getAllAngles();
 
 	//inputs.reserve(inputAngles.size());
@@ -298,8 +286,6 @@ std::vector<double> Creature::calculateInputs()
 	test2++;
 	//time_t t = time(0);
 	//inputs.push_back(cos(t));
-	//inputs.insert(inputs.end(), resultVec.begin(), resultVec.end());
-
 	return inputs;
 }
 
@@ -320,7 +306,7 @@ std::vector<double> Creature::getAllAngularVelocities()
 	angularVelocities.push_back(rightShin->getRigidBody()->getAngularVelocity().getX());
 	angularVelocities.push_back(rightShin->getRigidBody()->getAngularVelocity().getY());
 	angularVelocities.push_back(rightShin->getRigidBody()->getAngularVelocity().getZ());
-
+	
 	//rightFoot
 	angularVelocities.push_back(rightFoot->getRigidBody()->getAngularVelocity().getX());
 	angularVelocities.push_back(rightFoot->getRigidBody()->getAngularVelocity().getY());
@@ -365,7 +351,7 @@ void Creature::setAllTargetVelocities(std::vector<double>& resultVec)
 	getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity((resultVec[0] - mU) * m);
 	getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity((resultVec[1] - mU) * m);
 
-	//	//FEETS
+//	//FEETS
 	getRightShin()->getHinge("rightAnkle")->setMotorTargetVelocity((resultVec[4] - mU) * m);
 	getLeftShin()->getHinge("leftAnkle")->setMotorTargetVelocity((resultVec[5] - mU) * m);
 }
@@ -397,19 +383,19 @@ void Creature::setMaxMotorImpulses(double maxMotorImpulse)
 
 void Creature::createNeuralNetwork(std::vector<int> topology)
 {
-	m_neuralNetwork = NeuralNetwork(topology);
+	m_neuralNetwork = new NeuralNetwork(topology);
 }
 
-void Creature::setNeuralNetwork(NeuralNetwork neuralNetwork)
+void Creature::setNeuralNetwork(NeuralNetwork* neuralNetwork)
 {
 	m_neuralNetwork = neuralNetwork;
 }
 
-NeuralNetwork Creature::getNeuralNetwork()
+NeuralNetwork* Creature::getNeuralNetwork()
 {
+	//Creature* tempNN = new Creature(*m_neuralNetwork);
 	return m_neuralNetwork;
 }
-
 int test = 0;
 void Creature::updateNeuralNetwork()
 {
@@ -421,16 +407,16 @@ void Creature::updateNeuralNetwork()
 	//}
 	test++;
 	//std::cout << inputs.size() << std::endl;
-	m_neuralNetwork.forward(inputs);
+	m_neuralNetwork->forward(inputs);
 
-	m_neuralNetwork.getResults(resultVec);
+	m_neuralNetwork->getResults(resultVec);
 	setAllTargetVelocities(resultVec);
 	//std::cout << resultVec[0] << "  " << resultVec[1]<< std::endl;
 }
 
 void Creature::mutate(double mutationRate)
 {
-	m_neuralNetwork.mutate(mutationRate);
+	m_neuralNetwork->mutate(mutationRate);
 }
 
 void Creature::reset()
@@ -444,7 +430,7 @@ void Creature::reset()
 	leftShin->reset();
 	leftFoot->reset();
 
-	std::vector<double> resetVals = { 0,0,0,0,0,0 };
+	std::vector<double> resetVals = {0,0,0,0,0,0};
 	setAllTargetVelocities(resetVals);
 
 }
@@ -523,12 +509,16 @@ void Creature::removeConstraints(PhysicsManager * pm)
 	hips->removeConstraint(pm);
 
 	rightThigh->removeConstraint(pm);
+
 	rightShin->removeConstraint(pm);
 	rightFoot->removeConstraint(pm);
 
 	leftThigh->removeConstraint(pm);
 	leftShin->removeConstraint(pm);
 	leftFoot->removeConstraint(pm);
+	//delete hips;
+	//std::cout << std::endl;
+
 }
 
 void Creature::setColor(glm::vec3 color)
@@ -590,9 +580,23 @@ void Creature::setTimeOnTwoLegs(double time)
 
 void Creature::checkIfLegsCrossed()
 {
+	//double rha = (getHips()->getHinge("rightHip")->getHingeAngle() - getHips()->getHinge("rightHip")->getLowerLimit()) / (getHips()->getHinge("rightHip")->getUpperLimit() - getHips()->getHinge("rightHip")->getLowerLimit());
+	//double lha = (getHips()->getHinge("leftHip")->getHingeAngle() - getHips()->getHinge("leftHip")->getLowerLimit()) / (getHips()->getHinge("leftHip")->getUpperLimit() - getHips()->getHinge("leftHip")->getLowerLimit());
+
+	//if (notCrossed & rha > lha) {
+	//	numTimesLegsCrossed++;
+	//	notCrossed = false;
+	//	//std::cout << "crossed: " << numTimesLegsCrossed << " " << rha << " " << lha << std::endl;
+	//}
+	//else if (rha  < lha + 0.2) {
+	//	notCrossed = true;
+	//	//std::cout << "crossed: " << numTimesLegsCrossed << " " << rha << " " << lha << std::endl;
+	//}
+
 	double max = getHips()->getHinge("rightHip")->getUpperLimit();
 	double min = getHips()->getHinge("rightHip")->getLowerLimit();
-
+	//std::cout << max << "  " << min << "\n";
+	//std::cout << getHips()->getHinge("rightHip")->getHingeAngle() << "\n";
 	if (!reachedUpperR && getHips()->getHinge("rightHip")->getHingeAngle() >= max - 0.15) {
 		numTimesLegsCrossed++;
 		reachedUpperR = true;
@@ -601,6 +605,7 @@ void Creature::checkIfLegsCrossed()
 		reachedUpperR = false;
 		numTimesLegsCrossed++;
 	}
+
 
 	if (!reachedUpperL && getHips()->getHinge("leftHip")->getHingeAngle() >= max - 0.15) {
 		numTimesLegsCrossed++;
@@ -618,11 +623,6 @@ double Creature::getNumTimesCrossed() {
 }
 Creature::~Creature()
 {
-	
-	removeConstraints(m_pm);
-	removeBodies(m_pm);
-	
-	
 	delete hips;
 	delete rightThigh;
 	delete rightShin;
@@ -630,6 +630,6 @@ Creature::~Creature()
 	delete leftThigh;
 	delete leftShin;
 	delete leftFoot;
-	//delete m_pm;
-	
+
+	delete m_neuralNetwork;
 }
