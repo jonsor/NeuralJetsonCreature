@@ -78,6 +78,11 @@ void Neuron::mutate(double mutationRate)
 	}
 }
 
+std::vector<double> Neuron::getOutputWeights()
+{
+	return outputWeights;
+}
+
 double Neuron::getRandomWeight()
 {
 

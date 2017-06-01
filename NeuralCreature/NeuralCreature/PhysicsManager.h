@@ -17,6 +17,11 @@ private:
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
+
+	btCollisionShape* groundShape;
+	btDefaultMotionState* groundMotionState;
+	btRigidBody* groundRigidBody;
+
 public:
 	void initPhysics();
 	void update(GLfloat deltaTime, int steps);

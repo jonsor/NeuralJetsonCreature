@@ -17,16 +17,19 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 	//creatures.reserve(m_populationSize);
 	for (int i = 0; i < m_populationSize; i++) {
 		
-		Spider* tempCret = new Spider(pm, glm::vec3(1.0, 2.0, 0.0));
+		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 10.0, 0.0));
 		creatures.push_back(tempCret);
 
 	}
+	NetworkWriter nw;
+	nw.writeToFile(creatures);
+	//nw.readFromFile(creatures);
 }
 
-bool moreThanByFitness(Spider* lhs, Spider* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
+bool moreThanByFitness(Creature* lhs, Creature* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
 
 int l = 0;
-void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
+void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MINNELEKASJE HER:
 {
 	l = 0;
 
@@ -45,6 +48,12 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 	double bestFit = creatures[0]->getFitness();
 	std::cout << "BestFit: " << bestFit << std::endl;
 
+	for (int i = 0; i < creatures.size(); i++) {
+		creatures[i]->removeConstraints(pm);
+
+		creatures[i]->removeBodies(pm);
+	}
+
 	pm->reset();
 	double divider = 2.5;
 	int partSize = creatures.size() / divider;
@@ -54,11 +63,12 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 			j = 0;
 		}
 
-		Spider* tempCret = new Spider(pm, glm::vec3(1.0, 2.0, 0.0));
+		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 10.0, 0.0));
+		
 		if (i == 0) {
-			//tempCret->setColor(glm::vec3(0.8f, 0.1f, 0.6f));
+			tempCret->setColor(glm::vec3(0.8f, 0.1f, 0.6f));
 		}else if (i == 1) {
-			//tempCret->setColor(glm::vec3(0.1f, 0.8f, 0.1f));
+			tempCret->setColor(glm::vec3(0.1f, 0.8f, 0.1f));
 		}
 
 		if (i != creatures.size() - 1) {
@@ -67,21 +77,21 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 			}
 			else {
 				if (i - partSize == 1) {
-					tempCret->setNeuralNetwork(*crossOver(&creatures[0]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
+					tempCret->setNeuralNetwork(crossOver(&creatures[0]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
 				}
 				else {
-					tempCret->setNeuralNetwork(*crossOver(&creatures[i - partSize]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
+					tempCret->setNeuralNetwork(crossOver(&creatures[i - partSize]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
 				}
 
 			}
 		}
 
-		Spider* oldCret = creatures[i];
+		Creature* oldCret = creatures[i];
 		creatures[i] = tempCret;
 		tempCret = nullptr;
 		//oldCret->removeConstraints(pm);
 		//oldCret->removeBodies(pm);
-		//delete oldCret;
+		delete oldCret;
 		//creatures[i]->~Creature();
 		//creatures[i]->setNeuralNetwork(fitCret[j]->getNeuralNetwork());
 		if (i >= 1) {
@@ -114,7 +124,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm)
 
 }
 
-double GeneticAlgorithm::getDistanceWalked(Spider* creature)
+double GeneticAlgorithm::getDistanceWalked(Creature* creature)
 {
 	glm::vec3 end = creature->getPosition();
 	glm::vec3 start = creature->getStartPosition();
@@ -127,7 +137,7 @@ double GeneticAlgorithm::getDistanceWalked(Spider* creature)
 	//return glm::distance(end, start);
 }
 
-NeuralNetwork * GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork * crossOverRecipient)
+NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork * crossOverRecipient)
 {
 
 	std::vector<Layer> lA = parent->getLayers();
@@ -151,13 +161,13 @@ NeuralNetwork * GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwor
 		
 	}
 
-	NeuralNetwork* child = new NeuralNetwork(lB);
+	NeuralNetwork child = NeuralNetwork(lB);
 	return child;
 
 }
 
 
-double GeneticAlgorithm::evaluateFitness(Spider* creature)
+double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
 	double fitnessD = getDistanceWalked(creature);
 	//double fitnessH = creature->getAverageHeight();
@@ -179,7 +189,7 @@ double GeneticAlgorithm::evaluateFitness(Spider* creature)
 	return fitness;
 }
 
-void GeneticAlgorithm::mutate(Spider* creature, double mutationRate)
+void GeneticAlgorithm::mutate(Creature* creature, double mutationRate)
 {
 	creature->mutate(mutationRate);
 }
@@ -227,7 +237,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 	}
 }
 
-void GeneticAlgorithm::updateCreature(Shader shader, Spider* creature)
+void GeneticAlgorithm::updateCreature(Shader shader, Creature* creature)
 {
 	creature->activate();
 	creature->updatePhysics();

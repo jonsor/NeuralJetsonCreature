@@ -383,15 +383,15 @@ void Creature::setMaxMotorImpulses(double maxMotorImpulse)
 
 void Creature::createNeuralNetwork(std::vector<int> topology)
 {
-	m_neuralNetwork = new NeuralNetwork(topology);
+	m_neuralNetwork = NeuralNetwork(topology);
 }
 
-void Creature::setNeuralNetwork(NeuralNetwork* neuralNetwork)
+void Creature::setNeuralNetwork(NeuralNetwork neuralNetwork)
 {
 	m_neuralNetwork = neuralNetwork;
 }
 
-NeuralNetwork* Creature::getNeuralNetwork()
+NeuralNetwork Creature::getNeuralNetwork()
 {
 	//Creature* tempNN = new Creature(*m_neuralNetwork);
 	return m_neuralNetwork;
@@ -407,16 +407,16 @@ void Creature::updateNeuralNetwork()
 	//}
 	test++;
 	//std::cout << inputs.size() << std::endl;
-	m_neuralNetwork->forward(inputs);
+	m_neuralNetwork.forward(inputs);
 
-	m_neuralNetwork->getResults(resultVec);
+	m_neuralNetwork.getResults(resultVec);
 	setAllTargetVelocities(resultVec);
 	//std::cout << resultVec[0] << "  " << resultVec[1]<< std::endl;
 }
 
 void Creature::mutate(double mutationRate)
 {
-	m_neuralNetwork->mutate(mutationRate);
+	m_neuralNetwork.mutate(mutationRate);
 }
 
 void Creature::reset()
@@ -621,6 +621,7 @@ void Creature::checkIfLegsCrossed()
 double Creature::getNumTimesCrossed() {
 	return numTimesLegsCrossed;
 }
+
 Creature::~Creature()
 {
 	delete hips;
@@ -630,6 +631,4 @@ Creature::~Creature()
 	delete leftThigh;
 	delete leftShin;
 	delete leftFoot;
-
-	delete m_neuralNetwork;
 }

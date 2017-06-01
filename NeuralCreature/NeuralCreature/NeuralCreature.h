@@ -34,16 +34,14 @@ class NeuralCreature
 private:
 	RenderManager rm;
 	PhysicsManager pm;
-	//const GLuint WIDTH = 3072, HEIGHT = 1728;	//Sjurs Laptop.
-	const GLuint WIDTH = 1280, HEIGHT = 720;	//Normal
+	const GLuint WIDTH = 3072, HEIGHT = 1728;	//Sjurs Laptop.
+	//const GLuint WIDTH = 1280, HEIGHT = 720;	//Normal
 	const double PI = 3.141592653589793238463;
 	void incrementTargetAngles();
 
 public:
 	void init();
 	void renderLoop(GLFWwindow * window, GLint planeVAO, GLint lightVAO, Shader lightingShader);
-	//btRigidBody * createRigidBody(btCollisionShape * collisionShape, btScalar mass, const btTransform & transform) const;
-	//GLint initShaders();
 	void doMovement();
 	void initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO);
 

@@ -74,6 +74,16 @@ void PhysicsManager::removeConstraint(btHingeConstraint* hingeConstraint)
 
 void PhysicsManager::reset()
 {
+	delete dynamicsWorld;
+	delete broadphase;
+	delete collisionConfiguration;
+	delete dispatcher;
+	delete solver;
+
+	delete groundShape;
+	delete groundMotionState;
+	delete groundRigidBody;
+
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -81,11 +91,11 @@ void PhysicsManager::reset()
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 	dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+	groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
 
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
+	groundRigidBody = new btRigidBody(groundRigidBodyCI);
 	groundRigidBody->setFriction(2.0f);
 	addBody(groundRigidBody, 2, 1);
 }
@@ -97,4 +107,8 @@ PhysicsManager::~PhysicsManager()
 	delete collisionConfiguration;
 	delete dispatcher;
 	delete broadphase;
+
+	delete groundShape;
+	delete groundMotionState;
+	delete groundRigidBody;
 }

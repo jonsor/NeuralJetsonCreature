@@ -20,7 +20,7 @@ private:
 	glm::vec3 centerPosition;
 	glm::vec3 m_startPosition;
 
-	NeuralNetwork* m_neuralNetwork;
+	NeuralNetwork m_neuralNetwork;
 	std::vector<double> resultVec;
 	int yo = 0;
 
@@ -65,8 +65,8 @@ public:
 	void setAllTargetVelocities(std::vector<double> &resultVec);
 	void setMaxMotorImpulses(double maxMotorImpulse);
 	void createNeuralNetwork(std::vector<int> topology);
-	void setNeuralNetwork(NeuralNetwork* neuralNetwork);
-	NeuralNetwork* getNeuralNetwork();
+	void setNeuralNetwork(NeuralNetwork neuralNetwork);
+	NeuralNetwork getNeuralNetwork();
 	void updateNeuralNetwork();
 	void mutate(double mutationRate);
 	void reset();

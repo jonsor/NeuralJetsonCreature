@@ -74,25 +74,9 @@ void NeuralCreature::init() {
 	//Init pysics 
 	pm.initPhysics();
 
+	//Light
 	GLuint lightVAO, planeVAO;
 	initPlaneAndLight(& lightVAO, & planeVAO);
-
-	//Populate the world with cubes:
-	
-
-	//Cube cube1(glm::vec3(6.0f, 60.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 10);
-	//Cube cube2(glm::vec3(6.0f, 40.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 2.0f, 0.5f, 1.0f, 20);
-	//Cube cube3(glm::vec3(6.0f, 20.0f, 1.0f), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.0f, 0.5f, 1);
-	//pm.addBody(cube1.getRigidBody());
-	//pm.addBody(cube2.getRigidBody());
-	//pm.addBody(cube3.getRigidBody());
-
-	//cube1.addHinge(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(-5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), & cube2, true, & pm, "h1");
-
-	//std::vector<Cube> cubes;
-	//cubes.push_back(cube1);
-	//cubes.push_back(cube2);
-	//cubes.push_back(cube3);
 
 	//Plane
 	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
@@ -114,8 +98,6 @@ void NeuralCreature::init() {
 	pm.removeBody(groundRigidBody);
 	delete groundRigidBody->getMotionState();
 	delete groundRigidBody;
-
-	//delete fallShape;
 	delete groundShape;
 
 	//Terminate

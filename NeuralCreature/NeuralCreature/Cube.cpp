@@ -237,6 +237,8 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 
 	//Add to hinge array
 	hinges[name] = hingeConstraint;
+	hingeConstraint = nullptr;
+
 
 	
 }
@@ -273,6 +275,7 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 
 	//Add to hinge array
 	hinges[name] = hingeConstraint;
+	hingeConstraint = nullptr;
 
 
 }
@@ -291,6 +294,8 @@ void Cube::addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Cube* cubeB, bool notCol
 	btPoint2PointConstraint* jointConstraint = new btPoint2PointConstraint(*rigidBody, *cubeB->getRigidBody(), Util::convertToBtVector3(pivotA), Util::convertToBtVector3(pivotB));
 	pm->addNewConstraint(jointConstraint, notCollision);
 	joints[name] = jointConstraint;
+	jointConstraint = nullptr;
+
 }
 
 btHingeConstraint* Cube::getHinge(std::string name)
