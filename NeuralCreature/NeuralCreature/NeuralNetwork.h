@@ -18,6 +18,7 @@ public:
 	void getResults(std::vector<double>& resultsVals) const;
 	void mutate(double mutationRate);
 	std::vector<Layer> getLayers();
+	std::vector<Layer>* getL();
 	~NeuralNetwork();
 };
 

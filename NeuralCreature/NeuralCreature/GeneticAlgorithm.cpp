@@ -8,6 +8,7 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double crossoverProb, co
 	generation = 0;
 	timesNoImprovement = 0;
 	lastFitness = 0;
+	timeNotWritten = 0;
 }
 
 void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
@@ -21,17 +22,28 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		creatures.push_back(tempCret);
 
 	}
-	NetworkWriter nw;
-	nw.writeToFile(creatures);
-	//nw.readFromFile(creatures);
+	NetworkWriter::readFromFile(creatures);
+
+	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
+	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
+	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[2] << "\n";
 }
 
 bool moreThanByFitness(Creature* lhs, Creature* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
 
-int l = 0;
+
 void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MINNELEKASJE HER:
 {
 	l = 0;
+
+	timeNotWritten++;
+	if (timeNotWritten >= 5) {
+		NetworkWriter::writeToFile(creatures);
+		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
+		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
+		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[2] << "\n";
+		timeNotWritten = 0;
+	}
 
 	for (int i = 0; i < creatures.size(); i++) {
 		double tempFit = evaluateFitness(creatures[i]);
@@ -118,6 +130,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	} else {
 		m_mutationRate = 0.1;
 	}
+
 
 	std::cout << "Generation: " << generation  << " creatures size: " << creatures.size() << std::endl;
 	generation++;

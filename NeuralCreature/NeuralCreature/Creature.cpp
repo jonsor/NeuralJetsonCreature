@@ -396,6 +396,12 @@ NeuralNetwork Creature::getNeuralNetwork()
 	//Creature* tempNN = new Creature(*m_neuralNetwork);
 	return m_neuralNetwork;
 }
+
+NeuralNetwork* Creature::getNN()
+{
+	//Creature* tempNN = new Creature(*m_neuralNetwork);
+	return &m_neuralNetwork;
+}
 int test = 0;
 void Creature::updateNeuralNetwork()
 {

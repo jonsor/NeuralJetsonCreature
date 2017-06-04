@@ -17,6 +17,8 @@ private:
 	std::vector<Creature*> creatures;
 	int generation;
 	double lastFitness;
+	int l = 0;
+	int timeNotWritten;
 public:
 	GeneticAlgorithm(double mutationRate, double crossoverProb, int populationSize, int numElites, PhysicsManager * pm);
 	void initCreatures(PhysicsManager * pm);

@@ -113,6 +113,11 @@ std::vector<Layer> NeuralNetwork::getLayers()
 	return layers;
 }
 
+std::vector<Layer>* NeuralNetwork::getL()
+{
+	return &layers;
+}
+
 NeuralNetwork::~NeuralNetwork()
 {
 }

@@ -8,6 +8,7 @@ Neuron::Neuron(int numOutputs, int neuronIndex) : neuronIndex(neuronIndex)
 	//Set random weights on neuron outputs
 	for (int con = 0; con < numOutputs; ++con) {
 		outputWeights.push_back(Neuron::getRandomWeight());
+		//outputWeights.push_back(0.0);
 	}
 }
 
@@ -81,6 +82,11 @@ void Neuron::mutate(double mutationRate)
 std::vector<double> Neuron::getOutputWeights()
 {
 	return outputWeights;
+}
+
+void Neuron::setOutputWeights(std::vector<double> weights)
+{
+	outputWeights = weights;
 }
 
 double Neuron::getRandomWeight()

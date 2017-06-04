@@ -8,8 +8,8 @@ class NetworkWriter
 {
 public:
 	NetworkWriter();
-	void writeToFile(std::vector<Creature*> creatures);
-	void readFromFile(std::vector<Creature*> creatures);
+	static void writeToFile(std::vector<Creature*> creatures);
+	static void readFromFile(std::vector<Creature*> creatures);
 	~NetworkWriter();
 };
 
