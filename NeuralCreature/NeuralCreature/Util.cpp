@@ -33,6 +33,11 @@ double Util::normalize(double x, double min, double max)
 	return result;
 }
 
+double Util::normalizeSigned(double x, double min, double max)
+{
+	return (x - min) / (max - min);
+}
+
 bool Util::intContains(std::vector<int>* vec, int num)
 {
 	bool contains = false;

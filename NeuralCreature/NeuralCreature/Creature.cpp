@@ -22,7 +22,7 @@ Purpose: Sets up, renders and updates a complete, hardcoded creature.
 Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition(startPosition)
 {
 	//Limbs:
-	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.0f, 0.4f, 15);
+	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.8f, 0.4f, 25);
 	//hips->getRigidBody()->setDamping(0, 0);
 	rightThigh = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightShin = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
@@ -66,7 +66,7 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 	setMaxMotorImpulses(10.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 34, 20, 20, 6 };
+	std::vector<int> topology{ 34, 34, 20, 6 };
 	createNeuralNetwork(topology);
 
 	//Set default fitness
@@ -230,7 +230,7 @@ std::vector<double> Creature::calculateInputs()
 {
 	std::vector<double> inputs;
 	//Height
-	double height = Util::normalize(hips->getPosition().y, 0, 12);
+	double height = Util::normalize(hips->getPosition().y, 0, 10);
 	inputs.push_back(height);
 
 	//target velocities
@@ -263,27 +263,27 @@ std::vector<double> Creature::calculateInputs()
 	//inputs.reserve(inputAngles.size());
 	inputs.insert(inputs.end(), inputAngles.begin(), inputAngles.end());
 	//Foot heights
-	int numNeg = 0;
-	int numPos = 0;
-	//if (test2 < 1000) {
-	for (int i = 0; i < inputs.size(); i++) {
+	//int numNeg = 0;
+	//int numPos = 0;
+	////if (test2 < 1000) {
+	//for (int i = 0; i < inputs.size(); i++) {
 
-		double testCheck = inputs[i];
+	//	double testCheck = inputs[i];
 
-		//if (testCheck > tempHigh) {
-		//	tempHigh = testCheck;
-		//	std::cout << tempHigh << "\n";
-		//}
-		if (testCheck < 0) {
-			numNeg++;
-		}
-		else {
-			numPos++;
-		}
-	}
-	//std::cout << "neg: " << numNeg << " pos: " << numPos << "\n";
+	//	//if (testCheck > tempHigh) {
+	//	//	tempHigh = testCheck;
+	//	//	std::cout << tempHigh << "\n";
+	//	//}
+	//	if (testCheck < 0) {
+	//		numNeg++;
+	//	}
+	//	else {
+	//		numPos++;
+	//	}
 	//}
-	test2++;
+	////std::cout << "neg: " << numNeg << " pos: " << numPos << "\n";
+	////}
+	//test2++;
 	//time_t t = time(0);
 	//inputs.push_back(cos(t));
 	return inputs;
@@ -333,7 +333,7 @@ std::vector<double> Creature::getAllAngularVelocities()
 void Creature::setAllTargetVelocities(std::vector<double>& resultVec)
 {
 	//CHANGE MAX VELOCITY NORMALIZATION IF YOU CHANGE m
-	double m = 4;
+	double m = 5;
 	double mU = 0.0;
 	//for (int i = 0; i < 2; i++) {
 	//	std::cout << resultVec[i] << " | ";

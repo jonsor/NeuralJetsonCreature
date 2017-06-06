@@ -19,6 +19,7 @@ private:
 	double lastFitness;
 	int l = 0;
 	int timeNotWritten;
+	bool stillStanding;
 public:
 	GeneticAlgorithm(double mutationRate, double crossoverProb, int populationSize, int numElites, PhysicsManager * pm);
 	void initCreatures(PhysicsManager * pm);
@@ -27,6 +28,7 @@ public:
 	void mutate(Creature* creature, double mutationRate);
 	void updateCreatures(Shader shader, bool render);
 	static void updateCreature(Shader shader, Creature* creature);
+	bool isStillStanding();
 	void createNewGeneration(PhysicsManager * pm);
 	double getDistanceWalked(Creature* creature);
 	~GeneticAlgorithm();

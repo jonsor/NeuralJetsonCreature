@@ -9,6 +9,7 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double crossoverProb, co
 	timesNoImprovement = 0;
 	lastFitness = 0;
 	timeNotWritten = 0;
+	stillStanding = false;
 }
 
 void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
@@ -22,7 +23,7 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		creatures.push_back(tempCret);
 
 	}
-	NetworkWriter::readFromFile(creatures);
+	//NetworkWriter::readFromFile(creatures);
 
 	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
 	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
@@ -124,11 +125,11 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	lastFitness = bestFit;
 	if(timesNoImprovement >= 3) {
 		if (m_mutationRate > 0.001) {
-			//m_mutationRate *= 0.9;
+			m_mutationRate *= 0.9;
 		}
 		std::cout << "mutation rate: " << m_mutationRate << "\n";
 	} else {
-		m_mutationRate = 0.1;
+		m_mutationRate = 0.03;
 	}
 
 
@@ -183,11 +184,11 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
 	double fitnessD = getDistanceWalked(creature);
-	//double fitnessH = creature->getAverageHeight();
+	double fitnessH = creature->getAverageHeight();
 	////double fitnessH = creature->getMaxHeight();
 	////std::cout << creature->getTimeOnGround() << "\n";
-	//double groundTimeN = Util::normalize(creature->getTimeOnGround(), 0, 600);
-	//double standTimeN = Util::normalize(creature->getTimeOnTwoLegs(), 0, 600);
+	double groundTimeN = Util::normalizeSigned(creature->getTimeOnGround(), 0, 100);
+	double standTimeN = Util::normalizeSigned(creature->getTimeOnTwoLegs(), 0, 100);
 	//double groundModifier = 0;
 	//if (creature->getTimeOnGround() >= 1) {
 	//	groundModifier = 10;
@@ -197,7 +198,8 @@ double GeneticAlgorithm::evaluateFitness(Creature* creature)
 	//double fitness = fitnessD * 2 - creature->getTimeOnGround() - creature->getTimeOnTwoLegs();
 	//double fitness = creature->getNumTimesCrossed();
 	//std::cout << fitness << "\n";
-	double fitness = fitnessD;
+	//std::cout << "ground/stand: " << groundTimeN << "  " <<standTimeN << "\n";
+	double fitness = fitnessD + fitnessH;
 	creature->setFitness(fitness);
 	return fitness;
 }
@@ -215,7 +217,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 		l = 0;
 	}
 
-	const int NUM_THREADS = 10;
+	const int NUM_THREADS = 20;
 	std::thread threads[NUM_THREADS];
 	int rc;
 	int i;
@@ -227,7 +229,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 	for (int i = 0; i < NUM_THREADS; i++) {
 		threads[i].join();
 	}
-
+	stillStanding = false;
 	//creatures[0]->checkIfLegsCrossed();
 	for (int i = 0; i < creatures.size(); i++) {
 
@@ -244,8 +246,16 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 		//if (creatures[i]->getHeight() < 5.5f) {
 		//	creatures[i]->setTimeOnTwoLegs(creatures[i]->getTimeOnTwoLegs() + 0.1);
 		//}
+
+		if (creatures[i]->getHeight() > 3.6f) {
+			stillStanding = true;
+		}
+
 		if (render) {
 			creatures[i]->render(shader);
+		}
+		else {
+			creatures[0]->render(shader);
 		}
 	}
 }
@@ -254,14 +264,18 @@ void GeneticAlgorithm::updateCreature(Shader shader, Creature* creature)
 {
 	creature->activate();
 	creature->updatePhysics();
-	//creature->incrementToAverage();
-	//if (creature->getHeight() < 2.f) {
-	//	creature->setTimeOnGround(creature->getTimeOnGround() + 0.1);
-	//}
-	//if (creature->getHeight() < 5.5f) {
-	//	creature->setTimeOnTwoLegs(creature->getTimeOnTwoLegs() + 0.1);
-	//}
-	//creature->checkIfLegsCrossed();
+	creature->incrementToAverage();
+	if (creature->getHeight() < 2.f) {
+		creature->setTimeOnGround(creature->getTimeOnGround() + 0.1);
+	}
+	if (creature->getHeight() < 5.5f) {
+		creature->setTimeOnTwoLegs(creature->getTimeOnTwoLegs() + 0.1);
+	}
+	creature->checkIfLegsCrossed();
+}
+
+bool GeneticAlgorithm::isStillStanding() {
+	return stillStanding;
 }
 
 GeneticAlgorithm::~GeneticAlgorithm()
