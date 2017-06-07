@@ -21,7 +21,7 @@ void NetworkWriter::writeToFile(std::vector<Creature*> creatures)
 			for (int j = 0; j < tempLayer.size(); j++) {
 				std::vector<double> outputWeights = tempLayer[j].getOutputWeights();
 				for (int k = 0; k < outputWeights.size(); k++) {
-					myfile << outputWeights[k] << " ";
+					myfile << std::setprecision(20) << outputWeights[k] << " ";
 				}
 				myfile << "\n";
 			}
