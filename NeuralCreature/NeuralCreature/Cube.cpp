@@ -94,7 +94,8 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 	Cube::setUpPhysicsCube();
 
 	rigidBody->getMotionState()->getWorldTransform(startPos);
-
+	groundCollision = false;
+	stepsSinceLastCollision = 0;
 }
 
 /**
@@ -108,7 +109,6 @@ void Cube::render(Shader shader)
 	glBindVertexArray(cubeVAO);
 	GLint objectColorLoc = glGetUniformLocation(shader.program, "objectColor");
 	glUniform3f(objectColorLoc, color.x, color.y, color.z);
-
 	glm::mat4 model;
 	model = glm::translate(model, position);
 	//Hacky roation fix - doesnt render if axis is equal to zero
@@ -119,6 +119,7 @@ void Cube::render(Shader shader)
 	}
 	model = glm::rotate(model, angle, axisOfRotation);
 	GLint modelLoc = glGetUniformLocation(shader.program, "model"); 
+
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); 
 	//GLfloat angle = 20.0f * i;
 	//model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
@@ -198,7 +199,6 @@ void Cube::updatePhysics()
 	float y = trans.getRotation().getY();
 	float z = trans.getRotation().getZ();
 	float angle = trans.getRotation().getAngle();
-
 	setRotation(angle, glm::vec3(x, y, z));
 }
 
@@ -333,6 +333,29 @@ GLfloat Cube::getHeight()
 GLfloat Cube::getDepth()
 {
 	return depth;
+	
+}
+
+void Cube::setCollidingWithGround(bool colliding) {
+	if (colliding) {
+		stepsSinceLastCollision = 0;
+		groundCollision = true;
+	}
+	else if (stepsSinceLastCollision == 20) {
+		groundCollision = false;
+	}
+}
+
+bool Cube::isCollidingWithGround() {
+	return groundCollision;
+}
+
+void Cube::incrementStepsSinceLastCollision() {
+	stepsSinceLastCollision++;
+}
+
+int Cube::getStepsSinceLastCollision() {
+	return stepsSinceLastCollision;
 }
 
 void Cube::remove(PhysicsManager * pm)

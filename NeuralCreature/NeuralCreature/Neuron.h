@@ -21,7 +21,7 @@ public:
 	void setOutputVal(double value);
 	double getOutputVal() const;
 	void forward(Layer& prevLayer);
-	void mutate(double mutationRate);
+	void mutate(double mutationRate, double mutationChance);
 	std::vector<double> getOutputWeights();
 	void setOutputWeights(std::vector<double> weights);
 	~Neuron();

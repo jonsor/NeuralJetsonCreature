@@ -40,6 +40,12 @@ void NetworkWriter::readFromFile(std::vector<Creature*> creatures)
 	{
 		std::string line;
 		std::getline(myfile, line);
+		double numCreatures = std::stod(line);
+
+		if (numCreatures != creatures.size()){
+			std::cout << "Not the same size of creatures, net: " << numCreatures << " creature list: " << creatures.size() << "\n";
+			return;
+		}
 
 		//std::istringstream buf(line);
 		//std::istream_iterator<std::string> beg(buf), end;
@@ -66,7 +72,7 @@ void NetworkWriter::readFromFile(std::vector<Creature*> creatures)
 						outputWeights[k] = weight;
 					}
 					tempLayer[j].setOutputWeights(outputWeights);
-					//HVA FAEN!!! HVORFOR FUNKER IKKE DETTE
+					//HVA FN!!! HVORFOR FUNKER IKKE DETTE
 					creatures[i]->getNN()->getL()->at(l).at(j).setOutputWeights(outputWeights);
 					//std::cout << creatures[i]->getNeuralNetwork().getLayers()[l][j].getOutputWeights()[0] << " ";
 					//std::getline(myfile, line);

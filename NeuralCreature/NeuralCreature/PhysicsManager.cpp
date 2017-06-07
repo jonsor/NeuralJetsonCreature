@@ -72,6 +72,12 @@ void PhysicsManager::removeConstraint(btHingeConstraint* hingeConstraint)
 	dynamicsWorld->removeConstraint(hingeConstraint);
 }
 
+btRigidBody* PhysicsManager::getGroundShape()
+{
+	return groundRigidBody;
+}
+
+
 void PhysicsManager::reset()
 {
 	delete dynamicsWorld;

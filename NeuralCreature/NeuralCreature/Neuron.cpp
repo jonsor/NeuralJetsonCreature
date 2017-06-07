@@ -44,37 +44,44 @@ void Neuron::forward(Layer & prevLayer)
 
 }
 
-void Neuron::mutate(double mutationRate)
+void Neuron::mutate(double mutationRate, double mutationChance)
 {
-	bool contains = false;
-	int numWeightsToMutate = 1;
-	std::vector<int> indiciesToMutate;
-	if (outputWeights.size() != 0) {
-		numWeightsToMutate = rand() % outputWeights.size()/2 + 1;
-		//std::cout << numWeightsToMutate << "\n";
-		for (int i = 0; i < numWeightsToMutate; i++) {
-			int tempIndex = rand() % outputWeights.size();
-			contains = false;
-			for (int j = 0; j < indiciesToMutate.size(); j++) {
-				if (tempIndex == indiciesToMutate[j]) {
-					contains = true;
-					i--;
-					break;
-				}
-			}
-			if(!contains) indiciesToMutate.push_back(tempIndex);
-		}
-	}
+	//bool contains = false;
+	//int numWeightsToMutate = 1;
+	//std::vector<int> indiciesToMutate;
+	//if (outputWeights.size() != 0) {
+	//	numWeightsToMutate = rand() % outputWeights.size()/2 + 1;
+	//	//std::cout << numWeightsToMutate << "\n";
+	//	for (int i = 0; i < numWeightsToMutate; i++) {
+	//		int tempIndex = rand() % outputWeights.size();
+	//		contains = false;
+	//		for (int j = 0; j < indiciesToMutate.size(); j++) {
+	//			if (tempIndex == indiciesToMutate[j]) {
+	//				contains = true;
+	//				i--;
+	//				break;
+	//			}
+	//		}
+	//		if(!contains) indiciesToMutate.push_back(tempIndex);
+	//	}
+	//}
 
-	double mutateChance = ((double)rand() / (RAND_MAX));
-	//std::cout << "size " << indiciesToMutate.size() << std::endl;
-	for (int i = 0; i < indiciesToMutate.size(); i++) {
-		//std::cout << "mutation amout: " << getRandomWeight() * mutationRate << "\n";
-		if (mutateChance <= 0.2) {
-			outputWeights[indiciesToMutate[i]] = getRandomWeight();
-		}
-		else {
-			outputWeights[indiciesToMutate[i]] += getRandomWeight() * mutationRate;
+	//double mutateChance = ((double)rand() / (RAND_MAX));
+	////std::cout << "size: " << outputWeights.size() << std::endl;
+	//for (int i = 0; i < indiciesToMutate.size(); i++) {
+	//	//if (mutateChance <= 0.2) {
+	//	//	outputWeights[indiciesToMutate[i]] = getRandomWeight();
+	//	//}
+	//	//else {
+	//		outputWeights[indiciesToMutate[i]] += getRandomWeight() * mutationRate;
+	//	//}
+	//}
+	int ind = 0;
+	for (int i = 0; i < outputWeights.size(); i++) {
+		double mutRand = ((double)rand() / (RAND_MAX));
+		if (mutRand <= mutationChance) {
+			ind++;
+			outputWeights[i] += getRandomWeight() * mutationRate;
 		}
 	}
 }

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "GeneticAlgorithm.h"
 
-GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double crossoverProb, const int populationSize, int numElites, PhysicsManager* pm)
-	: m_mutationRate(mutationRate), m_crossoverProb(crossoverProb), m_populationSize(populationSize), m_numElites(numElites)
+GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, double crossoverProb, const int populationSize, int numElites, PhysicsManager* pm)
+	: m_mutationRate(mutationRate), m_crossoverProb(crossoverProb), m_populationSize(populationSize), m_numElites(numElites), m_mutationChance(mutationChance), initalMutationRate(mutationRate)
 {
 	initCreatures(pm);
 	generation = 0;
@@ -70,11 +70,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	pm->reset();
 	double divider = 2.5;
 	int partSize = creatures.size() / divider;
-	int j = 0;
 	for (int i = 0; i < creatures.size(); i++) {
-		if (j == creatures.size()/ divider) {
-			j = 0;
-		}
 
 		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 10.0, 0.0));
 		
@@ -84,11 +80,10 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			tempCret->setColor(glm::vec3(0.1f, 0.8f, 0.1f));
 		}
 
-		if (i != creatures.size() - 1) {
+		//if (i != creatures.size() - 1) {
 			if (i < partSize) {
 				tempCret->setNeuralNetwork(NeuralNetwork(creatures[i]->getNeuralNetwork()));
-			}
-			else {
+			} else {
 				if (i - partSize == 1) {
 					tempCret->setNeuralNetwork(crossOver(&creatures[0]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
 				}
@@ -97,7 +92,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 				}
 
 			}
-		}
+		//}
 
 		Creature* oldCret = creatures[i];
 		creatures[i] = tempCret;
@@ -109,10 +104,9 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 		//creatures[i]->setNeuralNetwork(fitCret[j]->getNeuralNetwork());
 		if (i >= 1) {
 			//double muRate = rand() % 10;
-			double muRate = ((double)rand() / (RAND_MAX));
-			mutate(creatures[i], m_mutationRate * muRate);
+			//double muRate = ((double)rand() / (RAND_MAX));
+			mutate(creatures[i], m_mutationRate, m_mutationChance);
 		}
-		j++;
 	}
 
 
@@ -129,7 +123,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 		}
 		std::cout << "mutation rate: " << m_mutationRate << "\n";
 	} else {
-		m_mutationRate = 0.03;
+		m_mutationRate = initalMutationRate;
 	}
 
 
@@ -159,23 +153,49 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 	//lA[1][1].setOutputVal(59);
 	//std::cout << "lA: " << lA[1][1].getOutputVal() << "\n";
 	//std::cout << "lA: " << parent->getLayers()[1][1].getOutputVal() << "\n";
-	int numLayersToCross = lA.size() /2;
-	std::vector<int> crossOverLayerIndices = Util::getRandomIndices(lA.size(), numLayersToCross);
 
-	for (int i = 0; i < crossOverLayerIndices.size(); i++) {
-		int lI = crossOverLayerIndices[i];
-		int layerSize = lA[lI].size();
-		int numNeuronsToCross = layerSize / 2;
-		std::vector<int> crossOverNeuronIndices = Util::getRandomIndices(layerSize, numNeuronsToCross);
+	double prob = ((double)rand() / (RAND_MAX));
+	NeuralNetwork child;
+	if (prob > m_crossoverProb) {
+		//int numLayersToCross = lA.size() / 2;
+		//std::vector<int> crossOverLayerIndices = Util::getRandomIndices(lA.size(), numLayersToCross);
 
-		for (int j = 0; j < crossOverNeuronIndices.size(); j++) {
-			int nI = crossOverNeuronIndices[j];
-			lB[lI][nI] = lA[lI][nI];
+		//for (int i = 0; i < crossOverLayerIndices.size(); i++) {
+		//	int lI = crossOverLayerIndices[i];
+		//	int layerSize = lA[lI].size();
+		//	int numNeuronsToCross = layerSize / 2;
+		//	std::vector<int> crossOverNeuronIndices = Util::getRandomIndices(layerSize, numNeuronsToCross);
+
+		//	for (int j = 0; j < crossOverNeuronIndices.size(); j++) {
+		//		int nI = crossOverNeuronIndices[j];
+		//		lB[lI][nI] = lA[lI][nI];
+		//	}
+
+		//}
+
+
+		for (int i = 0; i < lA.size(); i++) {
+			for (int j = 0; j < lA[i].size(); j++) {
+				if ((double)rand() > (RAND_MAX)) {
+					lB[i][j] = lA[i][j];
+				}
+			}
 		}
-		
+
+
+
+		child = NeuralNetwork(lB);
+	}
+	else {
+		double parentProb = ((double)rand() / (RAND_MAX));
+		if (parentProb >= 0.5) {
+			child = NeuralNetwork(lA);
+		}
+		else {
+			child = NeuralNetwork(lB);
+		}
 	}
 
-	NeuralNetwork child = NeuralNetwork(lB);
 	return child;
 
 }
@@ -185,7 +205,7 @@ double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
 	double fitnessD = getDistanceWalked(creature);
 	double fitnessH = creature->getAverageHeight();
-	////double fitnessH = creature->getMaxHeight();
+	double fitnessMH = creature->getMaxHeight();
 	////std::cout << creature->getTimeOnGround() << "\n";
 	double groundTimeN = Util::normalizeSigned(creature->getTimeOnGround(), 0, 100);
 	double standTimeN = Util::normalizeSigned(creature->getTimeOnTwoLegs(), 0, 100);
@@ -204,20 +224,21 @@ double GeneticAlgorithm::evaluateFitness(Creature* creature)
 	return fitness;
 }
 
-void GeneticAlgorithm::mutate(Creature* creature, double mutationRate)
+void GeneticAlgorithm::mutate(Creature* creature, double mutationRate, double mutationChance)
 {
-	creature->mutate(mutationRate);
+	creature->mutate(mutationRate, mutationChance);
 }
 
-void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
+void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManager* pm)
 {
+
 	l++;
 	if (l == 250) {
 		//std::cout << creatures[0]->getPosition().y << std::endl;
 		l = 0;
 	}
 
-	const int NUM_THREADS = 20;
+	const int NUM_THREADS = 10;
 	std::thread threads[NUM_THREADS];
 	int rc;
 	int i;
@@ -231,6 +252,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 	}
 	stillStanding = false;
 	//creatures[0]->checkIfLegsCrossed();
+
 	for (int i = 0; i < creatures.size(); i++) {
 
 		//creatures.at(i)->activate();
@@ -246,6 +268,38 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render)
 		//if (creatures[i]->getHeight() < 5.5f) {
 		//	creatures[i]->setTimeOnTwoLegs(creatures[i]->getTimeOnTwoLegs() + 0.1);
 		//}
+		creatures[i]->getRightFoot()->setCollidingWithGround(false);
+		creatures[i]->getLeftFoot()->setCollidingWithGround(false);
+		int numManifolds = pm->getDynamicsWorld()->getDispatcher()->getNumManifolds();
+		for (int l = 0; l < numManifolds; l++)
+		{
+			btPersistentManifold* contactManifold = pm->getDynamicsWorld()->getDispatcher()->getManifoldByIndexInternal(l);
+			const btCollisionObject* obA = contactManifold->getBody0();
+			const btCollisionObject* obB = contactManifold->getBody1();
+
+			int numContacts = contactManifold->getNumContacts();
+			for (int j = 0; j < numContacts; j++)
+			{
+				btManifoldPoint& pt = contactManifold->getContactPoint(j);
+				if (pt.getDistance() < 0.f)
+				{
+					const btVector3& ptA = pt.getPositionWorldOnA();
+					const btVector3& ptB = pt.getPositionWorldOnB();
+					const btVector3& normalOnB = pt.m_normalWorldOnB;
+
+					if ((btRigidBody*)obA == creatures[i]->getRightFoot()->getRigidBody() || (btRigidBody*)obB == creatures[i]->getRightFoot()->getRigidBody())
+					{
+						creatures[i]->getRightFoot()->setCollidingWithGround(true);
+					}
+
+					if ((btRigidBody*)obA == creatures[i]->getLeftFoot()->getRigidBody() || (btRigidBody*)obB == creatures[i]->getLeftFoot()->getRigidBody())
+					{
+						creatures[i]->getLeftFoot()->setCollidingWithGround(true);
+					}
+
+				}
+			}
+		}
 
 		if (creatures[i]->getHeight() > 3.6f) {
 			stillStanding = true;
@@ -268,10 +322,11 @@ void GeneticAlgorithm::updateCreature(Shader shader, Creature* creature)
 	if (creature->getHeight() < 2.f) {
 		creature->setTimeOnGround(creature->getTimeOnGround() + 0.1);
 	}
-	if (creature->getHeight() < 5.5f) {
+	if (creature->getHeight() < 4.5f) {
 		creature->setTimeOnTwoLegs(creature->getTimeOnTwoLegs() + 0.1);
 	}
 	creature->checkIfLegsCrossed();
+	creature->updateMaxHeight(creature->getHeight());
 }
 
 bool GeneticAlgorithm::isStillStanding() {

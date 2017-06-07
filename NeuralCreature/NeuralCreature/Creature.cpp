@@ -22,7 +22,7 @@ Purpose: Sets up, renders and updates a complete, hardcoded creature.
 Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition(startPosition)
 {
 	//Limbs:
-	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.8f, 0.4f, 25);
+	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.5f, 0.4f, 20);
 	//hips->getRigidBody()->setDamping(0, 0);
 	rightThigh = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightShin = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
@@ -66,7 +66,7 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 	setMaxMotorImpulses(10.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 34, 34, 20, 6 };
+	std::vector<int> topology{ 42, 36, 20, 6 };
 	createNeuralNetwork(topology);
 
 	//Set default fitness
@@ -147,10 +147,15 @@ void Creature::updatePhysics()
 
 void Creature::calcCenterPosition()
 {
-	centerPosition = hips->getPosition();
-	centerPosition.y -= hips->getHeight() / 2;
-	centerPosition.x += hips->getWidth() / 2;
-	centerPosition.z += hips->getDepth() / 2;
+	//centerPosition = hips->getPosition();
+	//centerPosition.y -= hips->getHeight() / 2;
+	//centerPosition.x += hips->getWidth() / 2;
+	//centerPosition.z += hips->getDepth() / 2;
+
+	btVector3 centerMass = hips->getRigidBody()->getCenterOfMassPosition();
+	centerPosition = glm::vec3(centerMass.getX(), centerMass.getY(), centerMass.getZ());
+	//std::cout << "centerMass: x: " << centerMass.getX() << " y: " << centerMass.getY() << " z: " << centerMass.getZ() << "\n";
+	//std::cout << "centerPosition: x: " << centerPosition.x << " y: " << centerPosition.y << " z: " << centerPosition.z << "\n";
 	//std::cout << centerPosition.z << std::endl;
 }
 
@@ -226,6 +231,10 @@ std::vector<double> Creature::getAllAngles()
 }
 int test2 = 0;
 double tempHigh = 0;
+
+double maxX = 10;
+double maxY = 10;
+double maxZ = 10;
 std::vector<double> Creature::calculateInputs()
 {
 	std::vector<double> inputs;
@@ -262,30 +271,55 @@ std::vector<double> Creature::calculateInputs()
 
 	//inputs.reserve(inputAngles.size());
 	inputs.insert(inputs.end(), inputAngles.begin(), inputAngles.end());
+
 	//Foot heights
-	//int numNeg = 0;
-	//int numPos = 0;
-	////if (test2 < 1000) {
-	//for (int i = 0; i < inputs.size(); i++) {
 
-	//	double testCheck = inputs[i];
+	getRightFoot()->incrementStepsSinceLastCollision();
+	getLeftFoot()->incrementStepsSinceLastCollision();
 
-	//	//if (testCheck > tempHigh) {
-	//	//	tempHigh = testCheck;
-	//	//	std::cout << tempHigh << "\n";
-	//	//}
-	//	if (testCheck < 0) {
-	//		numNeg++;
-	//	}
-	//	else {
-	//		numPos++;
-	//	}
-	//}
-	////std::cout << "neg: " << numNeg << " pos: " << numPos << "\n";
-	////}
-	//test2++;
-	//time_t t = time(0);
-	//inputs.push_back(cos(t));
+
+	double rightFootOnGround = (getRightFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
+	double leftFootOnGround = (getLeftFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
+	//std::cout << "rightCollides: " << rightFootOnGround << "\n";
+	//std::cout << "rightCollides: " << getRightFoot()->getRigidBody()->getCollisionFlags() << "\n";
+	//getRightFoot()->getRigidBody()->coll
+	if (getRightFoot()->isCollidingWithGround()) {
+		getRightFoot()->setColor(glm::vec3(0.1, 1.0, 0.1));
+	} else {
+		getRightFoot()->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
+	}
+
+	if (getLeftFoot()->isCollidingWithGround()) {
+		getLeftFoot()->setColor(glm::vec3(0.1, 1.0, 0.1));
+	} else {
+		getLeftFoot()->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
+	}
+	inputs.push_back(rightFootOnGround);
+	inputs.push_back(leftFootOnGround);
+
+	if (getRelativePosition(getLeftFoot()).x < maxX) {
+		maxX = getRelativePosition(getLeftFoot()).x;
+	}
+	if (getRelativePosition(getLeftFoot()).y < maxY) {
+		maxY = getRelativePosition(getLeftFoot()).y;
+	}
+
+	if (getRelativePosition(getLeftFoot()).z < maxZ) {
+		maxZ = getRelativePosition(getLeftFoot()).z;
+	}
+
+	const double RELATIVEPOSMAXMIN = 10;
+	inputs.push_back(Util::normalize(getRelativePosition(getLeftFoot()).x, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
+	inputs.push_back(Util::normalize(getRelativePosition(getLeftFoot()).y, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
+	inputs.push_back(Util::normalize(getRelativePosition(getLeftFoot()).z, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
+
+	inputs.push_back(Util::normalize(getRelativePosition(getRightFoot()).x, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
+	inputs.push_back(Util::normalize(getRelativePosition(getRightFoot()).y, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
+	inputs.push_back(Util::normalize(getRelativePosition(getRightFoot()).z, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
+
+	//Max: x 8.5 y 7.1 z 8.8
+	//Min: x -5.8 y -9.5 z -9.5
+
 	return inputs;
 }
 
@@ -333,7 +367,7 @@ std::vector<double> Creature::getAllAngularVelocities()
 void Creature::setAllTargetVelocities(std::vector<double>& resultVec)
 {
 	//CHANGE MAX VELOCITY NORMALIZATION IF YOU CHANGE m
-	double m = 5;
+	double m = 4;
 	double mU = 0.0;
 	//for (int i = 0; i < 2; i++) {
 	//	std::cout << resultVec[i] << " | ";
@@ -402,7 +436,7 @@ NeuralNetwork* Creature::getNN()
 	//Creature* tempNN = new Creature(*m_neuralNetwork);
 	return &m_neuralNetwork;
 }
-int test = 0;
+
 void Creature::updateNeuralNetwork()
 {
 	std::vector<double> inputs = calculateInputs();
@@ -411,7 +445,6 @@ void Creature::updateNeuralNetwork()
 	//		std::cout << i << "\n";
 	//	}
 	//}
-	test++;
 	//std::cout << inputs.size() << std::endl;
 	m_neuralNetwork.forward(inputs);
 
@@ -420,9 +453,9 @@ void Creature::updateNeuralNetwork()
 	//std::cout << resultVec[0] << "  " << resultVec[1]<< std::endl;
 }
 
-void Creature::mutate(double mutationRate)
+void Creature::mutate(double mutationRate, double mutationChance)
 {
-	m_neuralNetwork.mutate(mutationRate);
+	m_neuralNetwork.mutate(mutationRate, mutationChance);
 }
 
 void Creature::reset()

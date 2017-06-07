@@ -43,7 +43,7 @@ public:
 
 	void updateNeuralNetwork();
 
-	void mutate(double mutationRate);
+	void mutate(double mutationRate, double mutationChance);
 
 	void setFitness(double fitness);
 

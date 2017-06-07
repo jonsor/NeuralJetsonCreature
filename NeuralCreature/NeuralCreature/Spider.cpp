@@ -195,9 +195,9 @@ void Spider::updateNeuralNetwork()
 	setAllTargetVelocities(resultVec);
 }
 
-void Spider::mutate(double mutationRate)
+void Spider::mutate(double mutationRate, double mutationChance)
 {
-	m_neuralNetwork.mutate(mutationRate);
+	m_neuralNetwork.mutate(mutationRate, mutationChance);
 }
 
 void Spider::setFitness(double fitness)

@@ -69,7 +69,7 @@ public:
 	NeuralNetwork getNeuralNetwork();
 	NeuralNetwork * getNN();
 	void updateNeuralNetwork();
-	void mutate(double mutationRate);
+	void mutate(double mutationRate, double mutationChance);
 	void reset();
 	void setFitness(double fitness);
 	double getFitness();

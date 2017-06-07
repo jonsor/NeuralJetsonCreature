@@ -16,7 +16,7 @@ public:
 	NeuralNetwork(const std::vector<Layer> layers);
 	void forward(const std::vector<double>& inputVals);
 	void getResults(std::vector<double>& resultsVals) const;
-	void mutate(double mutationRate);
+	void mutate(double mutationRate, double mutationChance);
 	std::vector<Layer> getLayers();
 	std::vector<Layer>* getL();
 	~NeuralNetwork();

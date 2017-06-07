@@ -44,7 +44,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> &topology)
 		//std::cout << std::endl;
 
 		//Force bias to 1.0
-		layers.back().back().setOutputVal(1.0);
+		layers.back().back().setOutputVal(0.0);
 	}
 }
 
@@ -87,24 +87,31 @@ void NeuralNetwork::getResults(std::vector<double>& resultsVals) const
 
 }
 
-void NeuralNetwork::mutate(double mutationRate)
+void NeuralNetwork::mutate(double mutationRate, double mutationChance)
 {
 	//TODO one layer doesnt contain weights, exclude it.
+	//THIS IS POSSIBLY WRONG! HAS A BIAS TOWARDS CENTRE LAYERS
 	//std::cout << layers[0][layers[0].size()-1].getOutputVal() << std::endl;
-	int endPoint = rand() % layers.size()+1;
-	int startPoint = rand() % endPoint;
+	//int endPoint = rand() % layers.size()+1;
+	//int startPoint = rand() % endPoint;
+	////rand() % (max - min + 1) + min;
 	//int startPoint = endPoint -1;
-	for (int i = startPoint; i < endPoint; i++) {
-		Layer& tempLayer = layers[i];
 
-		int endPoint2 = rand() % tempLayer.size() + 1;
-		int startPoint2 = rand() % endPoint;
-		//int startPoint2 = endPoint2 -1;
-		for (int j = startPoint2; j < endPoint2; j++) {
-			//std::cout << "mutateweight";
-			tempLayer[i].mutate(mutationRate);
+	for (int i = 0; i < layers.size(); i++) {
+		Layer& tempLayer = layers[i];
+		for (int j = 0; j < tempLayer.size(); j++) {
+			//double mutRand = ((double)rand() / (RAND_MAX));
+			//if (mutRand <= mutationChance) {
+				tempLayer[i].mutate(mutationRate, mutationChance);
+			//}
 		}
 	}
+
+	//int layerPoint = rand() % layers.size();
+	//Layer& tempLayer = layers[layerPoint];
+	//int neuronPoint = rand() % tempLayer.size();
+	//tempLayer[neuronPoint].mutate(mutationRate);
+
 	//std::cout << "\n";
 }
 
