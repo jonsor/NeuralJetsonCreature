@@ -19,7 +19,7 @@ Purpose: Sets up, renders and updates a complete, hardcoded creature.
 
 	@param pm pointer to the PhysicsManager class so that the limbs and joints can be added to the world simulation.
 */
-Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition(startPosition)
+Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine): m_startPosition(startPosition)
 {
 	//Limbs:
 	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.5f, 0.4f, 20);
@@ -67,7 +67,7 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition): m_startPosition
 
 	//Create the neural network
 	std::vector<int> topology{ 42, 36, 20, 6 };
-	createNeuralNetwork(topology);
+	createNeuralNetwork(topology, engine);
 
 	//Set default fitness
 	m_fitness = 0;
@@ -415,9 +415,9 @@ void Creature::setMaxMotorImpulses(double maxMotorImpulse)
 	getLeftShin()->getHinge("leftAnkle")->setMaxMotorImpulse(maxMotorImpulse);
 }
 
-void Creature::createNeuralNetwork(std::vector<int> topology)
+void Creature::createNeuralNetwork(std::vector<int> topology, std::default_random_engine &engine)
 {
-	m_neuralNetwork = NeuralNetwork(topology);
+	m_neuralNetwork = NeuralNetwork(topology, engine);
 }
 
 void Creature::setNeuralNetwork(NeuralNetwork neuralNetwork)
@@ -453,9 +453,9 @@ void Creature::updateNeuralNetwork()
 	//std::cout << resultVec[0] << "  " << resultVec[1]<< std::endl;
 }
 
-void Creature::mutate(double mutationRate, double mutationChance)
+void Creature::mutate(double mutationRate, double mutationChance,  std::default_random_engine engine)
 {
-	m_neuralNetwork.mutate(mutationRate, mutationChance);
+	m_neuralNetwork.mutate(mutationRate, mutationChance, engine);
 }
 
 void Creature::reset()

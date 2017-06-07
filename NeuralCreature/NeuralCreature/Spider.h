@@ -29,21 +29,21 @@ private:
 
 	glm::vec3 getCenterPosition();
 public:
-	Spider(PhysicsManager* pm, glm::vec3 startPosition);
+	Spider(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine engine);
 	void render(Shader shader);
 	void updatePhysics();
 
 	void setAllTargetVelocities(std::vector<double>& resultVec);
 
 	void setMaxMotorImpulses(double maxMotorImpulse);
-	void createNeuralNetwork(std::vector<int> topology);
+	void createNeuralNetwork(std::vector<int> topology, std::default_random_engine engine);
 	void setNeuralNetwork(NeuralNetwork neuralNetwork);
 
 	NeuralNetwork getNeuralNetwork();
 
 	void updateNeuralNetwork();
 
-	void mutate(double mutationRate, double mutationChance);
+	void mutate(double mutationRate, double mutationChance, std::default_random_engine engine);
 
 	void setFitness(double fitness);
 

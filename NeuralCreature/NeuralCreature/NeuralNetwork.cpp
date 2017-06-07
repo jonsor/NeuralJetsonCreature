@@ -19,7 +19,7 @@ NeuralNetwork::NeuralNetwork()
 {
 }
 
-NeuralNetwork::NeuralNetwork(const std::vector<int> &topology)
+NeuralNetwork::NeuralNetwork(const std::vector<int> &topology, std::default_random_engine &engine)
 {
 	int numLayers = topology.size();
 
@@ -38,7 +38,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> &topology)
 		//Fill the added layer with neurons
 		for (int neuronNum = 0; neuronNum <= topology[layerNum]; ++neuronNum) {
 			//Get last element (back()) and push a new Neuron
-			layers.back().push_back(Neuron(numOutputs, neuronNum));
+			layers.back().push_back(Neuron(numOutputs, neuronNum, engine));
 			//std::cout << "Neuron added!" << std::endl;
 		}
 		//std::cout << std::endl;
@@ -87,7 +87,7 @@ void NeuralNetwork::getResults(std::vector<double>& resultsVals) const
 
 }
 
-void NeuralNetwork::mutate(double mutationRate, double mutationChance)
+void NeuralNetwork::mutate(double mutationRate, double mutationChance, std::default_random_engine engine)
 {
 	//TODO one layer doesnt contain weights, exclude it.
 	//THIS IS POSSIBLY WRONG! HAS A BIAS TOWARDS CENTRE LAYERS
@@ -102,7 +102,7 @@ void NeuralNetwork::mutate(double mutationRate, double mutationChance)
 		for (int j = 0; j < tempLayer.size(); j++) {
 			//double mutRand = ((double)rand() / (RAND_MAX));
 			//if (mutRand <= mutationChance) {
-				tempLayer[i].mutate(mutationRate, mutationChance);
+				tempLayer[i].mutate(mutationRate, mutationChance, engine);
 			//}
 		}
 	}

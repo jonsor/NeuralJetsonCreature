@@ -16,7 +16,7 @@ Purpose: Sets up, renders and updates a complete, hardcoded spider creature.
 
 	@param pm pointer to the PhysicsManager class so that the limbs and joints can be added to the world simulation.
 */
-Spider::Spider(PhysicsManager* pm, glm::vec3 startPosition) : m_startPosition(startPosition)
+Spider::Spider(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine engine) : m_startPosition(startPosition)
 {
 	//Limbs:
 	body = new Cube(m_startPosition, glm::vec3(0.9f, 0.1f, 0.9f), 1.0f, 0.2f, 1.5f, 15);
@@ -67,7 +67,7 @@ Spider::Spider(PhysicsManager* pm, glm::vec3 startPosition) : m_startPosition(st
 
 	//Create Neural Network
 	std::vector<int> topology{42, 20, 20, 8 };
-	createNeuralNetwork(topology);
+	createNeuralNetwork(topology, engine);
 
 	setMaxMotorImpulses(20.f);
 }
@@ -171,9 +171,9 @@ void Spider::setMaxMotorImpulses(double maxMotorImpulse)
 	rightBackUpper->getHinge("rightBackKnee")->setMaxMotorImpulse(maxMotorImpulse);
 }
 
-void Spider::createNeuralNetwork(std::vector<int> topology)
+void Spider::createNeuralNetwork(std::vector<int> topology, std::default_random_engine engine)
 {
-	m_neuralNetwork = NeuralNetwork(topology);
+	m_neuralNetwork = NeuralNetwork(topology, engine);
 }
 
 void Spider::setNeuralNetwork(NeuralNetwork neuralNetwork)
@@ -195,9 +195,9 @@ void Spider::updateNeuralNetwork()
 	setAllTargetVelocities(resultVec);
 }
 
-void Spider::mutate(double mutationRate, double mutationChance)
+void Spider::mutate(double mutationRate, double mutationChance, std::default_random_engine engine)
 {
-	m_neuralNetwork.mutate(mutationRate, mutationChance);
+	m_neuralNetwork.mutate(mutationRate, mutationChance, engine);
 }
 
 void Spider::setFitness(double fitness)

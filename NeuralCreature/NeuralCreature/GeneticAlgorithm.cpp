@@ -4,12 +4,28 @@
 GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, double crossoverProb, const int populationSize, int numElites, PhysicsManager* pm)
 	: m_mutationRate(mutationRate), m_crossoverProb(crossoverProb), m_populationSize(populationSize), m_numElites(numElites), m_mutationChance(mutationChance), initalMutationRate(mutationRate)
 {
+
+	//Random Setup:
+	//m_overSeed = std::chrono::system_clock::now().time_since_epoch().count();
+	m_overSeed = 0;
+	m_overEngine = std::default_random_engine(m_overSeed);
+	std::uniform_int_distribution<int> overDistribution(0, INT_MAX); //INT_MIN instead of 0?
+	m_randomEngines = std::vector<std::default_random_engine>();
+
+	for (int i = 0; i < m_populationSize; i++) {
+		int randomSeed = overDistribution(m_overEngine);
+		m_randomEngines.push_back(std::default_random_engine(randomSeed));
+	}
+
 	initCreatures(pm);
 	generation = 0;
 	timesNoImprovement = 0;
 	lastFitness = 0;
 	timeNotWritten = 0;
 	stillStanding = false;
+
+
+
 }
 
 void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
@@ -19,7 +35,8 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 	//creatures.reserve(m_populationSize);
 	for (int i = 0; i < m_populationSize; i++) {
 		
-		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 10.0, 0.0));
+		std::default_random_engine &rand = m_randomEngines[i];
+		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 10.0, 0.0), rand);
 		creatures.push_back(tempCret);
 
 	}
@@ -72,7 +89,9 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	int partSize = creatures.size() / divider;
 	for (int i = 0; i < creatures.size(); i++) {
 
-		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 10.0, 0.0));
+
+		std::default_random_engine &rand = m_randomEngines[i];
+		Creature* tempCret = new Creature(pm, glm::vec3(1.0, 10.0, 0.0), rand);
 		
 		if (i == 0) {
 			tempCret->setColor(glm::vec3(0.8f, 0.1f, 0.6f));
@@ -105,7 +124,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 		if (i >= 1) {
 			//double muRate = rand() % 10;
 			//double muRate = ((double)rand() / (RAND_MAX));
-			mutate(creatures[i], m_mutationRate, m_mutationChance);
+			mutate(creatures[i], m_mutationRate, m_mutationChance, m_randomEngines[i]);
 		}
 	}
 
@@ -145,6 +164,21 @@ double GeneticAlgorithm::getDistanceWalked(Creature* creature)
 	//return glm::distance(end, start);
 }
 
+std::vector<unsigned> GeneticAlgorithm::getSeedsForCreatures()
+{
+	std::vector<unsigned> seeds;
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	std::default_random_engine generator(seed);
+	std::uniform_int_distribution<int> distribution(0, 2147483647);
+
+	for (int i = 0; i < m_populationSize; i++) {
+		seeds.push_back(distribution(generator));
+	}
+
+
+	return seeds;
+}
+
 NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork * crossOverRecipient)
 {
 
@@ -154,7 +188,9 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 	//std::cout << "lA: " << lA[1][1].getOutputVal() << "\n";
 	//std::cout << "lA: " << parent->getLayers()[1][1].getOutputVal() << "\n";
 
-	double prob = ((double)rand() / (RAND_MAX));
+	std::uniform_real_distribution<double> distribution(0, 1);
+	double prob = distribution(m_overEngine);
+
 	NeuralNetwork child;
 	if (prob > m_crossoverProb) {
 		//int numLayersToCross = lA.size() / 2;
@@ -176,7 +212,7 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 
 		for (int i = 0; i < lA.size(); i++) {
 			for (int j = 0; j < lA[i].size(); j++) {
-				if ((double)rand() > (RAND_MAX)) {
+				if (distribution(m_overEngine)) {
 					lB[i][j] = lA[i][j];
 				}
 			}
@@ -187,7 +223,7 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 		child = NeuralNetwork(lB);
 	}
 	else {
-		double parentProb = ((double)rand() / (RAND_MAX));
+		double parentProb = distribution(m_overEngine);
 		if (parentProb >= 0.5) {
 			child = NeuralNetwork(lA);
 		}
@@ -224,9 +260,9 @@ double GeneticAlgorithm::evaluateFitness(Creature* creature)
 	return fitness;
 }
 
-void GeneticAlgorithm::mutate(Creature* creature, double mutationRate, double mutationChance)
+void GeneticAlgorithm::mutate(Creature* creature, double mutationRate, double mutationChance, std::default_random_engine engine)
 {
-	creature->mutate(mutationRate, mutationChance);
+	creature->mutate(mutationRate, mutationChance, engine);
 }
 
 void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManager* pm)

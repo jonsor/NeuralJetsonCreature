@@ -8,7 +8,6 @@ class Creature
 {
 
 private:
-	//Cube* chest;
 	Cube* hips;
 	Cube* rightThigh;
 	Cube* rightShin;
@@ -35,15 +34,7 @@ private:
 	bool reachedUpperL = false;
 
 public:
-	//static struct LessThanByFitness
-	//{
-	//	bool operator()(const Creature* lhs, const Creature* rhs) const
-	//	{
-	//		return lhs->m_fitness < rhs->m_fitness;
-	//	}
-	//};
-
-	Creature(PhysicsManager* pm, glm::vec3 startPosition);
+	Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);
 	void updatePhysics();
 	Cube* getHips();
@@ -64,12 +55,12 @@ public:
 	std::vector<double> getAllAngularVelocities();
 	void setAllTargetVelocities(std::vector<double> &resultVec);
 	void setMaxMotorImpulses(double maxMotorImpulse);
-	void createNeuralNetwork(std::vector<int> topology);
+	void createNeuralNetwork(std::vector<int> topology, std::default_random_engine &engine);
 	void setNeuralNetwork(NeuralNetwork neuralNetwork);
 	NeuralNetwork getNeuralNetwork();
 	NeuralNetwork * getNN();
 	void updateNeuralNetwork();
-	void mutate(double mutationRate, double mutationChance);
+	void mutate(double mutationRate, double mutationChance, std::default_random_engine engine);
 	void reset();
 	void setFitness(double fitness);
 	double getFitness();
