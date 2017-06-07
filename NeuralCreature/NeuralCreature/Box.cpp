@@ -1,6 +1,6 @@
 /**
-Cube.cpp
-Purpose: Creates cubes to use in the world. Also renders, updates physics and creates hinges to attach other cubes.
+Box.cpp
+Purpose: Creates Boxs to use in the world. Also renders, updates physics and creates hinges to attach other Boxs.
 
 @author Sjur Barndon, Jonas Sørsdal
 @version 1.0 23.03.2017
@@ -8,22 +8,22 @@ Purpose: Creates cubes to use in the world. Also renders, updates physics and cr
 
 
 #include "stdafx.h"
-#include "Cube.h"
+#include "Box.h"
 
 /**
-	Creates a new OpenGL cube and initializes the physics.
+	Creates a new OpenGL Box and initializes the physics.
 
-	@param position Vector position of the cube.
-	@param color Vector color of the cube.
-	@param width The width of the cube.
-	@param height The heigth of the cube.
-	@param depth The depth of the cube.
-	@param mass The Mass of the cube.
+	@param position Vector position of the Box.
+	@param color Vector color of the Box.
+	@param width The width of the Box.
+	@param height The heigth of the Box.
+	@param depth The depth of the Box.
+	@param mass The Mass of the Box.
 */
-Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
+Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
 {
-	// Cubes
-	GLfloat cubeVertices[] = {
+	// Boxs
+	GLfloat BoxVertices[] = {
 		//BACK
 		-width, -height, -depth,  0.0f,  0.0f, -1.0f,
 		width, -height, -depth,  0.0f,  0.0f, -1.0f,
@@ -70,15 +70,15 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 
 	angle = 0.0f;
 	axisOfRotation = glm::vec3(1.0f, 1.0f, 1.0f);
-	//CUBE STUFF
-	GLuint cubeVBO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
+	//Box STUFF
+	GLuint BoxVBO;
+	glGenVertexArrays(1, &BoxVAO);
+	glGenBuffers(1, &BoxVBO);
 
-	glBindVertexArray(cubeVAO);
+	glBindVertexArray(BoxVAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, BoxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(BoxVertices), BoxVertices, GL_STATIC_DRAW);
 
 	// Position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
@@ -91,7 +91,7 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 
 	//mass = 1;
 	//Set up physics
-	Cube::setUpPhysicsCube();
+	Box::setUpPhysicsBox();
 
 	rigidBody->getMotionState()->getWorldTransform(startPos);
 	groundCollision = false;
@@ -99,14 +99,14 @@ Cube::Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, G
 }
 
 /**
-	Renders the cube with OpenGL.
+	Renders the Box with OpenGL.
 
 	@param shader Shader object for rendering.
 */
-void Cube::render(Shader shader)
+void Box::render(Shader shader)
 {
 	shader.use();
-	glBindVertexArray(cubeVAO);
+	glBindVertexArray(BoxVAO);
 	GLint objectColorLoc = glGetUniformLocation(shader.program, "objectColor");
 	glUniform3f(objectColorLoc, color.x, color.y, color.z);
 	glm::mat4 model;
@@ -128,43 +128,43 @@ void Cube::render(Shader shader)
 	glBindVertexArray(0);
 }
 
-void Cube::setColor(glm::vec3 color)
+void Box::setColor(glm::vec3 color)
 {
 	this->color = color;
 }
 
-glm::vec3 Cube::getColor()
+glm::vec3 Box::getColor()
 {
 	return color;
 }
 
-void Cube::setPosition(glm::vec3 position)
+void Box::setPosition(glm::vec3 position)
 {
 	this->position = position;
 }
 
-void Cube::reset() {
+void Box::reset() {
 
 	rigidBody->getMotionState()->setWorldTransform(startPos);
 	rigidBody->setWorldTransform(startPos);
 	rigidBody->clearForces();
 }
-glm::vec3 Cube::getPosition()
+glm::vec3 Box::getPosition()
 {
 	return position;
 }
 
-void Cube::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
+void Box::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
 {
 	this->angle = angle;
 	this->axisOfRotation = axisOfRotation;
 }
 
 /**
-	Sets up physics for the cube.
+	Sets up physics for the Box.
 	Does not add it to the physics world.
 */
-void Cube::setUpPhysicsCube()
+void Box::setUpPhysicsBox()
 {
 	//TODO: delete fall shape at the end of game loop
 	fallShape = new btBoxShape(btVector3(width, height, depth));
@@ -177,16 +177,16 @@ void Cube::setUpPhysicsCube()
 }
 
 
-btRigidBody* Cube::getRigidBody()
+btRigidBody* Box::getRigidBody()
 {
 	return rigidBody;
 }
 
 /**
-	Calculates and applies the next phyical step for the Cube.
+	Calculates and applies the next phyical step for the Box.
 	Should be called in the main loop.
 */
-void Cube::updatePhysics()
+void Box::updatePhysics()
 {
 	btTransform trans;
 	rigidBody->getMotionState()->getWorldTransform(trans);
@@ -203,25 +203,25 @@ void Cube::updatePhysics()
 }
 
 /**
-	Adds a new hinge to this cube that attaches cubeB.
+	Adds a new hinge to this Box that attaches BoxB.
 
 	@param pivotA
 	@param pivotB
-	@param axisA The vector direction of rotation of this cube in relation to cubeB.
-	@param axisB The vector direction of rotation of cubeB in relation to this cube.
-	@param cubeB A pointer to the cube that you want to attach to this one.
-	@param notCollision Wether or not the two joint cubes should be able to collide.
+	@param axisA The vector direction of rotation of this Box in relation to BoxB.
+	@param axisB The vector direction of rotation of BoxB in relation to this Box.
+	@param BoxB A pointer to the Box that you want to attach to this one.
+	@param notCollision Wether or not the two joint Boxs should be able to collide.
 	@param pm A pointer to the Pysics Manager to add the hinges to the world.
 	@param name The key for hinge storage.
 
 
 */
-void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name)
+void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name)
 {
 	bool useReferenceFrameA = false;
 	btHingeConstraint* hingeConstraint = new btHingeConstraint(
 		*rigidBody,
-		*cubeB->getRigidBody(),
+		*BoxB->getRigidBody(),
 		Util::convertToBtVector3(pivotA),
 		Util::convertToBtVector3(pivotB),
 		Util::convertToBtVector3(axisA),
@@ -243,25 +243,25 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 	
 }
 /**
-	Adds a new hinge to this cube that attaches cubeB.
+	Adds a new hinge to this Box that attaches BoxB.
 
 	@param pivotA
 	@param pivotB
-	@param axisA The vector direction of rotation of this cube in relation to cubeB.
-	@param axisB The vector direction of rotation of cubeB in relation to this cube.
-	@param cubeB A pointer to the cube that you want to attach to this one.
-	@param notCollision Wether or not the two joint cubes should be able to collide.
+	@param axisA The vector direction of rotation of this Box in relation to BoxB.
+	@param axisB The vector direction of rotation of BoxB in relation to this Box.
+	@param BoxB A pointer to the Box that you want to attach to this one.
+	@param notCollision Wether or not the two joint Boxs should be able to collide.
 	@param minAngle The minimum angle of rotation on the hinge.
 	@param maxAngle The maximum angle of rotation on the hinge.
 	@param pm A pointer to the Pysics Manager to add the hinges to the world.
 	@param name The key for hinge storage.
 */
-void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager * pm, std::string name)
+void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager * pm, std::string name)
 {
 	bool useReferenceFrameA = false;
 	btHingeConstraint* hingeConstraint = new btHingeConstraint(
 		*rigidBody,
-		*cubeB->getRigidBody(),
+		*BoxB->getRigidBody(),
 		Util::convertToBtVector3(pivotA),
 		Util::convertToBtVector3(pivotB),
 		Util::convertToBtVector3(axisA),
@@ -280,30 +280,30 @@ void Cube::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::ve
 
 }
 /**
-	Adds a new hinge to this cube that attaches cubeB.
+	Adds a new hinge to this Box that attaches BoxB.
 
 	@param pivotA
 	@param pivotB
-	@param cubeB A pointer to the cube that you want to attach to this one.
-	@param notCollision Wether or not the two joint cubes should be able to collide.
+	@param BoxB A pointer to the Box that you want to attach to this one.
+	@param notCollision Wether or not the two joint Boxs should be able to collide.
 	@param pm A pointer to the Pysics Manager to add the hinges to the world.
 	@param name The key for joint storage.
 */
-void Cube::addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name)
+void Box::addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name)
 {
-	btPoint2PointConstraint* jointConstraint = new btPoint2PointConstraint(*rigidBody, *cubeB->getRigidBody(), Util::convertToBtVector3(pivotA), Util::convertToBtVector3(pivotB));
+	btPoint2PointConstraint* jointConstraint = new btPoint2PointConstraint(*rigidBody, *BoxB->getRigidBody(), Util::convertToBtVector3(pivotA), Util::convertToBtVector3(pivotB));
 	pm->addNewConstraint(jointConstraint, notCollision);
 	joints[name] = jointConstraint;
 	jointConstraint = nullptr;
 
 }
 
-btHingeConstraint* Cube::getHinge(std::string name)
+btHingeConstraint* Box::getHinge(std::string name)
 {
 	return hinges[name];
 }
 
-btPoint2PointConstraint* Cube::getJoint(std::string name)
+btPoint2PointConstraint* Box::getJoint(std::string name)
 {
 	return joints[name];
 }
@@ -315,28 +315,28 @@ btPoint2PointConstraint* Cube::getJoint(std::string name)
 	@param minAngle min angle.
 	@param maxAngle max angle.
 */
-void Cube::setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle)
+void Box::setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle)
 {
 	hinges[name]->setLimit(minAngle, maxAngle);
 }
 
-GLfloat Cube::getWidth()
+GLfloat Box::getWidth()
 {
 	return width;
 }
 
-GLfloat Cube::getHeight()
+GLfloat Box::getHeight()
 {
 	return height;
 }
 
-GLfloat Cube::getDepth()
+GLfloat Box::getDepth()
 {
 	return depth;
 	
 }
 
-void Cube::setCollidingWithGround(bool colliding) {
+void Box::setCollidingWithGround(bool colliding) {
 	if (colliding) {
 		stepsSinceLastCollision = 0;
 		groundCollision = true;
@@ -346,25 +346,25 @@ void Cube::setCollidingWithGround(bool colliding) {
 	}
 }
 
-bool Cube::isCollidingWithGround() {
+bool Box::isCollidingWithGround() {
 	return groundCollision;
 }
 
-void Cube::incrementStepsSinceLastCollision() {
+void Box::incrementStepsSinceLastCollision() {
 	stepsSinceLastCollision++;
 }
 
-int Cube::getStepsSinceLastCollision() {
+int Box::getStepsSinceLastCollision() {
 	return stepsSinceLastCollision;
 }
 
-void Cube::remove(PhysicsManager * pm)
+void Box::remove(PhysicsManager * pm)
 {
 
 	pm->removeBody(rigidBody);
 }
 
-void Cube::removeConstraint(PhysicsManager * pm)
+void Box::removeConstraint(PhysicsManager * pm)
 {
 
 
@@ -378,7 +378,7 @@ void Cube::removeConstraint(PhysicsManager * pm)
 
 }
 
-Cube::~Cube()
+Box::~Box()
 {
 
 	delete fallShape;

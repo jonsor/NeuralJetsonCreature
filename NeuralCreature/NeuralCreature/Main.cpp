@@ -10,12 +10,12 @@ Purpose: Defines the entry point for the console application.
 
 #include <btBulletDynamicsCommon.h>
 #include <iostream>
-#include "NeuralCreature.h"
+#include "World.h"
 #include "NeuralNetwork.h"
 
 int main(void) {
 	std::srand(time(NULL));
-	NeuralCreature world;
+	World world;
 	world.init();
 
 }

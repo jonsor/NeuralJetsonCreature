@@ -1,5 +1,5 @@
 #pragma once
-#include "Cube.h"
+#include "Box.h"
 #include "NeuralNetwork.h"
 #include "Util.h"
 #include <thread>
@@ -8,13 +8,13 @@ class Creature
 {
 
 private:
-	Cube* hips;
-	Cube* rightThigh;
-	Cube* rightShin;
-	Cube* rightFoot;
-	Cube* leftThigh;
-	Cube* leftShin;
-	Cube* leftFoot;
+	Box* hips;
+	Box* rightThigh;
+	Box* rightShin;
+	Box* rightFoot;
+	Box* leftThigh;
+	Box* leftShin;
+	Box* leftFoot;
 	const double PI = 3.141592653589793238463;
 	glm::vec3 centerPosition;
 	glm::vec3 m_startPosition;
@@ -37,18 +37,18 @@ public:
 	Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);
 	void updatePhysics();
-	Cube* getHips();
-	Cube* getRightThigh();
-	Cube* getRightShin();
-	Cube* getRightFoot();
-	Cube* getLeftThigh();
-	Cube* getLeftShin();
-	Cube* getLeftFoot();
+	Box* getHips();
+	Box* getRightThigh();
+	Box* getRightShin();
+	Box* getRightFoot();
+	Box* getLeftThigh();
+	Box* getLeftShin();
+	Box* getLeftFoot();
 	void calcCenterPosition();
 	glm::vec3 getPosition();
 	glm::vec3 getStartPosition();
-	glm::vec3 getRelativePosition(Cube* cube);
-	double get2DAngle(Cube * cube1, Cube* cube2);
+	glm::vec3 getRelativePosition(Box* Box);
+	double get2DAngle(Box * Box1, Box* Box2);
 	void activate();
 	std::vector<double> getAllAngles();
 	std::vector<double> calculateInputs();

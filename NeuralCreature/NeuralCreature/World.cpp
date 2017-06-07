@@ -1,5 +1,5 @@
 /**
-NeuralCerature.cpp
+World.cpp
 Purpose: Main application file. Initializes all the libraries and sets up the world, then starts the main game loop.
 
 @author Sjur Barndon, Jonas Sørsdal
@@ -7,7 +7,7 @@ Purpose: Main application file. Initializes all the libraries and sets up the wo
 */
 
 #include "stdafx.h"
-#include "NeuralCreature.h"
+#include "World.h"
 
 #define GLEW_STATIC
 
@@ -52,7 +52,7 @@ glm::vec3 lightPos(-30.0f, 20.0f, 0.0f);
 /**
 	Initializes all the libraries, sets up a window, and starts the main loop.
 */
-void NeuralCreature::init() {
+void World::init() {
 	//Create a GLFW Window
 	GLFWwindow* window = rm.initWindow(WIDTH, HEIGHT);
 
@@ -115,7 +115,7 @@ void NeuralCreature::init() {
 	@param cubes Vector of cubes to place in the world.
 		
 */
-void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader) {
+void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shader lightingShader) {
 	
 	//Init hinge variables:
 	targetAngle = 0.0f;
@@ -131,7 +131,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	//Spider spider(&pm, glm::vec3(15.f, 4.f, 15.f));
 	
 	//Create genetic algorithm
-	GeneticAlgorithm ga(0.1, 0.05, 0.9, 10, 1, &pm);
+	GeneticAlgorithm ga(0.1, 0.05, 0.9, 10, 1, &pm); 
 
 /*
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
@@ -154,6 +154,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 	GLfloat startTime = glfwGetTime();
 	int frameCount = 0;
 	int simTime = 600;
+
 	//START MAIN LOOP:
 	while (!glfwWindowShouldClose(window)) {
 		frameCount++;
@@ -275,7 +276,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 		//creature.render(lightingShader);
 		numLoops++;
 		ga.updateCreatures(lightingShader, render, &pm);
-		if (numLoops >= 300 && !ga.isStillStanding() || numLoops >= 1500) {
+		if (numLoops >= 600 && !ga.isStillStanding() || numLoops >= 1500) {
 			GLfloat thisTime = glfwGetTime();
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
 			startTime = glfwGetTime();
@@ -299,7 +300,7 @@ void NeuralCreature::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightV
 /**
 	Alters the camera positions based on user input.
 */
-void NeuralCreature::doMovement()
+void World::doMovement()
 {
 	// Camera controls
 	if (keys[GLFW_KEY_W])
@@ -324,7 +325,7 @@ void NeuralCreature::doMovement()
 	@param lightVAO Pointer to the lights Vertex Array Object.
 	@param planeVAO Pointer to the planes Vertex Array Objectm.
 */
-void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
+void World::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 {
 	float s = 50.0f;
 	GLfloat rectangleVertices[] = {
@@ -380,7 +381,7 @@ void NeuralCreature::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 /**
 	Helper method to change target angle of hinges.
 */
-void NeuralCreature::incrementTargetAngles()
+void World::incrementTargetAngles()
 {
 	float factor = 0.2f;
 	if (holdingO) {
@@ -535,6 +536,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 
 
-NeuralCreature::~NeuralCreature()
+World::~World()
 {
 }

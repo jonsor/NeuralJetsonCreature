@@ -19,19 +19,19 @@ Purpose: Sets up, renders and updates a complete, hardcoded spider creature.
 Spider::Spider(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine engine) : m_startPosition(startPosition)
 {
 	//Limbs:
-	body = new Cube(m_startPosition, glm::vec3(0.9f, 0.1f, 0.9f), 1.0f, 0.2f, 1.5f, 15);
+	body = new Box(m_startPosition, glm::vec3(0.9f, 0.1f, 0.9f), 1.0f, 0.2f, 1.5f, 15);
 	
-	leftFrontUpper = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
-	leftFrontLower = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	leftFrontUpper = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	leftFrontLower = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
 
-	rightFrontUpper = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
-	rightFrontLower = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	rightFrontUpper = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	rightFrontLower = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
 	
-	leftBackUpper = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
-	leftBackLower = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	leftBackUpper = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	leftBackLower = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
 	
-	rightBackUpper = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
-	rightBackLower = new Cube(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	rightBackUpper = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
+	rightBackLower = new Box(glm::vec3(startPosition.x, startPosition.y, startPosition.z), glm::vec3(0.1f, 0.9f, 0.9f), 0.1f, 1.0f, 0.1f, 10);
 
 	pm->addBody(body->getRigidBody(), 1, 2);
 
@@ -338,47 +338,47 @@ void Spider::activate() {
 }
 
 
-Cube * Spider::getBody()
+Box * Spider::getBody()
 {
 	return body;
 }
 
-Cube * Spider::getLeftFrontUpper()
+Box * Spider::getLeftFrontUpper()
 {
 	return leftFrontUpper;
 }
 
-Cube * Spider::getLeftFrontLower()
+Box * Spider::getLeftFrontLower()
 {
 	return leftFrontLower;
 }
 
-Cube * Spider::getLeftBackUpper()
+Box * Spider::getLeftBackUpper()
 {
 	return leftBackUpper;
 }
 
-Cube * Spider::getLeftBackLower()
+Box * Spider::getLeftBackLower()
 {
 	return leftBackLower;
 }
 
-Cube * Spider::getRightFrontUpper()
+Box * Spider::getRightFrontUpper()
 {
 	return rightFrontUpper;
 }
 
-Cube * Spider::getRightFrontLower()
+Box * Spider::getRightFrontLower()
 {
 	return rightFrontLower;
 }
 
-Cube * Spider::getRightBackUpper()
+Box * Spider::getRightBackUpper()
 {
 	return rightBackUpper;
 }
 
-Cube * Spider::getRightBackLower()
+Box * Spider::getRightBackLower()
 {
 	return rightBackLower;
 }

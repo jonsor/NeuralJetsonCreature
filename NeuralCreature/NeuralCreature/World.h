@@ -16,7 +16,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "Camera.h"
-#include "Cube.h"
+#include "Box.h"
 //#include <vector>
 #include <math.h>
 #include <btBulletDynamicsCommon.h>
@@ -29,7 +29,7 @@
 
 #define _USE_MATH_DEFINES
 
-class NeuralCreature
+class World
 {
 private:
 	RenderManager rm;
@@ -45,6 +45,6 @@ public:
 	void doMovement();
 	void initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO);
 
-	~NeuralCreature();
+	~World();
 };
 

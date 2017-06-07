@@ -22,7 +22,7 @@
 #include "PhysicsManager.h"
 #include <iterator>
 
-class Cube
+class Box
 {
 private:
 	glm::vec3 position;
@@ -30,7 +30,7 @@ private:
 	GLfloat width;
 	GLfloat height;
 	GLfloat depth;
-	GLuint cubeVAO;
+	GLuint BoxVAO;
 	GLfloat angle;
 	btScalar mass;
 	glm::vec3 axisOfRotation;
@@ -48,19 +48,19 @@ private:
 
 
 public:
-	Cube(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass);
+	Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass);
 	void render(Shader shader);
 	void setColor(glm::vec3 color);
 	glm::vec3 getColor();
 	void setPosition(glm::vec3 position);
 	glm::vec3 getPosition();
 	void setRotation(GLfloat angle, glm::vec3 angleMatrix);
-	void setUpPhysicsCube();
+	void setUpPhysicsBox();
 	btRigidBody* getRigidBody();
 	void updatePhysics();
-	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name);
-	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Cube* cubeB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
-	void addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Cube* cubeB, bool notCollision, PhysicsManager* pm, std::string name);
+	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
+	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
+	void addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
 	btHingeConstraint* getHinge(std::string name);
 	btPoint2PointConstraint* getJoint(std::string name);
 	void setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle);
@@ -74,6 +74,6 @@ public:
 	void remove(PhysicsManager * pm);
 	void removeConstraint(PhysicsManager * pm);
 	void reset();
-	~Cube();
+	~Box();
 };
 

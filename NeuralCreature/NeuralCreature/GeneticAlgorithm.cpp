@@ -6,8 +6,8 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 {
 
 	//Random Setup:
-	//m_overSeed = std::chrono::system_clock::now().time_since_epoch().count();
-	m_overSeed = 0;
+	m_overSeed = std::chrono::system_clock::now().time_since_epoch().count();
+	//m_overSeed = 0;
 	m_overEngine = std::default_random_engine(m_overSeed);
 	std::uniform_int_distribution<int> overDistribution(0, INT_MAX); //INT_MIN instead of 0?
 	m_randomEngines = std::vector<std::default_random_engine>();
@@ -56,7 +56,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 	timeNotWritten++;
 	if (timeNotWritten >= 5) {
-		NetworkWriter::writeToFile(creatures);
+		NetworkWriter::writeToFile(creatures, m_overSeed);
 		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
 		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
 		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[2] << "\n";

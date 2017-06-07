@@ -22,15 +22,15 @@ Purpose: Sets up, renders and updates a complete, hardcoded creature.
 Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine): m_startPosition(startPosition)
 {
 	//Limbs:
-	hips = new Cube(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.5f, 0.4f, 20);
+	hips = new Box(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.5f, 0.4f, 20);
 	//hips->getRigidBody()->setDamping(0, 0);
-	rightThigh = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	rightShin = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	rightFoot = new Cube(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
+	rightThigh = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	rightShin = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	rightFoot = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
 
-	leftThigh = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	leftShin = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
-	leftFoot = new Cube(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
+	leftThigh = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	leftShin = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
+	leftFoot = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
 
 	leftFoot->getRigidBody()->setFriction(4.f);
 	rightFoot->getRigidBody()->setFriction(4.f);
@@ -96,8 +96,8 @@ void Creature::render(Shader shader)
 	Updates the physics for each limb in the creature. 
 	Also sets dampening and restitution?
 */
-static void updatePhysicsOfLimb(Cube * cube) {
-	cube->updatePhysics();
+static void updatePhysicsOfLimb(Box * Box) {
+	Box->updatePhysics();
 }
 void Creature::updatePhysics()
 {
@@ -169,15 +169,15 @@ glm::vec3 Creature::getStartPosition()
 	return m_startPosition;
 }
 
-glm::vec3 Creature::getRelativePosition(Cube* cube) {
+glm::vec3 Creature::getRelativePosition(Box* Box) {
 	glm::vec3 relativePosition;
-	relativePosition.x = cube->getPosition().x - centerPosition.x;
-	relativePosition.y = cube->getPosition().y - centerPosition.y;
-	relativePosition.z = cube->getPosition().z - centerPosition.z;
+	relativePosition.x = Box->getPosition().x - centerPosition.x;
+	relativePosition.y = Box->getPosition().y - centerPosition.y;
+	relativePosition.z = Box->getPosition().z - centerPosition.z;
 	return relativePosition;
 }
 
-double Creature::get2DAngle(Cube* cube1, Cube* cube2) {
+double Creature::get2DAngle(Box* Box1, Box* Box2) {
 	return 0.0;
 }
 
@@ -278,8 +278,11 @@ std::vector<double> Creature::calculateInputs()
 	getLeftFoot()->incrementStepsSinceLastCollision();
 
 
-	double rightFootOnGround = (getRightFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
-	double leftFootOnGround = (getLeftFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
+	//double rightFootOnGround = (getRightFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
+	//double leftFootOnGround = (getLeftFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
+	double rightFootOnGround = (getRightFoot()->getRigidBody()->getCenterOfMassPosition().getY() < 0.5) ? 1.0 : -1.0;
+	double leftFootOnGround = (getLeftFoot()->getRigidBody()->getCenterOfMassPosition().getY() < 0.5) ? 1.0 : -1.0;
+
 	//std::cout << "rightCollides: " << rightFootOnGround << "\n";
 	//std::cout << "rightCollides: " << getRightFoot()->getRigidBody()->getCollisionFlags() << "\n";
 	//getRightFoot()->getRigidBody()->coll
@@ -484,37 +487,37 @@ double Creature::getFitness()
 	return m_fitness;
 }
 
-Cube* Creature::getHips()
+Box* Creature::getHips()
 {
 	return hips;
 }
 
-Cube* Creature::getRightThigh()
+Box* Creature::getRightThigh()
 {
 	return rightThigh;
 }
 
-Cube* Creature::getRightShin()
+Box* Creature::getRightShin()
 {
 	return rightShin;
 }
 
-Cube* Creature::getRightFoot()
+Box* Creature::getRightFoot()
 {
 	return rightFoot;
 }
 
-Cube* Creature::getLeftThigh()
+Box* Creature::getLeftThigh()
 {
 	return leftThigh;
 }
 
-Cube* Creature::getLeftShin()
+Box* Creature::getLeftShin()
 {
 	return leftShin;
 }
 
-Cube* Creature::getLeftFoot()
+Box* Creature::getLeftFoot()
 {
 	return leftFoot;
 }

@@ -9,8 +9,11 @@ class NetworkWriter
 {
 public:
 	NetworkWriter();
-	static void writeToFile(std::vector<Creature*> creatures);
-	static void readFromFile(std::vector<Creature*> creatures);
+	static void writeToFile(std::vector<Creature*> creatures, unsigned mainSeed);
+	static void readFromFile(std::vector<Creature*> creatures, unsigned mainSeed);
+
+	static void writeToFile(std::vector<Creature*> creatures, std::string fileName, unsigned mainSeed);
+	static void readFromFile(std::vector<Creature*> creatures, std::string fileName, unsigned mainSeed);
 	~NetworkWriter();
 };
 

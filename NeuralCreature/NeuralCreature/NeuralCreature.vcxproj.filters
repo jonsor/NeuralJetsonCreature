@@ -30,16 +30,10 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RenderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NeuralCreature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Creature.h">
@@ -63,15 +57,15 @@
     <ClInclude Include="NetworkWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NeuralCreature.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RenderManager.cpp">
@@ -102,6 +96,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NetworkWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

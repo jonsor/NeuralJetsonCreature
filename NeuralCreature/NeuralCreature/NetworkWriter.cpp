@@ -6,12 +6,22 @@ NetworkWriter::NetworkWriter()
 {
 }
 
-void NetworkWriter::writeToFile(std::vector<Creature*> creatures)
+void NetworkWriter::writeToFile(std::vector<Creature*> creatures, unsigned mainSeed) {
+	writeToFile(creatures, "network.txt", mainSeed);
+}
+
+void NetworkWriter::readFromFile(std::vector<Creature*> creatures, unsigned mainSeed) {
+	readFromFile(creatures, "network.txt", mainSeed);
+
+}
+
+
+void NetworkWriter::writeToFile(std::vector<Creature*> creatures, std::string fileName, unsigned mainSeed)
 {
 	std::cout << "Writing networks to file...\n";
 	std::ofstream myfile;
-	myfile.open("network.txt");
-	myfile << creatures.size() << "\n";
+	myfile.open(fileName);
+	myfile << creatures.size() << " " << mainSeed << "\n";
 	for (int i = 0; i < creatures.size(); i++) {
 
 		std::vector<std::vector<Neuron>> tempNetLayers = creatures[i]->getNeuralNetwork().getLayers();
@@ -30,12 +40,12 @@ void NetworkWriter::writeToFile(std::vector<Creature*> creatures)
 	myfile.close();
 }
 
-void NetworkWriter::readFromFile(std::vector<Creature*> creatures)
+void NetworkWriter::readFromFile(std::vector<Creature*> creatures, std::string fileName, unsigned mainSeed)
 {
 
 	std::cout << "Reading networks from file...\n";
 	std::ifstream myfile;
-	myfile.open("network.txt");
+	myfile.open(fileName);
 	if (myfile.is_open())
 	{
 		std::string line;
@@ -47,10 +57,6 @@ void NetworkWriter::readFromFile(std::vector<Creature*> creatures)
 			return;
 		}
 
-		//std::istringstream buf(line);
-		//std::istream_iterator<std::string> beg(buf), end;
-
-		//std::vector<std::string> tokens(beg, end);
 
 		for (int i = 0; i < creatures.size(); i++) {
 
@@ -72,22 +78,12 @@ void NetworkWriter::readFromFile(std::vector<Creature*> creatures)
 						outputWeights[k] = weight;
 					}
 					tempLayer[j].setOutputWeights(outputWeights);
-					//HVA FN!!! HVORFOR FUNKER IKKE DETTE
 					creatures[i]->getNN()->getL()->at(l).at(j).setOutputWeights(outputWeights);
-					//std::cout << creatures[i]->getNeuralNetwork().getLayers()[l][j].getOutputWeights()[0] << " ";
-					//std::getline(myfile, line);
-					//std::istringstream iss(line);
-					//std::vector<std::string> outputWeights((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-
-					//for (int k = 0; k < outputWeights.size(); k++) {
-					//std::cout << outputWeights[i] << " ";
-					//}
 				}
 			}
 		}
 		myfile.close();
 	}
-	//}
 }
 
 

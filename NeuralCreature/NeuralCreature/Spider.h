@@ -1,25 +1,25 @@
 #pragma once
-#include "Cube.h"
+#include "Box.h"
 #include "NeuralNetwork.h"
 
 
 class Spider
 {
 private:
-	Cube* body;
+	Box* body;
 
-	Cube* leftFrontUpper;
-	Cube* leftFrontLower;
+	Box* leftFrontUpper;
+	Box* leftFrontLower;
 
-	Cube* rightFrontUpper;
-	Cube* rightFrontLower;
+	Box* rightFrontUpper;
+	Box* rightFrontLower;
 
 
-	Cube* leftBackUpper;
-	Cube* leftBackLower;
+	Box* leftBackUpper;
+	Box* leftBackLower;
 
-	Cube* rightBackUpper;
-	Cube* rightBackLower;
+	Box* rightBackUpper;
+	Box* rightBackLower;
 
 	glm::vec3 m_startPosition;
 	NeuralNetwork m_neuralNetwork;
@@ -57,19 +57,19 @@ public:
 
 	void activate();
 
-	Cube* getBody();
-	Cube* getLeftFrontUpper();
-	Cube* getLeftFrontLower();
+	Box* getBody();
+	Box* getLeftFrontUpper();
+	Box* getLeftFrontLower();
 
-	Cube* getRightFrontUpper();
-	Cube* getRightFrontLower();
+	Box* getRightFrontUpper();
+	Box* getRightFrontLower();
 	
 
-	Cube* getLeftBackUpper();
-	Cube* getLeftBackLower();
+	Box* getLeftBackUpper();
+	Box* getLeftBackLower();
 
-	Cube* getRightBackUpper();
-	Cube* getRightBackLower();
+	Box* getRightBackUpper();
+	Box* getRightBackLower();
 
 	glm::vec3 getPosition();
 	glm::vec3 getStartPosition();
