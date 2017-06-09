@@ -10,6 +10,11 @@ Neuron::Neuron(int numOutputs, int neuronIndex, std::default_random_engine &engi
 		outputWeights.push_back(Neuron::getRandomWeight(engine));
 		//outputWeights.push_back(0.0);
 	}
+	//std::cout << "weeeeeeeeights: \n";
+	//for (int i = 0; i < outputWeights.size(); i++) {
+	//	std::cout << outputWeights[i] << " ";
+	//}
+	//std::cout << "\n";
 }
 
 void Neuron::setOutputVal(double value)
@@ -46,12 +51,17 @@ void Neuron::forward(Layer & prevLayer)
 
 void Neuron::mutate(double mutationRate, double mutationChance, std::default_random_engine &engine)
 {
-	int ind = 0;
+
 	for (int i = 0; i < outputWeights.size(); i++) {
 		double mutRand = getRandomWeight(0, 1, engine);
 		if (mutRand <= mutationChance) {
-			ind++;
-			outputWeights[i] += getRandomWeight(engine) * mutationRate;
+			double chanceNewWeight = getRandomWeight(0, 1, engine);
+			if (chanceNewWeight <= 0.2) {
+				outputWeights[i] += getRandomWeight(engine);
+			}
+			else {
+				outputWeights[i] += getRandomWeight(engine) * mutationRate;
+			}
 		}
 	}
 }
@@ -99,6 +109,9 @@ double Neuron::activationFunction(double value)
 	//std::cout << "outputValsssssss: " << value << std::endl;
 
 	//Use tanh for -1 .. 1 range
+
+	//double sigmoid = 1 / (1 + exp(-value));
+	//return (sigmoid * 2 - 1);
 	return tanh(value);
 }
 

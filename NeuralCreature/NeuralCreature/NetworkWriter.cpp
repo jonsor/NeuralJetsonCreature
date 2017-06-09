@@ -6,22 +6,27 @@ NetworkWriter::NetworkWriter()
 {
 }
 
-void NetworkWriter::writeToFile(std::vector<Creature*> creatures, unsigned mainSeed) {
-	writeToFile(creatures, "network.txt", mainSeed);
+void NetworkWriter::writeToFile(std::vector<Creature*> creatures, int generation, unsigned mainSeed) {
+	writeToFile(creatures, "network.txt", generation, mainSeed);
 }
 
-void NetworkWriter::readFromFile(std::vector<Creature*> creatures, unsigned mainSeed) {
-	readFromFile(creatures, "network.txt", mainSeed);
+void NetworkWriter::writeFitness(double bestFitness)
+{
+	writeFitness(bestFitness, "fitnessPlot.txt");
+}
+
+void NetworkWriter::readFromFile(std::vector<Creature*> creatures) {
+	readFromFile(creatures, "network.txt");
 
 }
 
 
-void NetworkWriter::writeToFile(std::vector<Creature*> creatures, std::string fileName, unsigned mainSeed)
+void NetworkWriter::writeToFile(std::vector<Creature*> creatures, std::string fileName, int generation, unsigned mainSeed)
 {
 	std::cout << "Writing networks to file...\n";
 	std::ofstream myfile;
 	myfile.open(fileName);
-	myfile << creatures.size() << " " << mainSeed << "\n";
+	myfile << creatures.size() << " " << generation << " " << std::setprecision(20) << mainSeed << "\n";
 	for (int i = 0; i < creatures.size(); i++) {
 
 		std::vector<std::vector<Neuron>> tempNetLayers = creatures[i]->getNeuralNetwork().getLayers();
@@ -40,7 +45,15 @@ void NetworkWriter::writeToFile(std::vector<Creature*> creatures, std::string fi
 	myfile.close();
 }
 
-void NetworkWriter::readFromFile(std::vector<Creature*> creatures, std::string fileName, unsigned mainSeed)
+void NetworkWriter::writeFitness(double bestFitness, std::string fileName)
+{
+	std::ofstream myfile;
+	myfile.open(fileName, std::ios::out | std::ios::app);
+	myfile << std::setprecision(5) << bestFitness << "\n";
+	myfile.close();
+}
+
+void NetworkWriter::readFromFile(std::vector<Creature*> creatures, std::string fileName)
 {
 
 	std::cout << "Reading networks from file...\n";

@@ -22,6 +22,10 @@ private:
 	btDefaultMotionState* groundMotionState;
 	btRigidBody* groundRigidBody;
 
+	btCollisionShape* groundShape2;
+	btDefaultMotionState* groundMotionState2;
+	btRigidBody* groundRigidBody2;
+
 public:
 	void initPhysics();
 	void update(GLfloat deltaTime, int steps);

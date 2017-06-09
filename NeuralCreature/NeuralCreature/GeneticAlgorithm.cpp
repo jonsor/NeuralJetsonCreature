@@ -22,9 +22,9 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 	timesNoImprovement = 0;
 	lastFitness = 0;
 	timeNotWritten = 0;
-	stillStanding = false;
 
-
+	currentStep = 0;
+	m_keepRunning = true;
 
 }
 
@@ -40,7 +40,7 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		creatures.push_back(tempCret);
 
 	}
-	//NetworkWriter::readFromFile(creatures);
+	//NetworkWriter::readFromFile(creatures, m_overSeed);
 
 	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
 	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
@@ -52,21 +52,22 @@ bool moreThanByFitness(Creature* lhs, Creature* rhs) { return (lhs->getFitness()
 
 void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MINNELEKASJE HER:
 {
-	l = 0;
+	currentStep = 0;
+	m_keepRunning = true;
 
 	timeNotWritten++;
 	if (timeNotWritten >= 5) {
-		NetworkWriter::writeToFile(creatures, m_overSeed);
+		NetworkWriter::writeToFile(creatures, generation, m_overSeed);
 		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
 		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
 		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[2] << "\n";
 		timeNotWritten = 0;
 	}
 
-	for (int i = 0; i < creatures.size(); i++) {
-		double tempFit = evaluateFitness(creatures[i]);
-		creatures[i]->setFitness(tempFit);
-	}
+	//for (int i = 0; i < creatures.size(); i++) {
+	//	double tempFit = evaluateFitness(creatures[i]);
+	//	creatures[i]->setFitness(tempFit);
+	//}
 
 	std::sort(creatures.begin(), creatures.end(), moreThanByFitness);
 	std::cout << "sorted vector: " << std::endl;
@@ -83,10 +84,15 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 		creatures[i]->removeBodies(pm);
 	}
+	NetworkWriter::writeFitness(bestFit);
+
+	std::vector<Creature*> newGeneration;
 
 	pm->reset();
 	double divider = 2.5;
 	int partSize = creatures.size() / divider;
+	int numParentCreatures = 5;
+	int crossInd = 0;
 	for (int i = 0; i < creatures.size(); i++) {
 
 
@@ -95,39 +101,72 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 		
 		if (i == 0) {
 			tempCret->setColor(glm::vec3(0.8f, 0.1f, 0.6f));
-		}else if (i == 1) {
-			tempCret->setColor(glm::vec3(0.1f, 0.8f, 0.1f));
 		}
-
-		//if (i != creatures.size() - 1) {
-			if (i < partSize) {
-				tempCret->setNeuralNetwork(NeuralNetwork(creatures[i]->getNeuralNetwork()));
-			} else {
-				if (i - partSize == 1) {
-					tempCret->setNeuralNetwork(crossOver(&creatures[0]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
-				}
-				else {
-					tempCret->setNeuralNetwork(crossOver(&creatures[i - partSize]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
-				}
-
-			}
+		//else if (i == 1) {
+		//	tempCret->setColor(glm::vec3(0.1f, 0.8f, 0.1f));
 		//}
 
-		Creature* oldCret = creatures[i];
-		creatures[i] = tempCret;
-		tempCret = nullptr;
+		//if (i != creatures.size() - 1) {
+			//if (i < partSize) {
+			//	tempCret->setNeuralNetwork(NeuralNetwork(creatures[i]->getNeuralNetwork()));
+			//} else {
+				//if (i - partSize == 1) {
+				//	tempCret->setNeuralNetwork(crossOver(&creatures[0]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
+				//}
+				//else {
+					//tempCret->setNeuralNetwork(crossOver(&creatures[i - partSize]->getNeuralNetwork(), &creatures[i + 1 - partSize]->getNeuralNetwork()));
+				//}
+
+			//}
+		//}
+
+		if (i <= 1) {
+			tempCret->setNeuralNetwork(NeuralNetwork(creatures[i]->getNeuralNetwork()));
+		}
+		else {
+			/*int parentAind = rand() % (numParentCreatures + 1);*/
+			std::uniform_int_distribution<int> distribution(0, i);
+			double prob = distribution(m_overEngine);
+
+			//int parentAind = rand() % (i + 1);
+			//int parentBind = rand() % (i + 1);
+
+			int parentAind = distribution(m_overEngine);
+			int parentBind = distribution(m_overEngine);
+			while (parentAind == parentBind) {
+				parentAind = distribution(m_overEngine);
+				parentBind = distribution(m_overEngine);
+			}
+			tempCret->setNeuralNetwork(crossOver(&creatures[parentAind]->getNeuralNetwork(), &creatures[parentBind]->getNeuralNetwork()));
+
+		}
+		newGeneration.push_back(tempCret);
+
+
+		crossInd++;
+		if (crossInd > numParentCreatures) {
+			crossInd = 0;
+		}
+		//Creature* oldCret = creatures[i];
+		//creatures[i] = tempCret;
+		//tempCret = nullptr;
 		//oldCret->removeConstraints(pm);
 		//oldCret->removeBodies(pm);
-		delete oldCret;
+		//delete oldCret;
 		//creatures[i]->~Creature();
 		//creatures[i]->setNeuralNetwork(fitCret[j]->getNeuralNetwork());
-		if (i >= 1) {
+		if (i != 0) {
 			//double muRate = rand() % 10;
 			//double muRate = ((double)rand() / (RAND_MAX));
-			mutate(creatures[i], m_mutationRate, m_mutationChance, m_randomEngines[i]);
+			mutate(newGeneration[i], m_mutationRate, m_mutationChance, m_randomEngines[i]);
 		}
 	}
 
+	for (int i = 0; i < creatures.size(); i++) {
+		Creature* oldCret = creatures[i];
+		delete oldCret;
+	}
+	creatures = newGeneration;
 
 	if (lastFitness == bestFit) {
 		std::cout << "times are not changin\': " << timesNoImprovement <<"\n";
@@ -137,8 +176,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	}
 	lastFitness = bestFit;
 	if(timesNoImprovement >= 3) {
-		if (m_mutationRate > 0.001) {
-			m_mutationRate *= 0.9;
+		if (m_mutationRate < 0.3) {
+			m_mutationRate *= 1.1;
 		}
 		std::cout << "mutation rate: " << m_mutationRate << "\n";
 	} else {
@@ -155,13 +194,17 @@ double GeneticAlgorithm::getDistanceWalked(Creature* creature)
 {
 	glm::vec3 end = creature->getPosition();
 	glm::vec3 start = creature->getStartPosition();
-	double distancex = pow((end.x - start.x),2);
-	double distancey = pow((end.z - start.z),2);
+	//double distancex = pow((end.x - start.x),2);
+	//double distancey = pow((end.z - start.z),2);
 
 	//return sqrt(distancex + distancey);
-
 	return start.z - end.z;
 	//return glm::distance(end, start);
+}
+
+bool GeneticAlgorithm::keepRunning()
+{
+	return m_keepRunning;
 }
 
 std::vector<unsigned> GeneticAlgorithm::getSeedsForCreatures()
@@ -190,9 +233,9 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 
 	std::uniform_real_distribution<double> distribution(0, 1);
 	double prob = distribution(m_overEngine);
-
+	//std::cout << "crossover: " << prob << "\n";
 	NeuralNetwork child;
-	if (prob > m_crossoverProb) {
+	if (prob < m_crossoverProb) {
 		//int numLayersToCross = lA.size() / 2;
 		//std::vector<int> crossOverLayerIndices = Util::getRandomIndices(lA.size(), numLayersToCross);
 
@@ -209,10 +252,9 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 
 		//}
 
-
 		for (int i = 0; i < lA.size(); i++) {
 			for (int j = 0; j < lA[i].size(); j++) {
-				if (distribution(m_overEngine)) {
+				if (distribution(m_overEngine) > 0.5) {
 					lB[i][j] = lA[i][j];
 				}
 			}
@@ -239,12 +281,17 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 
 double GeneticAlgorithm::evaluateFitness(Creature* creature)
 {
-	double fitnessD = getDistanceWalked(creature);
-	double fitnessH = creature->getAverageHeight();
-	double fitnessMH = creature->getMaxHeight();
+	int numSteps = creature->getNumerOfSteps();
+	double distanceWalked = getDistanceWalked(creature);
+	double averageHeight = creature->getAverageHeight();
+	double maxHeight = creature->getMaxHeight();
+
+	double averageFeetDistance = creature->getAverageFeetStartPos() - creature->getAverageFeetPosition();
 	////std::cout << creature->getTimeOnGround() << "\n";
-	double groundTimeN = Util::normalizeSigned(creature->getTimeOnGround(), 0, 100);
-	double standTimeN = Util::normalizeSigned(creature->getTimeOnTwoLegs(), 0, 100);
+	//double groundTimeN = Util::normalizeSigned(creature->getTimeOnGround(), 0, 100);
+	double groundTimeN = creature->getTimeOnGround();
+	//double standTimeN = Util::normalizeSigned(creature->getTimeOnTwoLegs(), 0, 100);
+	double standTimeN = creature->getTimeOnTwoLegs();
 	//double groundModifier = 0;
 	//if (creature->getTimeOnGround() >= 1) {
 	//	groundModifier = 10;
@@ -255,8 +302,14 @@ double GeneticAlgorithm::evaluateFitness(Creature* creature)
 	//double fitness = creature->getNumTimesCrossed();
 	//std::cout << fitness << "\n";
 	//std::cout << "ground/stand: " << groundTimeN << "  " <<standTimeN << "\n";
-	double fitness = fitnessD + fitnessH;
-	creature->setFitness(fitness);
+	//std::cout << "numSteps: " << numSteps << "\n";
+	//std::cout << "distanceWalked: " << distanceWalked << "\n";
+	//std::cout << "averageHeight: " << averageHeight << "\n";
+	//std::cout << "averageFeetDistance: " << averageFeetDistance << "\n";
+	double fitness = distanceWalked * averageHeight * numSteps;
+	//if (distanceWalked < 0 && averageFeetDistance < 0) {
+	//	fitness *= -1;
+	//}
 	return fitness;
 }
 
@@ -265,18 +318,13 @@ void GeneticAlgorithm::mutate(Creature* creature, double mutationRate, double mu
 	creature->mutate(mutationRate, mutationChance, engine);
 }
 
+
 void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManager* pm)
 {
-
-	l++;
-	if (l == 250) {
-		//std::cout << creatures[0]->getPosition().y << std::endl;
-		l = 0;
-	}
+	currentStep++;
 
 	const int NUM_THREADS = 10;
 	std::thread threads[NUM_THREADS];
-	int rc;
 	int i;
 
 	for (i = 0; i < NUM_THREADS; i++) {
@@ -286,9 +334,9 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 	for (int i = 0; i < NUM_THREADS; i++) {
 		threads[i].join();
 	}
-	stillStanding = false;
-	//creatures[0]->checkIfLegsCrossed();
 
+	bool allCreaturesStanding = false;
+	//creatures[0]->checkIfLegsCrossed();
 	for (int i = 0; i < creatures.size(); i++) {
 
 		//creatures.at(i)->activate();
@@ -296,8 +344,10 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 		//creatures.at(i)->updatePhysics();
 
 		//creatures.at(i)->incrementToAverage();
+		if (currentStep > 100) {
+			creatures[i]->updateMaxHeight(creatures[i]->getHeight());
 
-		//if(l > 40)creatures[i]->updateMaxHeight(creatures[i]->getHeight());
+		}
 		//if (creatures[i]->getHeight() < 2.f) {
 		//	creatures[i]->setTimeOnGround(creatures[i]->getTimeOnGround() + 0.1);
 		//}
@@ -337,8 +387,8 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 			}
 		}
 
-		if (creatures[i]->getHeight() > 3.6f) {
-			stillStanding = true;
+		if (creatures[i]->getHeight() > 3.6) {
+			allCreaturesStanding = true;
 		}
 
 		if (render) {
@@ -347,6 +397,10 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 		else {
 			creatures[0]->render(shader);
 		}
+	}
+
+	if (!allCreaturesStanding) {
+		m_keepRunning = false;
 	}
 }
 
@@ -362,12 +416,12 @@ void GeneticAlgorithm::updateCreature(Shader shader, Creature* creature)
 		creature->setTimeOnTwoLegs(creature->getTimeOnTwoLegs() + 0.1);
 	}
 	creature->checkIfLegsCrossed();
-	creature->updateMaxHeight(creature->getHeight());
+
+	if (creature->getHeight() > 3.6) {
+		creature->setFitness(evaluateFitness(creature));
+	}
 }
 
-bool GeneticAlgorithm::isStillStanding() {
-	return stillStanding;
-}
 
 GeneticAlgorithm::~GeneticAlgorithm()
 {

@@ -19,6 +19,7 @@ public:
 	void mutate(double mutationRate, double mutationChance, std::default_random_engine engine);
 	std::vector<Layer> getLayers();
 	std::vector<Layer>* getL();
+	void printNetwork();
 	~NeuralNetwork();
 };
 

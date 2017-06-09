@@ -25,7 +25,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> &topology, std::default_rand
 
 	//Creates neural network
 	//Adds one bias neuron for each layer
-	for (int layerNum = 0; layerNum < numLayers; ++layerNum) {
+	for (int layerNum = 0; layerNum < numLayers; layerNum++) {
 		//Add a new layer
 		layers.push_back(Layer());
 
@@ -44,7 +44,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> &topology, std::default_rand
 		//std::cout << std::endl;
 
 		//Force bias to 1.0
-		layers.back().back().setOutputVal(0.0);
+		layers.back().back().setOutputVal(1.0);
 	}
 }
 
@@ -123,6 +123,23 @@ std::vector<Layer> NeuralNetwork::getLayers()
 std::vector<Layer>* NeuralNetwork::getL()
 {
 	return &layers;
+}
+
+void NeuralNetwork::printNetwork()
+{
+	std::cout << "layerSize: " << layers.size() << "\n";
+	for (int i = 0; i < layers.size(); i++) {
+		std::cout << "layer: " << i << "\n";
+		for (int j = 0; j < layers[i].size(); j++) {
+			std::cout << "\nVal: ";
+			std::cout << layers[i][j].getOutputVal() << " \n";
+			std::cout << "weights:\n";
+			for (int k = 0; k < layers[i][j].getOutputWeights().size(); k++) {
+				std::cout << layers[i][j].getOutputWeights()[k] << " ";
+			}
+		}
+	}
+
 }
 
 NeuralNetwork::~NeuralNetwork()

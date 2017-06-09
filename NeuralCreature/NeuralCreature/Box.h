@@ -44,7 +44,6 @@ private:
 	const double PI = 3.141592653589793238463;
 	btTransform startPos;
 	bool groundCollision;
-	int stepsSinceLastCollision;
 
 
 public:
@@ -69,8 +68,6 @@ public:
 	GLfloat getDepth();
 	void setCollidingWithGround(bool colliding);
 	bool isCollidingWithGround();
-	void incrementStepsSinceLastCollision();
-	int getStepsSinceLastCollision();
 	void remove(PhysicsManager * pm);
 	void removeConstraint(PhysicsManager * pm);
 	void reset();

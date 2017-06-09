@@ -95,7 +95,6 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 
 	rigidBody->getMotionState()->getWorldTransform(startPos);
 	groundCollision = false;
-	stepsSinceLastCollision = 0;
 }
 
 /**
@@ -112,7 +111,7 @@ void Box::render(Shader shader)
 	glm::mat4 model;
 	model = glm::translate(model, position);
 	//Hacky roation fix - doesnt render if axis is equal to zero
-	if (axisOfRotation.x == 0 || axisOfRotation.x == 0 || axisOfRotation.x == 0) {
+	if (axisOfRotation.x == 0 || axisOfRotation.y == 0 || axisOfRotation.z == 0) {
 		axisOfRotation.x += 0.000000001f;
 		axisOfRotation.y += 0.000000001f;
 		axisOfRotation.z += 0.000000001f;
@@ -337,25 +336,11 @@ GLfloat Box::getDepth()
 }
 
 void Box::setCollidingWithGround(bool colliding) {
-	if (colliding) {
-		stepsSinceLastCollision = 0;
-		groundCollision = true;
-	}
-	else if (stepsSinceLastCollision == 20) {
-		groundCollision = false;
-	}
+	groundCollision = colliding;
 }
 
 bool Box::isCollidingWithGround() {
 	return groundCollision;
-}
-
-void Box::incrementStepsSinceLastCollision() {
-	stepsSinceLastCollision++;
-}
-
-int Box::getStepsSinceLastCollision() {
-	return stepsSinceLastCollision;
 }
 
 void Box::remove(PhysicsManager * pm)

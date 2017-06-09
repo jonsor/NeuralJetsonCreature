@@ -79,13 +79,13 @@ void World::init() {
 	initPlaneAndLight(& lightVAO, & planeVAO);
 
 	//Plane
-	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+	//btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
 
-	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
-	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-	btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	groundRigidBody->setFriction(2.0f);
-	pm.addBody(groundRigidBody, 2, 1);
+	//btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
+	//btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
+	//btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
+	//groundRigidBody->setFriction(2.0f);
+	//pm.addBody(groundRigidBody, 2, 1);
 
 	//Start render loop
 	renderLoop(window, planeVAO, lightVAO, lightingShader);
@@ -95,10 +95,10 @@ void World::init() {
 	glDeleteBuffers(1, &planeVAO);
 	glDeleteBuffers(1, &planeVAO);
 
-	pm.removeBody(groundRigidBody);
-	delete groundRigidBody->getMotionState();
-	delete groundRigidBody;
-	delete groundShape;
+	//pm.removeBody(groundRigidBody);
+	//delete groundRigidBody->getMotionState();
+	//delete groundRigidBody;
+	//delete groundShape;
 
 	//Terminate
 	glfwTerminate();
@@ -131,7 +131,7 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 	//Spider spider(&pm, glm::vec3(15.f, 4.f, 15.f));
 	
 	//Create genetic algorithm
-	GeneticAlgorithm ga(0.1, 0.05, 0.9, 10, 1, &pm); 
+	GeneticAlgorithm ga(0.03, 0.05, 0.9, 10, 1, &pm); 
 
 /*
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
@@ -276,7 +276,8 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 		//creature.render(lightingShader);
 		numLoops++;
 		ga.updateCreatures(lightingShader, render, &pm);
-		if (numLoops >= 600 && !ga.isStillStanding() || numLoops >= 1500) {
+		// && !ga.keepRunning() || numLoops >= 1500
+		if (!ga.keepRunning() || numLoops >= 1500) {
 			GLfloat thisTime = glfwGetTime();
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
 			startTime = glfwGetTime();
