@@ -72,7 +72,7 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_ran
 	setMaxMotorImpulses(20.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 16, 10, 10, 6 };
+	std::vector<int> topology{ 29, 20, 20, 6 };
 	createNeuralNetwork(topology, engine);
 
 	//Set default fitness
@@ -89,6 +89,12 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_ran
 	lastFootThatStepped = 'n';
 
 	averageFeetStartPos = getAverageFeetPosition();
+
+	resultVec = { 0, 0, 0, 0, 0, 0 };
+
+	m_shouldUpdate = true;
+	timeOnTwoLegs = 0;
+	timeOnGround = 0;
 }
 
 /**
@@ -130,7 +136,7 @@ void Creature::updatePhysics()
 
 	updateNeuralNetwork();
 
-	double steppingThreshold = 1.0;
+	double steppingThreshold = 2.0;
 	if (leftFootMovingDownward())
 	{
 		//TODO CHANGE TO GROUND COLLISION INSTEAD OF THRESHOLD
@@ -379,8 +385,8 @@ std::vector<double> Creature::calculateInputs()
 	inputs.insert(inputs.end(), inputAngles.begin(), inputAngles.end());
 
 	//MAX AND MIN BOOLS
-	//getAllMaxMinAngles();
-	//inputs.insert(inputs.end(), maxMinAngles.begin(), maxMinAngles.end());
+	getAllMaxMinAngles();
+	inputs.insert(inputs.end(), maxMinAngles.begin(), maxMinAngles.end());
 	//Foot heights
 
 	double rightFootOnGround = (getRightFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
@@ -433,7 +439,7 @@ std::vector<double> Creature::calculateInputs()
 	// 1 og -1 for max min angles
 	//Lage minnenevroner
 	//Lage flere competing outputs
-	//inputs.insert(inputs.end(), resultVec.begin(), resultVec.end());
+	inputs.insert(inputs.end(), resultVec.begin(), resultVec.end());
 	//Max: x 8.5 y 7.1 z 8.8
 	//Min: x -5.8 y -9.5 z -9.5
 	//stepTime++;
@@ -813,6 +819,14 @@ double Creature::getDistanceFromHips(Box * box)
 	glm::vec3 end = box->getPosition();
 	glm::vec3 start = hips->getPosition();
 	return glm::distance(end, start);
+}
+void Creature::setShouldUpdate(bool update)
+{
+	m_shouldUpdate = update;
+}
+bool Creature::shouldUpdate()
+{
+	return m_shouldUpdate;
 }
 Creature::~Creature()
 {

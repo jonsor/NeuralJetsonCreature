@@ -56,10 +56,9 @@ void Neuron::mutate(double mutationRate, double mutationChance, std::default_ran
 		double mutRand = getRandomWeight(0, 1, engine);
 		if (mutRand <= mutationChance) {
 			double chanceNewWeight = getRandomWeight(0, 1, engine);
-			if (chanceNewWeight <= 0.2) {
-				outputWeights[i] += getRandomWeight(engine);
-			}
-			else {
+			if (chanceNewWeight <= 0.05) {
+				outputWeights[i] = getRandomWeight(engine);
+			} else {
 				outputWeights[i] += getRandomWeight(engine) * mutationRate;
 			}
 		}
@@ -110,9 +109,9 @@ double Neuron::activationFunction(double value)
 
 	//Use tanh for -1 .. 1 range
 
-	//double sigmoid = 1 / (1 + exp(-value));
-	//return (sigmoid * 2 - 1);
-	return tanh(value);
+	double sigmoid = 1 / (1 + exp(-value));
+	return (sigmoid * 2 - 1);
+	//return tanh(value);
 }
 
 Neuron::~Neuron()

@@ -131,7 +131,7 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 	//Spider spider(&pm, glm::vec3(15.f, 4.f, 15.f));
 	
 	//Create genetic algorithm
-	GeneticAlgorithm ga(0.03, 0.05, 0.9, 10, 1, &pm); 
+	GeneticAlgorithm ga(0.03, 0.05, 0.9, 50, 1, &pm);
 
 /*
 	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);

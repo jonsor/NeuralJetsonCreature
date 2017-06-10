@@ -37,6 +37,7 @@ private:
 	bool reachedUpperR = false;
 	bool reachedUpperL = false;
 	double averageFeetStartPos;
+	bool m_shouldUpdate;
 
 public:
 	Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
@@ -92,6 +93,8 @@ public:
 	double getAverageFeetPosition();
 	double getAverageFeetStartPos();
 	double getDistanceFromHips(Box * box);
+	void setShouldUpdate(bool update);
+	bool shouldUpdate();
 	~Creature();
 };
 

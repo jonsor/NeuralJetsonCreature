@@ -15,6 +15,11 @@ void NetworkWriter::writeFitness(double bestFitness)
 	writeFitness(bestFitness, "fitnessPlot.txt");
 }
 
+void NetworkWriter::writeDistance(double distance)
+{
+	writeDistance(distance, "distancePlot.txt");
+}
+
 void NetworkWriter::readFromFile(std::vector<Creature*> creatures) {
 	readFromFile(creatures, "network.txt");
 
@@ -97,6 +102,14 @@ void NetworkWriter::readFromFile(std::vector<Creature*> creatures, std::string f
 		}
 		myfile.close();
 	}
+}
+
+void NetworkWriter::writeDistance(double distance, std::string fileName)
+{
+	std::ofstream myfile;
+	myfile.open(fileName, std::ios::out | std::ios::app);
+	myfile << std::setprecision(5) << distance << "\n";
+	myfile.close();
 }
 
 
