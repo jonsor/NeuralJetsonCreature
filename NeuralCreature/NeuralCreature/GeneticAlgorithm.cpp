@@ -1,3 +1,11 @@
+/**
+GeneticAlgorithm.cpp
+Purpose: Sets up generations, simulates evolution.
+
+@author Sjur Barndon, Jonas Sørsdal
+@version 1.0 23.03.2017
+*/
+
 #include "stdafx.h"
 #include "GeneticAlgorithm.h"
 
@@ -7,7 +15,6 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 
 	//Random Setup:
 	m_overSeed = std::chrono::system_clock::now().time_since_epoch().count();
-	//m_overSeed = 0;
 	m_overEngine = std::default_random_engine(m_overSeed);
 	std::uniform_int_distribution<int> overDistribution(0, INT_MAX); //INT_MIN instead of 0?
 	m_randomEngines = std::vector<std::default_random_engine>();
@@ -44,9 +51,6 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 
 void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 {
-
-	//std::vector<Creature> testVec(m_populationSize);
-	//creatures.reserve(m_populationSize);
 	for (int i = 0; i < m_populationSize; i++) {
 		
 		std::default_random_engine &rand = m_randomEngines[i];
@@ -55,10 +59,6 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 
 	}
 	//NetworkWriter::readFromFile(creatures);
-
-	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
-	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
-	//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[2] << "\n";
 }
 
 bool moreThanByFitness(Creature* lhs, Creature* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
@@ -89,16 +89,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	timeNotWritten++;
 	if (timeNotWritten >= 5) {
 		NetworkWriter::writeToFile(creatures, generation, m_overSeed);
-		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[0] << "\n";
-		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[1] << "\n";
-		//std::cout << creatures[0]->getNeuralNetwork().getLayers()[0][0].getOutputWeights()[2] << "\n";
 		timeNotWritten = 0;
 	}
-
-	//for (int i = 0; i < creatures.size(); i++) {
-	//	double tempFit = evaluateFitness(creatures[i]);
-	//	creatures[i]->setFitness(tempFit);
-	//}
 
 	std::sort(creatures.begin(), creatures.end(), moreThanByFitness);
 	std::cout << "sorted vector: " << std::endl;
@@ -156,8 +148,6 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			tempCret->setNeuralNetwork(NeuralNetwork(creatures[i]->getNeuralNetwork()));
 		}
 		else {
-			/*int parentAind = rand() % (numParentCreatures + 1);*/
-
 			int index = i;
 			if (index >= partSize) {
 				index = partSize;
@@ -165,8 +155,6 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			std::uniform_int_distribution<int> distribution(0, index);
 			double prob = distribution(m_overEngine);
 
-			//int parentAind = rand() % (i + 1);
-			//int parentBind = rand() % (i + 1);
 			int parentAind = distribution(m_overEngine);
 			int parentBind = distribution(m_overEngine);
 			while (parentAind == parentBind) {
@@ -174,25 +162,16 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 				parentBind = distribution(m_overEngine);
 			}
 
-			//std::cout << "parentAind: " << parentAind << " parentBind: " << parentBind << "\n";
 			tempCret->setNeuralNetwork(crossOver(&creatures[parentAind]->getNeuralNetwork(), &creatures[parentBind]->getNeuralNetwork()));
-
 		}
-		newGeneration.push_back(tempCret);
 
+		newGeneration.push_back(tempCret);
 
 		crossInd++;
 		if (crossInd > numParentCreatures) {
 			crossInd = 0;
 		}
-		//Creature* oldCret = creatures[i];
-		//creatures[i] = tempCret;
-		//tempCret = nullptr;
-		//oldCret->removeConstraints(pm);
-		//oldCret->removeBodies(pm);
-		//delete oldCret;
-		//creatures[i]->~Creature();
-		//creatures[i]->setNeuralNetwork(fitCret[j]->getNeuralNetwork());
+		
 		if (i != 0) {
 			//double muRate = rand() % 10;
 			//double muRate = ((double)rand() / (RAND_MAX));
@@ -244,12 +223,7 @@ double GeneticAlgorithm::getDistanceWalked(Creature* creature)
 {
 	glm::vec3 end = creature->getPosition();
 	glm::vec3 start = creature->getStartPosition();
-	//double distancex = pow((end.x - start.x),2);
-	//double distancey = pow((end.z - start.z),2);
-
-	//return sqrt(distancex + distancey);
 	return start.z - end.z;
-	//return glm::distance(end, start);
 }
 
 bool GeneticAlgorithm::keepRunning()

@@ -1,13 +1,14 @@
-#include "stdafx.h"
-#include "NeuralNetwork.h"
-
 /**
 NeuralNetwork.cpp
 Purpose: Creates a neural network
 
-@author Sjur Barndon, Jonas Sørsdal
+@author Jonas Sørsdal
 @version 1.0 07.04.2017
 */
+
+#include "stdafx.h"
+#include "NeuralNetwork.h"
+
 
 /**
 Sets up a neural network

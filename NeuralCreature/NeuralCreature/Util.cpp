@@ -24,12 +24,7 @@ btVector3 Util::convertToBtVector3(glm::vec3 vector)
 
 double Util::normalize(double x, double min, double max)
 {
-	//return (x - min) / (max - min);
-	//double result = (abs(x) - min) / (max - min);
 	double result = 2*(x - min) / (max - min)-1;
-	//if (x < 0) {
-	//	result *= -1;
-	//}
 	return result;
 }
 

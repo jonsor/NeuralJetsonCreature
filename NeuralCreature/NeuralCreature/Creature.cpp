@@ -6,7 +6,6 @@ Purpose: Sets up, renders and updates a complete, hardcoded creature.
 @version 1.0 23.03.2017
 */
 
-
 #include "stdafx.h"
 #include "Creature.h"
 #include <chrono>
@@ -23,9 +22,7 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_ran
 {
 	//Limbs:
 	hips = new Box(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 1.5f, 0.4f, 20);
-	//hips->getRigidBody()->setDamping(0, 0);
-	//hips->getRigidBody()->setLinearFactor(btVector3(1,1,0));
-	//hips->getRigidBody()->setAngularFactor(btVector3(1, 0, 0));
+
 	rightThigh = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightShin = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	rightFoot = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
@@ -33,17 +30,6 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_ran
 	leftThigh = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	leftShin = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 10);
 	leftFoot = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 3);
-
-	//leftFoot->getRigidBody()->setFriction(4.f);
-	//rightFoot->getRigidBody()->setFriction(4.f);
-
-	//m_startPosition.x += hips->getWidth() / 2;
-	//m_startPosition.y -= hips->getHeight() / 2;
-	//m_startPosition.z += hips->getDepth() / 2;
-
-	//m_startPosition.x += hips->getRigidBody()->getCenterOfMassPosition().getX();
-	//m_startPosition.y -= hips->getRigidBody()->getCenterOfMassPosition().getY();
-	//m_startPosition.z += hips->getRigidBody()->getCenterOfMassPosition().getZ();
 
 	pm->addBody(hips->getRigidBody(),1, 2);
 
@@ -59,7 +45,6 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_ran
 
 	//Hinges:
 	bool noCol = true;
-	//chest->addHinge(glm::vec3(0.0f, -1.8f, 0.0f), glm::vec3(0.0f, 1.8f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), hips, noCol, -PI/2, PI/2, pm, "abdomen");
 	hips->addHinge(glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(1.0f, 1.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightThigh, noCol, -1.5, 0.7, pm, "rightHip");
 	hips->addHinge(glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(-1.0f, 1.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftThigh, noCol, -1.5, 0.7, pm, "leftHip");
 
@@ -79,7 +64,6 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_ran
 	m_fitness = 0;
 
 	maxMinAngles = { 1, 1, 1, 1, 1, 1 };
-
 	memoryNeurons = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	m_maxHeight = 0;
 
@@ -104,7 +88,6 @@ Creature::Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_ran
 */
 void Creature::render(Shader shader)
 {
-	//chest->render(shader);
 	hips->render(shader);
 
 	rightThigh->render(shader);
@@ -125,13 +108,6 @@ static void updatePhysicsOfLimb(Box * box) {
 }
 void Creature::updatePhysics()
 {
-	//if (yo >= 2000) {
-	//	std::vector<int> topology{ 28, 20, 6 };
-	//	createNeuralNetwork(topology);
-	//	//std::cout << "NEEEEEEEEEEEEEEEEEEEEW NEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET" << std::endl;
-	//	yo = 0;
-	//}
-	//yo++;
 	calcCenterPosition();
 
 	updateNeuralNetwork();
@@ -164,26 +140,6 @@ void Creature::updatePhysics()
 
 	previousRightFootHeight = getRightFoot()->getRigidBody()->getCenterOfMassPosition().getY();
 	previousLeftFootHeight = getLeftFoot()->getRigidBody()->getCenterOfMassPosition().getY();
-	//chest->updatePhysics();
-	//hips->getRigidBody()->setDamping(0, 0);
-	//hips->getRigidBody()->setRestitution(0);
-	//std::thread t1(updatePhysicsOfLimb, hips);
-
-	//std::thread t2(updatePhysicsOfLimb, rightThigh);
-	//std::thread t3(updatePhysicsOfLimb, rightShin);
-	//std::thread t4(updatePhysicsOfLimb, rightFoot);
-
-	//std::thread t5(updatePhysicsOfLimb, leftThigh);
-	//std::thread t6(updatePhysicsOfLimb, leftShin);
-	//std::thread t7(updatePhysicsOfLimb, leftFoot);
-
-	//t1.join();
-	//t2.join();
-	//t3.join();
-	//t4.join();
-	//t5.join();
-	//t6.join();
-	//t7.join();
 
 	hips->updatePhysics();
 	rightThigh->updatePhysics();
@@ -200,15 +156,6 @@ void Creature::updatePhysics()
 void Creature::calcCenterPosition()
 {
 	centerPosition = hips->getPosition();
-	//centerPosition.y -= hips->getHeight() / 2;
-	//centerPosition.x += hips->getWidth() / 2;
-	//centerPosition.z += hips->getDepth() / 2;
-
-	//btVector3 centerMass = hips->getRigidBody()->getCenterOfMassPosition();
-	//centerPosition = glm::vec3(centerMass.getX(), centerMass.getY(), centerMass.getZ());
-	//std::cout << "centerMass: x: " << centerMass.getX() << " y: " << centerMass.getY() << " z: " << centerMass.getZ() << "\n";
-	//std::cout << "centerPosition: x: " << centerPosition.x << " y: " << centerPosition.y << " z: " << centerPosition.z << "\n";
-	//std::cout << centerPosition.z << std::endl;
 }
 
 glm::vec3 Creature::getPosition()
@@ -226,9 +173,6 @@ glm::vec3 Creature::getRelativePosition(Box* box) {
 	relativePosition.x = box->getPosition().x - hips->getPosition().x;
 	relativePosition.y = box->getPosition().y - hips->getPosition().y;
 	//THIS IS WRONG
-	//std::cout << "box: " << box->getPosition().y <<"\n";
-	//std::cout << "hips: " << hips->getPosition().y << "\n";
-	//std::cout << "relative: " << relativePosition.y << "\n";
 	relativePosition.z = box->getPosition().z - hips->getPosition().z;
 	return relativePosition;
 }
@@ -250,7 +194,6 @@ void Creature::activate(){
 }
 void Creature::getAllMaxMinAngles()
 {
-
 	//RIGHT HIP
 	if (getHips()->getHinge("rightHip")->getHingeAngle() >= getHips()->getHinge("rightHip")->getUpperLimit() - 0.1) {
 		maxMinAngles[0] = 1.0;
@@ -311,16 +254,6 @@ void Creature::getAllMaxMinAngles()
 
 std::vector<double> Creature::getAllAngles()
 {
-
-	//double rha = (getHips()->getHinge("rightHip")->getHingeAngle() - getHips()->getHinge("rightHip")->getLowerLimit()) / (getHips()->getHinge("rightHip")->getUpperLimit() - getHips()->getHinge("rightHip")->getLowerLimit());
-	//double lha = (getHips()->getHinge("leftHip")->getHingeAngle() - getHips()->getHinge("leftHip")->getLowerLimit()) / (getHips()->getHinge("leftHip")->getUpperLimit() - getHips()->getHinge("leftHip")->getLowerLimit());
-
-	//double rka = (getRightThigh()->getHinge("rightKnee")->getHingeAngle() - getRightThigh()->getHinge("rightKnee")->getLowerLimit()) / (getRightThigh()->getHinge("rightKnee")->getUpperLimit() - getRightThigh()->getHinge("rightKnee")->getLowerLimit());
-	//double lka = (getLeftThigh()->getHinge("leftKnee")->getHingeAngle() - getLeftThigh()->getHinge("leftKnee")->getLowerLimit()) / (getLeftThigh()->getHinge("leftKnee")->getUpperLimit() - getLeftThigh()->getHinge("leftKnee")->getLowerLimit());
-
-	//double raa = (getRightShin()->getHinge("rightAnkle")->getHingeAngle() - getRightShin()->getHinge("rightAnkle")->getLowerLimit()) / (getRightShin()->getHinge("rightAnkle")->getUpperLimit() - getRightShin()->getHinge("rightAnkle")->getLowerLimit());
-	//double laa = (getLeftShin()->getHinge("leftAnkle")->getHingeAngle() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit()) / (getLeftShin()->getHinge("leftAnkle")->getUpperLimit() - getLeftShin()->getHinge("leftAnkle")->getLowerLimit());
-	//
 	double rha = Util::normalize(getHips()->getHinge("rightHip")->getHingeAngle(), getHips()->getHinge("rightHip")->getLowerLimit(), getHips()->getHinge("rightHip")->getUpperLimit());
 	double lha = Util::normalize(getHips()->getHinge("leftHip")->getHingeAngle(), getHips()->getHinge("leftHip")->getLowerLimit(), getHips()->getHinge("leftHip")->getUpperLimit());
 
@@ -330,29 +263,18 @@ std::vector<double> Creature::getAllAngles()
 	double raa = Util::normalize(getRightShin()->getHinge("rightAnkle")->getHingeAngle(), getRightShin()->getHinge("rightAnkle")->getLowerLimit(), getRightShin()->getHinge("rightAnkle")->getUpperLimit());
 	double laa = Util::normalize(getLeftShin()->getHinge("leftAnkle")->getHingeAngle(), getLeftShin()->getHinge("leftAnkle")->getLowerLimit(), getLeftShin()->getHinge("leftAnkle")->getUpperLimit());
 
-	//rha = (rha < 0) ? 0.0 : rha;
-	//lha = (lha < 0) ? 0.0 : lha;
-	//rka = (rka < 0) ? 0.0 : rka;
-	//lka = (lka < 0) ? 0.0 : lka;
-	//raa = (raa < 0) ? 0.0 : raa;
-	//laa = (laa < 0) ? 0.0 : laa;
-
-
-	//std::cout << rha << lha << rka << lka << raa << laa << std::endl;
 	return{ rha, lha, rka, lka, raa, laa };
-	//std::cout << "NA: " << rka << " " << lka << "\n";
-	//double time = sin(0.0002 * std::chrono::system_clock::now().time_since_epoch().count());
-	//return{rka, lka};
 }
+
+//TODO: move this
 int test2 = 0;
 double tempHigh = 0;
-
 int stepTime = 0;
+
 std::vector<double> Creature::calculateInputs()
 {
 	std::vector<double> inputs;
 	//Height
-	//double height = Util::normalize(hips->getRigidBody()->getCenterOfMassPosition().getY(), 0, 10);
 	double height = Util::normalize(hips->getPosition().y, 0, 10);
 	inputs.push_back(height);
 
@@ -363,13 +285,7 @@ std::vector<double> Creature::calculateInputs()
 	for (int i = 0; i < angularVel.size(); i++) {
 		angularVel[i] = Util::normalize(angularVel[i], -MAX, MAX);
 	}
-	//inputs.reserve(angularVel.size());
-	//inputs.insert(inputs.end(), angularVel.begin(), angularVel.end());
 
-	//for (int i = 0; i < inputs.size(); i++) {
-	//	std::cout << inputs.at(i) << "  ";
-	//}
-	//std::cout << std::endl;
 	inputs.push_back(getHips()->getRigidBody()->getOrientation().getX());
 	inputs.push_back(getHips()->getRigidBody()->getOrientation().getY());
 	inputs.push_back(getHips()->getRigidBody()->getOrientation().getZ());
@@ -379,26 +295,17 @@ std::vector<double> Creature::calculateInputs()
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getY(), -VEL_MAX, VEL_MAX));
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getZ(), -VEL_MAX, VEL_MAX));
 		
-		//Hinge angles
+	//Hinge angles
 	std::vector<double> inputAngles = getAllAngles();
-	//inputs.reserve(inputAngles.size());
 	inputs.insert(inputs.end(), inputAngles.begin(), inputAngles.end());
 
 	//MAX AND MIN BOOLS
 	getAllMaxMinAngles();
 	inputs.insert(inputs.end(), maxMinAngles.begin(), maxMinAngles.end());
+	
 	//Foot heights
-
 	double rightFootOnGround = (getRightFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
 	double leftFootOnGround = (getLeftFoot()->isCollidingWithGround()) ? 1.0 : -1.0;
-	
-	//getRightFoot()->setCollidingWithGround((getRightFoot()->getRigidBody()->getCenterOfMassPosition().getY() < 0.5));
-	//getLeftFoot()->setCollidingWithGround(getLeftFoot()->getRigidBody()->getCenterOfMassPosition().getY() < 0.5);
-
-	//double rightFootOnGround = (getRightFoot()->getRigidBody()->getCenterOfMassPosition().getY() < 0.5) ? 1.0 : -1.0;
-	//double leftFootOnGround = (getLeftFoot()->getRigidBody()->getCenterOfMassPosition().getY() < 0.5) ? 1.0 : -1.0;
-
-	//std::cout << "rightCollides: " << rightFootOnGround << "\n";
 
 	if (rightFootOnGround > 0) {
 		getRightFoot()->setColor(glm::vec3(0.1, 1.0, 0.1));
@@ -421,9 +328,7 @@ std::vector<double> Creature::calculateInputs()
 	inputs.push_back(Util::normalize(getDistanceFromHips(getRightFoot()), 2.5, 11));
 	inputs.push_back(Util::normalize(getDistanceFromHips(getLeftFoot()), 2.5, 11));
 
-	//std::cout << "distance: " << getDistanceFromHips(getRightFoot()) << "\n";
-	//std::cout << "r: " << hips->getPosition().y - getRightFoot()->getPosition().y << " ";
-	//std::cout << "l: " << hips->getPosition().y - getLeftFoot()->getPosition().y << "\n";
+
 	//const double RELATIVEPOSMAXMIN = 10;
 	//inputs.push_back(Util::normalize(getRelativePosition(getLeftFoot()).x, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
 	//inputs.push_back(Util::normalize(getRelativePosition(getLeftFoot()).y, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
@@ -515,20 +420,18 @@ void Creature::setAllTargetVelocities(std::vector<double>& resultVec)
 void Creature::setMaxMotorImpulses(double maxMotorImpulse)
 {
 	bool isEnableMotor = true;
+
 	//THEM HIPS
 	getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
 	getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
-	//double mU = 0.0;
 	getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
 	getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
-
 
 	//KnEES
 	getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
 	getLeftThigh()->getHinge("leftKnee")->enableMotor(isEnableMotor);
 	getRightThigh()->getHinge("rightKnee")->setMaxMotorImpulse(maxMotorImpulse);
 	getLeftThigh()->getHinge("leftKnee")->setMaxMotorImpulse(maxMotorImpulse);
-
 
 	//FEETS
 	getRightShin()->getHinge("rightAnkle")->enableMotor(isEnableMotor);
@@ -549,13 +452,11 @@ void Creature::setNeuralNetwork(NeuralNetwork neuralNetwork)
 
 NeuralNetwork Creature::getNeuralNetwork()
 {
-	//Creature* tempNN = new Creature(*m_neuralNetwork);
 	return m_neuralNetwork;
 }
 
 NeuralNetwork* Creature::getNN()
 {
-	//Creature* tempNN = new Creature(*m_neuralNetwork);
 	return &m_neuralNetwork;
 }
 
@@ -563,9 +464,7 @@ void Creature::updateNeuralNetwork()
 {
 	std::vector<double> inputs = calculateInputs();
 	m_neuralNetwork.forward(inputs);
-
 	m_neuralNetwork.getResults(resultVec);
-
 
 	setAllTargetVelocities(resultVec);
 }
@@ -643,7 +542,6 @@ double Creature::getHeight()
 
 void Creature::removeBodies(PhysicsManager * pm)
 {
-
 	hips->remove(pm);
 
 	rightThigh->remove(pm);
@@ -653,15 +551,11 @@ void Creature::removeBodies(PhysicsManager * pm)
 	leftThigh->remove(pm);
 	leftShin->remove(pm);
 	leftFoot->remove(pm);
-	//delete hips;
-	//std::cout << std::endl;
-
 }
 
 
 void Creature::removeConstraints(PhysicsManager * pm)
 {
-
 	hips->removeConstraint(pm);
 
 	rightThigh->removeConstraint(pm);
@@ -672,15 +566,10 @@ void Creature::removeConstraints(PhysicsManager * pm)
 	leftThigh->removeConstraint(pm);
 	leftShin->removeConstraint(pm);
 	leftFoot->removeConstraint(pm);
-	//delete hips;
-	//std::cout << std::endl;
-
 }
 
 void Creature::setColor(glm::vec3 color)
 {
-	//hips->setColor(color);
-
 	rightThigh->setColor(color);
 	rightShin->setColor(color);
 	rightFoot->setColor(color);
@@ -691,11 +580,8 @@ void Creature::setColor(glm::vec3 color)
 
 void Creature::incrementToAverage()
 {
-
 	double value = getHeight();
-
 	average = (avgSize * average + value) / (avgSize + 1);
-
 	avgSize++;
 }
 
@@ -751,8 +637,7 @@ void Creature::checkIfLegsCrossed()
 
 	double max = getHips()->getHinge("rightHip")->getUpperLimit();
 	double min = getHips()->getHinge("rightHip")->getLowerLimit();
-	//std::cout << max << "  " << min << "\n";
-	//std::cout << getHips()->getHinge("rightHip")->getHingeAngle() << "\n";
+
 	if (!reachedUpperR && getHips()->getHinge("rightHip")->getHingeAngle() >= max - 0.15) {
 		numTimesLegsCrossed++;
 		reachedUpperR = true;

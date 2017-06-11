@@ -15,7 +15,6 @@ private:
 	int neuronIndex;
 	static double getRandomWeight(std::default_random_engine &generator);
 	static double getRandomWeight(double min, double max, std::default_random_engine &generator);
-
 	static double activationFunction(double value);
 	
 public:

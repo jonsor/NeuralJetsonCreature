@@ -6,10 +6,8 @@ Purpose: Sets up and manages the render library OpenGL.
 @version 1.0 23.03.2017
 */
 
-
 #include "stdafx.h"
 #include "RenderManager.h"
-
 
 /**
 	Initializes a GLFW render window for the application to draw to.

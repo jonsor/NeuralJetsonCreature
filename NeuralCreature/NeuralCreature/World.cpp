@@ -31,7 +31,6 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
 //Leg control:
-
 btScalar targetAngle;
 btScalar targetAngleRightKnee;
 btScalar targetAngleLeftKnee;
@@ -78,15 +77,6 @@ void World::init() {
 	GLuint lightVAO, planeVAO;
 	initPlaneAndLight(& lightVAO, & planeVAO);
 
-	//Plane
-	//btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
-
-	//btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
-	//btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-	//btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-	//groundRigidBody->setFriction(2.0f);
-	//pm.addBody(groundRigidBody, 2, 1);
-
 	//Start render loop
 	renderLoop(window, planeVAO, lightVAO, lightingShader);
 
@@ -125,23 +115,9 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 
 	bool isEnableMotor = true;
 	btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
-
-	//Creates the creature
-	//Ceature creature(&pm, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Spider spider(&pm, glm::vec3(15.f, 4.f, 15.f));
 	
 	//Create genetic algorithm
 	GeneticAlgorithm ga(0.03, 0.05, 0.9, 30, 1, &pm);
-
-/*
-	Cube lightPosMarker(lightPos, glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 0.5f, 0.5f, 10);
-	pm.addBody(lightPosMarker.getRigidBody());
-
-	Cube fallCube(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
-	pm.addBody(fallCube.getRigidBody());
-*/
-	//Cube cameraCollisionBox(glm::vec3(0.0f, 1.0f, 2.0f), glm::vec3(0.2f, 0.3f, 0.7f), 1.0f, 1.0f, 1.0f, 5);
-	//pm.addBody(cameraCollisionBox.getRigidBody());
 
 	double fps = 0;
 	float accumilatedTime = 0;
@@ -167,23 +143,15 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 			
 			fps++;
 			accumilatedTime = 0;
-			//double time = sin(0.000002 * std::chrono::system_clock::now().time_since_epoch().count() );
-			//std::cout << time << std::endl;
 		}
+
 		if (currentFrame - startTime >= 1.0)
 		{
-			// Display the frame count here any way you want.
-			//std::cout << frameCount << std::endl;
 			frameCount = 0;
-			/*startTime = glfwGetTime();*/
 		}
-		//if (showFPS == 100) {
-		//	std::cout << "fps: " << fps << std::endl;
-		//	fps = 0;
-		//	showFPS = 0;
-		//}
 
 		showFPS++;
+
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 		doMovement();
@@ -193,12 +161,7 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (applyImpulse) {
-			//fallCube.getRigidBody()->activate();
-			//fallCube.getRigidBody()->applyImpulse(btVector3(5, 10, 3), btVector3(1, 0, 0));
 			applyImpulse = false;
-			//float rand = std::rand() % 360;
-			//targetAngle = glm::radians(rand);
-			//std::cout << targetAngle << std::endl;
 			if (simulate) {
 				simulate = false;
 			}
@@ -239,7 +202,6 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 		//GLint vertexColorLocation = glGetUniformLocation(lightingShader.program, "customColor");
 
 		//DRAW PLANE
-		//glUniform4f(vertexColorLocation, 0.2f, 0.5f, 0.3f, 1.0f);
 		model = glm::rotate(model, 1.57079633f, glm::vec3(1.0f, 0.0f, 0.0f));
 		GLint modelLoc = glGetUniformLocation(lightingShader.program, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -248,54 +210,19 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 
 		if(simulate) pm.update(1, 1);
 
-		//Camera box
-		//cameraCollisionBox.setPosition(glm::vec3(camera.Position.x, camera.Position.y, camera.Position.z));
-		//btDefaultMotionState* ms = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(camera.Position.x, camera.Position.y, camera.Position.z)));
-		//cameraCollisionBox.getRigidBody()->setMotionState(ms);
-		//cameraCollisionBox.updatePhysics();
-
-		//
-		//spider.updatePhysics();
-		//spider.render(lightingShader);
-
-		/*
-		lightPosMarker.render(lightingShader);
-
-		fallCube.updatePhysics();
-		fallCube.render(lightingShader);
-		*/
-		//for (int i = 0; i < cubes.size(); i++) {
-		//	cubes[i].updatePhysics();
-		//	cubes[i].render(lightingShader);
-
-		//}
-
-		//Update and render Creature
-		//creature.activate();
-		//creature.updatePhysics();
-		//creature.render(lightingShader);
 		numLoops++;
 		ga.updateCreatures(lightingShader, render, &pm);
-		// && !ga.keepRunning() || numLoops >= 1500
 		if (!ga.keepRunning() || numLoops >= 1500) {
 			GLfloat thisTime = glfwGetTime();
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
 			startTime = glfwGetTime();
 			ga.createNewGeneration(&pm);
 			numLoops = 0;
-			//simTime = rand() % 300 + 400;
 		}
 		
 		//Swap the screen buffers
 		glfwSwapBuffers(window);
-
 	}
-
-	//pm.removeBody(fallCube.getRigidBody());
-	//delete fallCube.getRigidBody()->getMotionState();
-	//delete fallCube.getRigidBody();
-
-	
 }
 
 /**

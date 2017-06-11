@@ -1,4 +1,9 @@
+/**
+	Shader.h
+	Purpose: Shader for the 3D rendereing.
 
+	@Author Joey de Vries, learnopengl.com
+*/
 
 #ifndef SHADER_H
 #define SHADER_H

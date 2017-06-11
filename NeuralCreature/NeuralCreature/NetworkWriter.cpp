@@ -1,3 +1,11 @@
+/**
+NetworkWriter.cpp
+Purpose: Writes and stores network, generation, fitness and distance data. Also loads.
+
+@author Sjur Barndon, Jonas Sørsdal
+@version 1.0 5.06.2017
+*/
+
 #include "stdafx.h"
 #include "NetworkWriter.h"
 

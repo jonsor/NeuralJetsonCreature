@@ -4,6 +4,7 @@
 #include "Neuron.h"
 
 typedef std::vector<Neuron> Layer;
+
 class NeuralNetwork
 {
 private:

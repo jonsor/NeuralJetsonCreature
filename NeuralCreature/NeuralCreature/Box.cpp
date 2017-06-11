@@ -6,7 +6,6 @@ Purpose: Creates Boxs to use in the world. Also renders, updates physics and cre
 @version 1.0 23.03.2017
 */
 
-
 #include "stdafx.h"
 #include "Box.h"
 
@@ -70,6 +69,7 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 
 	angle = 0.0f;
 	axisOfRotation = glm::vec3(1.0f, 1.0f, 1.0f);
+	
 	//Box STUFF
 	GLuint BoxVBO;
 	glGenVertexArrays(1, &BoxVAO);
@@ -110,6 +110,7 @@ void Box::render(Shader shader)
 	glUniform3f(objectColorLoc, color.x, color.y, color.z);
 	glm::mat4 model;
 	model = glm::translate(model, position);
+
 	//Hacky roation fix - doesnt render if axis is equal to zero
 	if (axisOfRotation.x == 0 || axisOfRotation.y == 0 || axisOfRotation.z == 0) {
 		axisOfRotation.x += 0.000000001f;
@@ -120,8 +121,6 @@ void Box::render(Shader shader)
 	GLint modelLoc = glGetUniformLocation(shader.program, "model"); 
 
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); 
-	//GLfloat angle = 20.0f * i;
-	//model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	glBindVertexArray(0);
@@ -142,8 +141,8 @@ void Box::setPosition(glm::vec3 position)
 	this->position = position;
 }
 
-void Box::reset() {
-
+void Box::reset() 
+{
 	rigidBody->getMotionState()->setWorldTransform(startPos);
 	rigidBody->setWorldTransform(startPos);
 	rigidBody->clearForces();
@@ -212,8 +211,6 @@ void Box::updatePhysics()
 	@param notCollision Wether or not the two joint Boxs should be able to collide.
 	@param pm A pointer to the Pysics Manager to add the hinges to the world.
 	@param name The key for hinge storage.
-
-
 */
 void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name)
 {
@@ -225,9 +222,9 @@ void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec
 		Util::convertToBtVector3(pivotB),
 		Util::convertToBtVector3(axisA),
 		Util::convertToBtVector3(axisB),
-		useReferenceFrameA);
+		useReferenceFrameA
+	);
 	
-
 	//Set constraint limit
 	const btScalar low = -PI;
 	const btScalar high = PI;
@@ -237,10 +234,8 @@ void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec
 	//Add to hinge array
 	hinges[name] = hingeConstraint;
 	hingeConstraint = nullptr;
-
-
-	
 }
+
 /**
 	Adds a new hinge to this Box that attaches BoxB.
 
@@ -345,19 +340,14 @@ bool Box::isCollidingWithGround() {
 
 void Box::remove(PhysicsManager * pm)
 {
-
 	pm->removeBody(rigidBody);
 }
 
 void Box::removeConstraint(PhysicsManager * pm)
 {
-
-
 	for (std::map<std::string, btHingeConstraint*>::iterator itr = hinges.begin(); itr != hinges.end(); itr++)
 	{
-
 		pm->removeConstraint(itr->second);
-		//delete (&itr->first);
 		delete (itr->second);
 	}
 
@@ -365,12 +355,10 @@ void Box::removeConstraint(PhysicsManager * pm)
 
 Box::~Box()
 {
-
 	delete fallShape;
 	delete collisionShape;
 	delete fallMotionState;
 	delete rigidBody;
-	//rigidBody = nullptr;
 	hinges.clear();
 	joints.clear();
 

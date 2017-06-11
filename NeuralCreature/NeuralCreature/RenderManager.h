@@ -15,6 +15,7 @@ class RenderManager
 private:
 	void initGLFW();
 	void initView(GLFWwindow* window);
+
 public:
 	GLFWwindow* initWindow(GLuint width, GLuint height);
 	void initGLEW(GLFWwindow* window);

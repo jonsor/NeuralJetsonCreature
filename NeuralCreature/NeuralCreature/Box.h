@@ -34,13 +34,15 @@ private:
 	GLfloat angle;
 	btScalar mass;
 	glm::vec3 axisOfRotation;
+
+	//Bullet physics variables
 	btCollisionShape* fallShape;
 	btDefaultMotionState* fallMotionState;
-	//Bullet physics variables
 	btCollisionShape* collisionShape;
 	btRigidBody* rigidBody;
 	std::map<std::string, btHingeConstraint*> hinges;
 	std::map<std::string, btPoint2PointConstraint*> joints;
+
 	const double PI = 3.141592653589793238463;
 	btTransform startPos;
 	bool groundCollision;
