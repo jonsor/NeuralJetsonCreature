@@ -23,8 +23,22 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 	lastFitness = 0;
 	timeNotWritten = 0;
 
-	currentStep = 0;
+	m_currentStep = 0;
 	m_keepRunning = true;
+
+	fitnessType = FITNESS_JUMPING;
+
+	if (fitnessType == FITNESS_WALKING) {
+		std::cout << "Fitness type: walking\n";
+	}
+	else if (fitnessType == FITNESS_JUMPING) {
+		std::cout << "Fitness type: jumping\n";
+
+	}
+	else if (fitnessType == FITNESS_STANDING) {
+		std::cout << "Fitness type: standing\n";
+
+	}
 
 }
 
@@ -69,7 +83,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 	//}
 
-	currentStep = 0;
+	m_currentStep = 0;
 	m_keepRunning = true;
 
 	timeNotWritten++;
@@ -145,8 +159,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			/*int parentAind = rand() % (numParentCreatures + 1);*/
 
 			int index = i;
-			if (index >= 20) {
-				index = 20;
+			if (index >= partSize) {
+				index = partSize;
 			}
 			std::uniform_int_distribution<int> distribution(0, index);
 			double prob = distribution(m_overEngine);
@@ -208,11 +222,11 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	}
 	lastFitness = bestFit;
 	//if(timesNoImprovement >= 3) {
-	//	if (m_mutationChance < 0.3) {
-	//		m_mutationChance *= 1.1;
+	//	if (m_mutationChance < 0.005) {
+	//		m_mutationChance *= 0.9;
 	//	}
-	//	if (m_mutationRate < 0.5) {
-	//		m_mutationRate *= 1.1;
+	//	if (m_mutationRate > 0.005) {
+	//		m_mutationRate *= 0.9;
 	//	}
 	//	std::cout << "mutation rate: " << m_mutationRate << "\n";
 	//} else {
@@ -315,7 +329,7 @@ NeuralNetwork GeneticAlgorithm::crossOver(NeuralNetwork * parent, NeuralNetwork 
 }
 
 
-double GeneticAlgorithm::evaluateFitness(Creature* creature)
+double GeneticAlgorithm::evaluateFitness(Creature* creature, int fitnessType, int currentStep)
 {
 	double numSteps = creature->getNumerOfSteps() + 1;
 	double distanceWalked = getDistanceWalked(creature);
@@ -323,6 +337,11 @@ double GeneticAlgorithm::evaluateFitness(Creature* creature)
 	double maxHeight = creature->getMaxHeight();
 
 	double averageFeetDistance = creature->getAverageFeetStartPos() - creature->getAverageFeetPosition();
+
+	glm::vec3 rightFoot = creature->getRightFoot()->getPosition();
+	glm::vec3 leftFoot = creature->getLeftFoot()->getPosition();
+
+	double feetDistanceFromEachOther = glm::distance(rightFoot, leftFoot);
 	////std::cout << creature->getTimeOnGround() << "\n";
 	//double groundTimeN = Util::normalizeSigned(creature->getTimeOnGround(), 0, 100);
 	double groundTimeN = creature->getTimeOnGround();
@@ -340,7 +359,14 @@ double GeneticAlgorithm::evaluateFitness(Creature* creature)
 	//std::cout << "ground/stand: " << groundTimeN << "  " <<standTimeN << "\n";
 
 	//std::cout << "averageFeetDistance: " << averageFeetDistance << "\n";
-	double fitness = distanceWalked * averageHeight * numSteps;
+	double fitness = 0;
+	if (fitnessType == FITNESS_WALKING) {
+		fitness = distanceWalked * averageHeight * numSteps;
+	}else if (fitnessType == FITNESS_JUMPING) {
+		fitness = maxHeight;
+	}else if (fitnessType == FITNESS_STANDING) {
+		fitness = averageHeight * (double)currentStep / feetDistanceFromEachOther;
+	}
 	//if (distanceWalked < 0 && averageFeetDistance < 0) {
 	//	fitness *= -1;
 	//}
@@ -355,14 +381,14 @@ void GeneticAlgorithm::mutate(Creature* creature, double mutationRate, double mu
 
 void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManager* pm)
 {
-	currentStep++;
+	m_currentStep++;
 
-	const int NUM_THREADS = 50;
+	const int NUM_THREADS = 30;
 	std::thread threads[NUM_THREADS];
 	int i;
 
 	for (i = 0; i < NUM_THREADS; i++) {
-		threads[i] = std::thread(updateCreature, shader, creatures[i]);
+		threads[i] = std::thread(updateCreature, creatures[i], fitnessType, m_currentStep);
 
 	}
 	for (int i = 0; i < NUM_THREADS; i++) {
@@ -378,7 +404,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 			//creatures.at(i)->updatePhysics();
 
 			//creatures.at(i)->incrementToAverage();
-			if (currentStep > 100) {
+			if (m_currentStep > 100) {
 				creatures[i]->updateMaxHeight(creatures[i]->getHeight());
 
 			}
@@ -442,7 +468,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 	}
 }
 
-void GeneticAlgorithm::updateCreature(Shader shader, Creature* creature)
+void GeneticAlgorithm::updateCreature(Creature* creature, int fitnessType, int currentStep)
 {
 	if (creature->shouldUpdate()) {
 		creature->activate();
@@ -461,7 +487,7 @@ void GeneticAlgorithm::updateCreature(Shader shader, Creature* creature)
 		//}
 
 		if (creature->getHeight() < 5.2) {
-			creature->setFitness(evaluateFitness(creature));
+			creature->setFitness(evaluateFitness(creature, fitnessType, currentStep));
 			creature->setShouldUpdate(false);
 		}
 	}
