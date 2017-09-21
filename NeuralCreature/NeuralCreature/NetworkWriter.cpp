@@ -14,7 +14,7 @@ NetworkWriter::NetworkWriter()
 {
 }
 
-void NetworkWriter::writeToFile(std::vector<Creature*> creatures, int generation, unsigned mainSeed) {
+void NetworkWriter::writeToFile(std::vector<Biped*> creatures, int generation, unsigned mainSeed) {
 	writeToFile(creatures, "network.txt", generation, mainSeed);
 }
 
@@ -28,13 +28,13 @@ void NetworkWriter::writeDistance(double distance)
 	writeDistance(distance, "distancePlot.txt");
 }
 
-void NetworkWriter::readFromFile(std::vector<Creature*> creatures) {
+void NetworkWriter::readFromFile(std::vector<Biped*> creatures) {
 	readFromFile(creatures, "network.txt");
 
 }
 
 
-void NetworkWriter::writeToFile(std::vector<Creature*> creatures, std::string fileName, int generation, unsigned mainSeed)
+void NetworkWriter::writeToFile(std::vector<Biped*> creatures, std::string fileName, int generation, unsigned mainSeed)
 {
 	std::cout << "Writing networks to file...\n";
 	std::ofstream myfile;
@@ -66,7 +66,7 @@ void NetworkWriter::writeFitness(double bestFitness, std::string fileName)
 	myfile.close();
 }
 
-void NetworkWriter::readFromFile(std::vector<Creature*> creatures, std::string fileName)
+void NetworkWriter::readFromFile(std::vector<Biped*> creatures, std::string fileName)
 {
 
 	std::cout << "Reading networks from file...\n";

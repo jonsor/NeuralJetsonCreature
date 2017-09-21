@@ -26,6 +26,7 @@ class Box
 {
 private:
 	glm::vec3 position;
+	glm::vec3 previousPosition;
 	glm::vec3 color;
 	GLfloat width;
 	GLfloat height;
@@ -42,6 +43,7 @@ private:
 	btRigidBody* rigidBody;
 	std::map<std::string, btHingeConstraint*> hinges;
 	std::map<std::string, btPoint2PointConstraint*> joints;
+	std::map<std::string, btGeneric6DofConstraint*> dofConstraints;
 
 	const double PI = 3.141592653589793238463;
 	btTransform startPos;
@@ -61,8 +63,10 @@ public:
 	void updatePhysics();
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
+	void addDOFConstraint(Box * cubeB, bool notCollision, btScalar xOffset, PhysicsManager * pm, std::string name);
 	void addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
 	btHingeConstraint* getHinge(std::string name);
+	btGeneric6DofConstraint* getdofConstraint(std::string name);
 	btPoint2PointConstraint* getJoint(std::string name);
 	void setHingeAngles(std::string name, const btScalar minAngle, const btScalar maxAngle);
 	GLfloat getWidth();
@@ -73,6 +77,7 @@ public:
 	void remove(PhysicsManager * pm);
 	void removeConstraint(PhysicsManager * pm);
 	void reset();
+	glm::vec3 getPreviousPosition();
 	~Box();
 };
 

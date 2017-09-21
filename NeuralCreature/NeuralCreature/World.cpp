@@ -117,7 +117,8 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 	btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 	
 	//Create genetic algorithm
-	GeneticAlgorithm ga(0.03, 0.05, 0.9, 30, 1, &pm);
+	// mutationRate, mutationChance(for every weight), crossoverProb
+	GeneticAlgorithm ga(0.05, 0.05, 0.9, 30, 1, &pm);
 
 	double fps = 0;
 	float accumilatedTime = 0;
@@ -202,7 +203,7 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 		//GLint vertexColorLocation = glGetUniformLocation(lightingShader.program, "customColor");
 
 		//DRAW PLANE
-		model = glm::rotate(model, 1.57079633f, glm::vec3(1.0f, 0.0f, 0.0f));
+		//model = glm::rotate(model, 1.57079633f, glm::vec3(1.0f, 0.0f, 0.0f));
 		GLint modelLoc = glGetUniformLocation(lightingShader.program, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(planeVAO);
@@ -217,6 +218,7 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
 			startTime = glfwGetTime();
 			ga.createNewGeneration(&pm);
+			std::cout << "NumLoops: " << numLoops << "\n";
 			numLoops = 0;
 		}
 		
@@ -255,12 +257,12 @@ void World::doMovement()
 */
 void World::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 {
-	float s = 50.0f;
+	float s = 300.0f;
 	GLfloat rectangleVertices[] = {
-		s,  s, 0.0f,  // Top Right
-		s, -s, 0.0f,  // Bottom Right
-		-s, -s, 0.0f,  // Bottom Left
-		-s,  s, 0.0f   // Top Left 
+		s,  0.f, s,  // Top Right
+		s, 0.f, -s,  // Bottom Right
+		-s, 0.f, -s,  // Bottom Left
+		-s,  0.f, s   // Top Left 
 	};
 	GLuint indices[] = {  // Note that we start from 0!
 		0, 1, 3,  // First Triangle

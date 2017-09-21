@@ -4,7 +4,7 @@
 #include "Util.h"
 #include <thread>
 
-class Creature
+class Biped
 {
 
 private:
@@ -18,6 +18,7 @@ private:
 	const double PI = 3.141592653589793238463;
 	glm::vec3 centerPosition;
 	glm::vec3 m_startPosition;
+	glm::vec3 m_previousPosition;
 	std::vector<double> maxMinAngles;
 	std::vector<double> memoryNeurons;
 	NeuralNetwork m_neuralNetwork;
@@ -38,9 +39,12 @@ private:
 	bool reachedUpperL = false;
 	double averageFeetStartPos;
 	bool m_shouldUpdate;
-
+	double rotationAmount = 0;
+	double timeAlive = 0;
+	double noMovementPenalty;
+	double m_totalSpeed = 0;
 public:
-	Creature(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
+	Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);
 	void updatePhysics();
 	Box* getHips();
@@ -57,6 +61,7 @@ public:
 	double get2DAngle(Box * Box1, Box* Box2);
 	void activate();
 	void getAllMaxMinAngles();
+	void getAllMaxMinAngles2();
 	std::vector<double> getAllAngles();
 	std::vector<double> calculateInputs();
 	std::vector<double> getAllAngularVelocities();
@@ -95,6 +100,14 @@ public:
 	double getDistanceFromHips(Box * box);
 	void setShouldUpdate(bool update);
 	bool shouldUpdate();
-	~Creature();
+
+	void checkRotation();
+	double getRotationAmount();
+	double getTimeAlive();
+	void checkIfMoving();
+	double getNoMovementPenalty();
+	void calculateSpeed();
+	double getTotalSpeed();
+	~Biped();
 };
 

@@ -34,8 +34,10 @@ public:
 	void addBody(btRigidBody* rigidBody, int id, int collidesWith);
 	void addNewConstraint(btHingeConstraint* hingeConstraint, bool isDisableCollisionsBetweenLinkedBodies);
 	void addNewConstraint(btPoint2PointConstraint* jointConstraint, bool isDisableCollisionsBetweenLinkedBodies);
+	void addNewConstraint(btGeneric6DofConstraint * hingeConstraint, bool isDisableCollisionsBetweenLinkedBodies);
 	void removeBody(btRigidBody* rigidBody);
 	void removeConstraint(btHingeConstraint * hingeConstraint);
+	void removeConstraint(btGeneric6DofConstraint * hingeConstraint);
 	btRigidBody* getGroundShape();
 	void reset();
 	~PhysicsManager();

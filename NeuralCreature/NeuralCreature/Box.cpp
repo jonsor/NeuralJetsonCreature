@@ -95,6 +95,8 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 
 	rigidBody->getMotionState()->getWorldTransform(startPos);
 	groundCollision = false;
+
+	previousPosition = position;
 }
 
 /**
@@ -147,6 +149,10 @@ void Box::reset()
 	rigidBody->setWorldTransform(startPos);
 	rigidBody->clearForces();
 }
+glm::vec3 Box::getPreviousPosition()
+{
+	return previousPosition;
+}
 glm::vec3 Box::getPosition()
 {
 	return position;
@@ -186,6 +192,7 @@ btRigidBody* Box::getRigidBody()
 */
 void Box::updatePhysics()
 {
+	previousPosition = position;
 	btTransform trans;
 	rigidBody->getMotionState()->getWorldTransform(trans);
 	float mat[16];
@@ -212,29 +219,29 @@ void Box::updatePhysics()
 	@param pm A pointer to the Pysics Manager to add the hinges to the world.
 	@param name The key for hinge storage.
 */
-void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name)
-{
-	bool useReferenceFrameA = false;
-	btHingeConstraint* hingeConstraint = new btHingeConstraint(
-		*rigidBody,
-		*BoxB->getRigidBody(),
-		Util::convertToBtVector3(pivotA),
-		Util::convertToBtVector3(pivotB),
-		Util::convertToBtVector3(axisA),
-		Util::convertToBtVector3(axisB),
-		useReferenceFrameA
-	);
-	
-	//Set constraint limit
-	const btScalar low = -PI;
-	const btScalar high = PI;
-	hingeConstraint->setLimit(low, high);
-	pm->addNewConstraint(hingeConstraint, notCollision);
-
-	//Add to hinge array
-	hinges[name] = hingeConstraint;
-	hingeConstraint = nullptr;
-}
+//void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name)
+//{
+//	bool useReferenceFrameA = false;
+//	btHingeConstraint* hingeConstraint = new btHingeConstraint(
+//		*rigidBody,
+//		*BoxB->getRigidBody(),
+//		Util::convertToBtVector3(pivotA),
+//		Util::convertToBtVector3(pivotB),
+//		Util::convertToBtVector3(axisA),
+//		Util::convertToBtVector3(axisB),
+//		useReferenceFrameA
+//	);
+//	
+//	//Set constraint limit
+//	const btScalar low = -PI;
+//	const btScalar high = PI;
+//	hingeConstraint->setLimit(low, high);
+//	pm->addNewConstraint(hingeConstraint, notCollision);
+//
+//	//Add to hinge array
+//	hinges[name] = hingeConstraint;
+//	hingeConstraint = nullptr;
+//}
 
 /**
 	Adds a new hinge to this Box that attaches BoxB.
@@ -273,6 +280,55 @@ void Box::addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec
 
 
 }
+
+void Box::addDOFConstraint(Box * cubeB, bool notCollision, btScalar xOffset, PhysicsManager * pm, std::string name)
+{
+
+	btTransform frameA = btTransform::getIdentity();
+	frameA.getBasis().setEulerZYX(0, 0, PI / 2);
+	frameA.setOrigin(btVector3(btScalar(xOffset), btScalar(-2.2), btScalar(0.)));
+
+
+	btTransform frameB = btTransform::getIdentity();
+	frameB.getBasis().setEulerZYX(0, 0, PI / 2);
+	frameB.setOrigin(btVector3(btScalar(0.), btScalar(2.2), btScalar(0.)));
+
+	btGeneric6DofConstraint* dofConstraint = new btGeneric6DofConstraint(*rigidBody,
+		*cubeB->getRigidBody(), frameA, frameB, true);
+
+	dofConstraint->setLinearLowerLimit(btVector3(0.f, 0.f, 0.f));
+	dofConstraint->setLinearUpperLimit(btVector3(0.f, 0.f, 0.f));
+
+	// x = rotasjon, y = fremover/bakover, z = side til side
+	if (name == "rightHip") {
+		dofConstraint->setAngularLowerLimit(btVector3(-PI / 8, -PI / 8, -0.1f));
+		dofConstraint->setAngularUpperLimit(btVector3(PI / 8, PI / 2.5, PI / 6));
+	}
+	else {
+		dofConstraint->setAngularLowerLimit(btVector3(-PI / 8, -PI / 8, -PI / 6));
+		dofConstraint->setAngularUpperLimit(btVector3(PI / 8, PI / 2.5, 0.1f));
+	}
+
+	for (int i = 0; i<3; i++)
+	{
+		dofConstraint->getRotationalLimitMotor(i)->m_maxLimitForce = SIMD_INFINITY;
+		dofConstraint->getRotationalLimitMotor(i)->m_stopERP = btScalar(1.0);
+		dofConstraint->getRotationalLimitMotor(i)->m_limitSoftness = btScalar(1.0);
+	}
+
+	pm->addNewConstraint(dofConstraint, notCollision);
+
+	// 0 = spin, 1 = fremover/bakover, 2 = side til side
+	//int v = 0;
+	//dofConstraint->getRotationalLimitMotor(v)->m_enableMotor = true;
+	//dofConstraint->getRotationalLimitMotor(v)->m_maxMotorForce = 100.0f;
+	//dofConstraint->getRotationalLimitMotor(v)->m_targetVelocity = -10.0f;
+
+	//Add to hinge array
+	dofConstraints[name] = dofConstraint;
+	dofConstraint = nullptr;
+}
+
 /**
 	Adds a new hinge to this Box that attaches BoxB.
 
@@ -295,6 +351,11 @@ void Box::addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Box* BoxB, bool notCollis
 btHingeConstraint* Box::getHinge(std::string name)
 {
 	return hinges[name];
+}
+
+btGeneric6DofConstraint * Box::getdofConstraint(std::string name)
+{
+	return dofConstraints[name];
 }
 
 btPoint2PointConstraint* Box::getJoint(std::string name)
@@ -343,12 +404,22 @@ void Box::remove(PhysicsManager * pm)
 	pm->removeBody(rigidBody);
 }
 
+bool alreadyRemoved = false;
 void Box::removeConstraint(PhysicsManager * pm)
 {
-	for (std::map<std::string, btHingeConstraint*>::iterator itr = hinges.begin(); itr != hinges.end(); itr++)
-	{
-		pm->removeConstraint(itr->second);
-		delete (itr->second);
+	if (!alreadyRemoved) {
+		for (std::map<std::string, btHingeConstraint*>::iterator itr = hinges.begin(); itr != hinges.end(); itr++)
+		{
+			pm->removeConstraint(itr->second);
+			delete (itr->second);
+		}
+
+		for (std::map<std::string, btGeneric6DofConstraint*>::iterator itr = dofConstraints.begin(); itr != dofConstraints.end(); itr++)
+		{
+			pm->removeConstraint(itr->second);
+			delete (itr->second);
+		}
+		//alreadyRemoved = true;
 	}
 
 }
@@ -361,5 +432,6 @@ Box::~Box()
 	delete rigidBody;
 	hinges.clear();
 	joints.clear();
+	dofConstraints.clear();
 
 }

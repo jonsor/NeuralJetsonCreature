@@ -22,8 +22,10 @@ void PhysicsManager::initPhysics()
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 	dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));//-9.81f
 
-	double x = ((double)rand()) / ((double)RAND_MAX) / 2 - 0.25;
-	x = 0;
+	double x = ((double)rand()) / ((double)RAND_MAX) / 2 -0.25;
+	x /= 100;
+	std::cout << "x: " << x << "\n";
+	x = 0; 
 	groundShape = new btStaticPlaneShape(btVector3(x, 1, x), 1);
 
 	btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
@@ -78,6 +80,10 @@ void PhysicsManager::addNewConstraint(btPoint2PointConstraint* jointConstraint, 
 {
 	dynamicsWorld->addConstraint(jointConstraint, isDisableCollisionsBetweenLinkedBodies);
 }
+void PhysicsManager::addNewConstraint(btGeneric6DofConstraint* hingeConstraint, bool isDisableCollisionsBetweenLinkedBodies)
+{
+	dynamicsWorld->addConstraint(hingeConstraint, isDisableCollisionsBetweenLinkedBodies);
+}
 
 
 void PhysicsManager::removeBody(btRigidBody * rigidBody)
@@ -87,6 +93,11 @@ void PhysicsManager::removeBody(btRigidBody * rigidBody)
 }
 
 void PhysicsManager::removeConstraint(btHingeConstraint* hingeConstraint)
+{
+	dynamicsWorld->removeConstraint(hingeConstraint);
+}
+
+void PhysicsManager::removeConstraint(btGeneric6DofConstraint* hingeConstraint)
 {
 	dynamicsWorld->removeConstraint(hingeConstraint);
 }
@@ -123,6 +134,7 @@ void PhysicsManager::reset()
 
 
 	double x = ((double)rand()) / ((double)RAND_MAX) / 2 - 0.25;
+	//x /= 100;
 	x = 0;
 	groundShape = new btStaticPlaneShape(btVector3(x, 1, x), 1);
 
