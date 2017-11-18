@@ -28,6 +28,15 @@ double Util::normalize(double x, double min, double max)
 	return result;
 }
 
+double Util::scaleToRange(double x, double min, double max)
+{
+	//Normalize to 0, 1
+	double result = (x + 1) / 2;
+	//Scale to range
+	double scaled = (result*(max - min)) + min;
+	return scaled;
+}
+
 double Util::normalizeSigned(double x, double min, double max)
 {
 	return (x - min) / (max - min);
@@ -57,3 +66,4 @@ std::vector<int> Util::getRandomIndices(int sizeOfVec, int numIndices) {
 	
 	return randomIndices;
 }
+

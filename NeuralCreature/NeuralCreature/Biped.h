@@ -1,6 +1,6 @@
 #pragma once
 #include "Box.h"
-#include "NeuralNetwork.h"
+#include "RecurrentNeuralNetwork.h"
 #include "Util.h"
 #include <thread>
 
@@ -21,7 +21,7 @@ private:
 	glm::vec3 m_previousPosition;
 	std::vector<double> maxMinAngles;
 	std::vector<double> memoryNeurons;
-	NeuralNetwork m_neuralNetwork;
+	RecurrentNeuralNetwork m_neuralNetwork;
 	std::vector<double> resultVec;
 	int numberOfSteps;
 	char lastFootThatStepped;
@@ -58,7 +58,6 @@ public:
 	glm::vec3 getPosition();
 	glm::vec3 getStartPosition();
 	glm::vec3 getRelativePosition(Box* Box);
-	double get2DAngle(Box * Box1, Box* Box2);
 	void activate();
 	void getAllMaxMinAngles();
 	void getAllMaxMinAngles2();
@@ -66,11 +65,13 @@ public:
 	std::vector<double> calculateInputs();
 	std::vector<double> getAllAngularVelocities();
 	void setAllTargetVelocities(std::vector<double> &resultVec);
+	btScalar computeTargetVelocity(btScalar hingeAngle, btScalar targetAngle, double dt);
 	void setMaxMotorImpulses(double maxMotorImpulse);
+	void quaternionToEuler(btQuaternion & quat, double & rotx, double & roty, double & rotz);
 	void createNeuralNetwork(std::vector<int> topology, std::default_random_engine &engine);
-	void setNeuralNetwork(NeuralNetwork neuralNetwork);
-	NeuralNetwork getNeuralNetwork();
-	NeuralNetwork * getNN();
+	void setNeuralNetwork(RecurrentNeuralNetwork neuralNetwork);
+	RecurrentNeuralNetwork getNeuralNetwork();
+	RecurrentNeuralNetwork * getNN();
 	void updateNeuralNetwork();
 	void mutate(double mutationRate, double mutationChance, std::default_random_engine engine);
 	void reset();
@@ -108,6 +109,7 @@ public:
 	double getNoMovementPenalty();
 	void calculateSpeed();
 	double getTotalSpeed();
+	double getDistanceWalked();
 	~Biped();
 };
 

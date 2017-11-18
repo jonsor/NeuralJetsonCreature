@@ -118,7 +118,7 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 	
 	//Create genetic algorithm
 	// mutationRate, mutationChance(for every weight), crossoverProb
-	GeneticAlgorithm ga(0.05, 0.05, 0.9, 30, 1, &pm);
+	GeneticAlgorithm ga(0.05, 0.05, 0.9, 10, 1, &pm);
 
 	double fps = 0;
 	float accumilatedTime = 0;
@@ -131,6 +131,7 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 	GLfloat startTime = glfwGetTime();
 	int frameCount = 0;
 	int simTime = 600;
+	int terminationFrame = 20;
 
 	//START MAIN LOOP:
 	while (!glfwWindowShouldClose(window)) {
@@ -213,7 +214,8 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 
 		numLoops++;
 		ga.updateCreatures(lightingShader, render, &pm);
-		if (!ga.keepRunning() || numLoops >= 1500) {
+		if (!ga.keepRunning() || numLoops >= 1000) {
+			terminationFrame+= 10;
 			GLfloat thisTime = glfwGetTime();
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
 			startTime = glfwGetTime();

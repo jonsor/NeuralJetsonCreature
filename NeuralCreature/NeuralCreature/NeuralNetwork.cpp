@@ -62,6 +62,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<Layer> networkLayers)
 
 void NeuralNetwork::forward(const std::vector<double>& inputVals)
 {
+	numForwards++;
 	//Set input values on first layer
 	for (int i = 0; i < inputVals.size(); i++) {
 		layers[0][i].setOutputVal(inputVals[i]);
@@ -72,7 +73,7 @@ void NeuralNetwork::forward(const std::vector<double>& inputVals)
 		Layer &prevLayer = layers[layerNum - 1];
 		//size() - 1 to exclude bias layer
 		for (int i = 0; i < layers[layerNum].size() - 1; i++) {
-			layers[layerNum][i].forward(prevLayer);
+			layers[layerNum][i].forward(prevLayer, numForwards);
 		}
 	}
 

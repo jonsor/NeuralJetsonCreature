@@ -8,7 +8,7 @@ typedef std::vector<Neuron> Layer;
 class NeuralNetwork
 {
 private:
-
+	int numForwards = 0;
 	std::vector<Layer> layers; //layers[layerNum][neuronNum]
 public:
 	NeuralNetwork();

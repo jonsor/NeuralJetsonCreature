@@ -1,9 +1,9 @@
 #pragma once
 #include "Box.h"
-#include "NeuralNetwork.h"
+#include "RecurrentNeuralNetwork.h"
 #include "Util.h"
 #include <thread>
-
+#include "NEATNetwork.h"
 class Dog
 {
 
@@ -26,9 +26,12 @@ private:
 	glm::vec3 centerPosition;
 	glm::vec3 m_startPosition;
 	glm::vec3 m_previousPosition;
+	glm::vec3 m_targetPosition;
+	double maxDistanceToTarget;
 	std::vector<double> maxMinAngles;
 	std::vector<double> memoryNeurons;
-	NeuralNetwork m_neuralNetwork;
+	RecurrentNeuralNetwork m_neuralNetwork;
+	NEATNetwork m_neatNeuralNetwork;
 	std::vector<double> resultVec;
 	int numberOfSteps;
 	char lastFootThatStepped;
@@ -50,6 +53,7 @@ private:
 	double timeAlive = 0;
 	double noMovementPenalty;
 	double m_totalSpeed = 0;
+	double jointsAtLimitPenalty = 0;
 public:
 	Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);
@@ -73,10 +77,17 @@ public:
 	glm::vec3 getStartPosition();
 	void activate();
 	void createNeuralNetwork(std::vector<int> topology, std::default_random_engine &engine);
-	void setNeuralNetwork(NeuralNetwork neuralNetwork);
-	NeuralNetwork getNeuralNetwork();
-	NeuralNetwork * getNN();
+	void setNEATNeuralNetwork(NEATNetwork neatNeuralNetwork);
+	NEATNetwork getNEATNeuralNetwork();
+	void setNeuralNetwork(RecurrentNeuralNetwork neuralNetwork);
+	RecurrentNeuralNetwork getNeuralNetwork();
+	RecurrentNeuralNetwork * getNN();
 	void updateNeuralNetwork();
+	std::vector<double> calculateInputs();
+	void setAllTargetVelocities(std::vector<double> &resultVec);
+	std::vector<double> getAllAngularVelocities();
+	void getAllMaxMinAngles();
+	std::vector<double> getAllAngles();
 	void mutate(double mutationRate, double mutationChance, std::default_random_engine engine);
 	void reset();
 	void setFitness(double fitness);
@@ -89,6 +100,7 @@ public:
 	double getAverageHeight();
 	double getMaxHeight();
 	void updateMaxHeight(double height);
+	double getCenterOfMassHeight();
 
 	double getTimeOnGround();
 	void setTimeOnGround(double time);
@@ -105,6 +117,18 @@ public:
 	double getNoMovementPenalty();
 	void calculateSpeed();
 	double getTotalSpeed();
+	double getDistanceWalked();
+	void setMaxMotorImpulses(double maxMotorImpulse);
+
+	bool noMovement(int currentStep);
+	void checkIfJointsAtLimit();
+	double getJointsAtlimitPenalty();
+	std::vector<double> getRelativePositions();
+
+	btVector3 getRelativePosition(Box * limb);
+
+	glm::vec3 getTargetPosition();
+	void setTargetPosition(glm::vec3 target);
 	~Dog();
 };
 

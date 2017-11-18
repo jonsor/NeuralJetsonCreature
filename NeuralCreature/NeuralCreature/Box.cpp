@@ -153,6 +153,14 @@ glm::vec3 Box::getPreviousPosition()
 {
 	return previousPosition;
 }
+double Box::getCollisionImpulse()
+{
+	return m_collisionImpulse;
+}
+void Box::setCollisionImpulse(double collisionImpulse)
+{
+	m_collisionImpulse = collisionImpulse;
+}
 glm::vec3 Box::getPosition()
 {
 	return position;
@@ -178,6 +186,16 @@ void Box::setUpPhysicsBox()
 
 	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
 	rigidBody = new btRigidBody(fallRigidBodyCI);
+
+	rigidBody->setRestitution(0.05);
+	rigidBody->setDamping(0.05, 0.85);
+	rigidBody->setDeactivationTime(0.8);
+	rigidBody->setSleepingThresholds(0.5f, 0.5f);
+
+	//Default damping: 0.1 -- stiffness: 10000
+	//rigidBody->setContactStiffnessAndDamping(10000.0f, 0.1f);
+	//std::cout << "stiffness: " << rigidBody->getContactStiffness() << "\n";
+	//std::cout << "damping: " << rigidBody->getContactDamping() << "\n";
 }
 
 
@@ -328,6 +346,55 @@ void Box::addDOFConstraint(Box * cubeB, bool notCollision, btScalar xOffset, Phy
 	dofConstraints[name] = dofConstraint;
 	dofConstraint = nullptr;
 }
+
+void Box::addDOFConstraintDog(Box * cubeB, bool notCollision, btScalar xOffset, btScalar zOffset, PhysicsManager * pm, std::string name)
+{
+
+	btTransform frameA = btTransform::getIdentity();
+	frameA.getBasis().setEulerZYX(0, 0, PI / 2);
+	frameA.setOrigin(btVector3(btScalar(xOffset), btScalar(-0.1), btScalar(zOffset)));
+
+
+	btTransform frameB = btTransform::getIdentity();
+	frameB.getBasis().setEulerZYX(0, 0, PI / 2);
+	frameB.setOrigin(btVector3(btScalar(0.), btScalar(1.4), btScalar(0.f)));
+
+	btGeneric6DofConstraint* dofConstraint = new btGeneric6DofConstraint(*rigidBody,
+		*cubeB->getRigidBody(), frameA, frameB, true);
+
+	dofConstraint->setLinearLowerLimit(btVector3(0.f, 0.f, 0.f));
+	dofConstraint->setLinearUpperLimit(btVector3(0.f, 0.f, 0.f));
+
+	// x = rotasjon, y = fremover/bakover, z = side til side
+	if (name == "rightHip") {
+		dofConstraint->setAngularLowerLimit(btVector3(-PI / 8, -PI / 8, -0.1f));
+		dofConstraint->setAngularUpperLimit(btVector3(PI / 8, PI / 2.5, PI / 6));
+	}
+	else {
+		dofConstraint->setAngularLowerLimit(btVector3(-PI / 8, -PI / 8, -PI / 6));
+		dofConstraint->setAngularUpperLimit(btVector3(PI / 8, PI / 2.5, 0.1f));
+	}
+
+	for (int i = 0; i<3; i++)
+	{
+		dofConstraint->getRotationalLimitMotor(i)->m_maxLimitForce = SIMD_INFINITY;
+		dofConstraint->getRotationalLimitMotor(i)->m_stopERP = btScalar(1.0);
+		dofConstraint->getRotationalLimitMotor(i)->m_limitSoftness = btScalar(1.0);
+	}
+
+	pm->addNewConstraint(dofConstraint, notCollision);
+
+	// 0 = spin, 1 = fremover/bakover, 2 = side til side
+	//int v = 0;
+	//dofConstraint->getRotationalLimitMotor(v)->m_enableMotor = true;
+	//dofConstraint->getRotationalLimitMotor(v)->m_maxMotorForce = 100.0f;
+	//dofConstraint->getRotationalLimitMotor(v)->m_targetVelocity = -10.0f;
+
+	//Add to hinge array
+	dofConstraints[name] = dofConstraint;
+	dofConstraint = nullptr;
+}
+
 
 /**
 	Adds a new hinge to this Box that attaches BoxB.

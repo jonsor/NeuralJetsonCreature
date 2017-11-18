@@ -35,6 +35,7 @@ private:
 	GLfloat angle;
 	btScalar mass;
 	glm::vec3 axisOfRotation;
+	double m_collisionImpulse;
 
 	//Bullet physics variables
 	btCollisionShape* fallShape;
@@ -64,6 +65,7 @@ public:
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
 	void addDOFConstraint(Box * cubeB, bool notCollision, btScalar xOffset, PhysicsManager * pm, std::string name);
+	void addDOFConstraintDog(Box * cubeB, bool notCollision, btScalar xOffset, btScalar zOffset, PhysicsManager * pm, std::string name);
 	void addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
 	btHingeConstraint* getHinge(std::string name);
 	btGeneric6DofConstraint* getdofConstraint(std::string name);
@@ -78,6 +80,9 @@ public:
 	void removeConstraint(PhysicsManager * pm);
 	void reset();
 	glm::vec3 getPreviousPosition();
+
+	double getCollisionImpulse();
+	void setCollisionImpulse(double collisionImpulse);
 	~Box();
 };
 
