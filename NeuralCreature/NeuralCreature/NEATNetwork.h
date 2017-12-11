@@ -13,7 +13,7 @@ private:
 	static const int INPUT_BIAS_NEURON = 1;
 	static const int HIDDEN_NEURON = 2;
 	static const int OUTPUT_NEURON = 3;
-
+	int numForwards;
 	std::vector<NEATNeuron> m_network;
 	//NEATNeuron[] neuronArray;
 	int m_usedHiddenNeuronIndex;

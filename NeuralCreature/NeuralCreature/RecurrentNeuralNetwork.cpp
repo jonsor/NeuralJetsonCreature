@@ -81,12 +81,21 @@ RecurrentNeuralNetwork::RecurrentNeuralNetwork(const std::vector<int> &topology,
 		//Force bias to 1.0
 		previousLayers.back().back().setOutputVal(1.0);
 	}
+
+	std::uniform_real_distribution<double> distribution2(5, 60);
+	double randNum = distribution2(engine);
+	divider = randNum;
+	//std::cout << "divider: " << divider << "\n";
+	numForwards = 0;
 }
 
 RecurrentNeuralNetwork::RecurrentNeuralNetwork(const RecurrentNeuralNetwork & neuralNet)
 {
 	layers = neuralNet.layers;
 	topology = neuralNet.topology;
+	divider = neuralNet.divider;
+	//std::cout << "divider: " << divider << "\n";
+	numForwards = 0;
 	int numLayers = topology.size();
 	for (int layerNum = 0; layerNum < numLayers; layerNum++) {
 		//Add a new layer
@@ -110,10 +119,11 @@ RecurrentNeuralNetwork::RecurrentNeuralNetwork(const RecurrentNeuralNetwork & ne
 	}
 }
 
-RecurrentNeuralNetwork::RecurrentNeuralNetwork(const std::vector<Layer> networkLayers, const std::vector<int> &topology) : topology(topology)
+RecurrentNeuralNetwork::RecurrentNeuralNetwork(const std::vector<Layer> networkLayers, const std::vector<int> &topology, double div) : topology(topology)
 {
 	layers = networkLayers;
 	int numLayers = topology.size();
+	divider = div;
 	for (int layerNum = 0; layerNum < numLayers; layerNum++) {
 		//Add a new layer
 		previousLayers.push_back(Layer());
@@ -186,22 +196,37 @@ void RecurrentNeuralNetwork::mutate(double mutationRate, double mutationChance, 
 	////rand() % (max - min + 1) + min;
 	//int startPoint = endPoint -1;
 	std::uniform_real_distribution<double> distribution(0, 1);
-	double mutationRandomNum = distribution(engine);
-	if (mutationRandomNum <= mutationChance) {
-		std::uniform_real_distribution<double> distribution(-1.0, 1.0);
-		double randNum = distribution(engine);
-		divider += randNum * mutationRate;
-	}
+	double mutationChoice = distribution(engine);
+	if (mutationChoice < 0.35) {
+		//double mutationRandomNum = distribution(engine);
+		//if (mutationRandomNum <= 0.3) {
+			std::uniform_real_distribution<double> distribution2(-1.0, 1.0);
+			double randNum = distribution2(engine);
+			divider += randNum * mutationRate;
+		//}
 
-
-	for (int i = 0; i < layers.size(); i++) {
-		Layer& tempLayer = layers[i];
-		for (int j = 0; j < tempLayer.size(); j++) {
-			//double mutRand = ((double)rand() / (RAND_MAX));
-			//if (mutRand <= mutationChance) {
-			tempLayer[i].mutate(mutationRate, mutationChance, engine);
-			//}
+		double probNewDivider = distribution(engine);
+		if (probNewDivider < 0.03) {
+			divider = distribution(engine) * 60;
 		}
+	}
+	else {
+		std::uniform_real_distribution<double> choiceDist(0, layers.size()-1);
+		double mutateLayer = choiceDist(engine);
+		Layer& tempLayer = layers[mutateLayer];
+		std::uniform_real_distribution<double> choiceDist2(0, tempLayer.size()-1);
+		double mutateIndex = choiceDist2(engine);
+		tempLayer[mutateIndex].mutate(mutationRate, mutationChance, engine);
+
+		//for (int i = 0; i < layers.size(); i++) {
+		//	Layer& tempLayer = layers[i];
+		//	for (int j = 0; j < tempLayer.size(); j++) {
+		//		//double mutRand = ((double)rand() / (RAND_MAX));
+		//		//if (mutRand <= mutationChance) {
+		//		tempLayer[i].mutate(mutationRate, mutationChance, engine);
+		//		//}
+		//	}
+		//}
 	}
 
 	//int layerPoint = rand() % layers.size();
@@ -225,6 +250,16 @@ std::vector<Layer>* RecurrentNeuralNetwork::getL()
 std::vector<int> RecurrentNeuralNetwork::getTopology()
 {
 	return topology;
+}
+
+double RecurrentNeuralNetwork::getDivider()
+{
+	return divider;
+}
+
+void RecurrentNeuralNetwork::setDivider(double div)
+{
+	divider = div;
 }
 
 RecurrentNeuralNetwork::~RecurrentNeuralNetwork()

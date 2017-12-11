@@ -54,6 +54,10 @@ private:
 	double noMovementPenalty;
 	double m_totalSpeed = 0;
 	double jointsAtLimitPenalty = 0;
+	bool targetReached = false;
+	double tighMovement = 0;
+	std::vector<double> inputAngles;
+	std::vector<double> prevInputAngles;
 public:
 	Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);
@@ -73,7 +77,8 @@ public:
 	Box* getBackLeftTigh();
 	Box* getBackLeftShin();
 
-	glm::vec3 getPosition();
+	glm::vec3 getPositionOfBody();
+	glm::vec3 getCenterPosition();
 	glm::vec3 getStartPosition();
 	void activate();
 	void createNeuralNetwork(std::vector<int> topology, std::default_random_engine &engine);
@@ -96,10 +101,10 @@ public:
 	void removeBodies(PhysicsManager * pm);
 	void removeConstraints(PhysicsManager * pm);
 	void setColor(glm::vec3 color);
-	void incrementToAverage();
+	void incrementToAverageHeight();
 	double getAverageHeight();
 	double getMaxHeight();
-	void updateMaxHeight(double height);
+	void updateMaxHeight();
 	double getCenterOfMassHeight();
 
 	double getTimeOnGround();
@@ -129,6 +134,11 @@ public:
 
 	glm::vec3 getTargetPosition();
 	void setTargetPosition(glm::vec3 target);
+	void checkIfTargetReached();
+	bool isTargetReached();
+	void disableSimulation();
+	void calculateTighMovement();
+	double getTighMovement();
 	~Dog();
 };
 

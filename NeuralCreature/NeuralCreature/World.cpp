@@ -114,11 +114,10 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 	targetAngleAbdomen = 0.0f;
 
 	bool isEnableMotor = true;
-	btScalar maxMotorImpulse = 20.0f; // 1.0f / 8.0f is about the minimum
 	
 	//Create genetic algorithm
 	// mutationRate, mutationChance(for every weight), crossoverProb
-	GeneticAlgorithm ga(0.05, 0.05, 0.9, 10, 1, &pm);
+	GeneticAlgorithm ga(0.1, 0.05, 0.9, 50, 1, &pm);
 
 	double fps = 0;
 	float accumilatedTime = 0;
@@ -208,13 +207,13 @@ void World::renderLoop(GLFWwindow* window, GLint planeVAO, GLint lightVAO, Shade
 		GLint modelLoc = glGetUniformLocation(lightingShader.program, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(planeVAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		if(simulate) pm.update(1, 1);
 
 		numLoops++;
 		ga.updateCreatures(lightingShader, render, &pm);
-		if (!ga.keepRunning() || numLoops >= 1000) {
+		if (!ga.keepRunning() || numLoops >= 1500) {
 			terminationFrame+= 10;
 			GLfloat thisTime = glfwGetTime();
 			std::cout << "Generation time: " << thisTime - startTime << std::endl;
@@ -271,29 +270,40 @@ void World::initPlaneAndLight(GLuint* lightVAO, GLuint* planeVAO)
 		1, 2, 3   // Second Triangle
 	};
 
+	GLfloat BoxVertices[] = {
+		-s,  0, -s,  0.0f,  1.0f,  0.0f,
+		s,  0, -s,  0.0f,  1.0f,  0.0f,
+		s,  0,  s,  0.0f,  1.0f,  0.0f,
+		s,  0,  s,  0.0f,  1.0f,  0.0f,
+		-s,  0,  s,  0.0f,  1.0f,  0.0f,
+		-s,  0, -s,  0.0f,  1.0f,  0.0f
+	};
+
+
 	//PLANE STUFF
 	//VBO = vertex buffer objects. Can store a large number of vertices in the GPU memory.
 	//VAO = vertex array object. Stores vertex buffer objects so that they can be easily swapped during rendering.
 	//EBO = element buffer objects. Used to add triangles together to for instance draw a rectangle(avoids overhead).
+
 	GLuint planeVBO, planeEBO;
 	glGenVertexArrays(1, planeVAO);
 	glGenBuffers(1, &planeVBO);
-	glGenBuffers(1, &planeEBO);
+	//glGenBuffers(1, &planeEBO);
 	// Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
 	glBindVertexArray(*planeVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(BoxVertices), BoxVertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeEBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
 	//Color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind

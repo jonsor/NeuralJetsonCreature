@@ -9,11 +9,13 @@
 class Neuron
 {
 private:
+
 	typedef std::vector<Neuron> Layer;
-	double divider = 10;
-	double outputVal;
-	std::vector<double> outputWeights;
-	int neuronIndex;
+	double m_divider = 20;
+	double m_outputVal;
+	double m_bias;
+	std::vector<double> m_outputWeights;
+	int m_neuronIndex;
 	static double getRandomWeight(std::default_random_engine &generator);
 	static double getRandomWeight(double min, double max, std::default_random_engine &generator);
 	static double activationFunction(double value);
@@ -30,6 +32,8 @@ public:
 	std::vector<double> getOutputWeights();
 	void setOutputWeights(std::vector<double> weights);
 	void setOutputWeightsToZero();
+	double getBias();
+	void setBias(double bias);
 	~Neuron();
 };
 

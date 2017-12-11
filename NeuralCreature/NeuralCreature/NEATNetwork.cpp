@@ -17,6 +17,7 @@ void NEATNetwork::printFirstWeight()
 
 NEATNetwork::NEATNetwork()
 {
+	numForwards = 0;
 }
 
 void NEATNetwork::generateNeuralNetworkFromGene()
@@ -68,14 +69,16 @@ void NEATNetwork::generateNeuralNetworkFromGene()
 	}
 
 	std::sort(m_genes.begin(), m_genes.end(), moreThanOrEqualByInnovation);
+	numForwards = 0;
 }
 
 std::vector<double> NEATNetwork::forward(std::vector<double>& inputVals)
 {
 	for (int i = 0; i < inputVals.size(); i++)
 	{
-		m_network[i].setOutputValue(inputVals[i]);
-
+		//m_network[i].setOutputValue(inputVals[i]);
+		double outputValue = sin(numForwards / 12) * inputVals[i];
+		m_network[i].setOutputValue(outputValue);
 	}
 	//float[] output = new float[numberOfOutputs];
 	//float[] tempValues = new float[networkArray.Length];
@@ -114,7 +117,7 @@ std::vector<double> NEATNetwork::forward(std::vector<double>& inputVals)
 		outputs[i] = m_network[i + m_numInputs].getOutputValue();
 
 	}
-
+	numForwards = 0;
 	return outputs;
 }
 

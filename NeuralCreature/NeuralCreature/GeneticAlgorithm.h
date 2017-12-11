@@ -26,8 +26,9 @@ private:
 	int creatureType;
 	double m_mutationRate;
 	double m_crossoverProb;
-	const int m_populationSize;
+	int m_populationSize;
 	int m_numElites;
+	int m_numCreatures;
 	int timesNoImprovement;
 	std::vector<Biped*> bipeds;
 	std::vector<Dog*> dogs;

@@ -8,6 +8,7 @@ class Biped
 {
 
 private:
+	Box* lowerBody;
 	Box* hips;
 	Box* rightThigh;
 	Box* rightShin;
@@ -26,6 +27,9 @@ private:
 	int numberOfSteps;
 	char lastFootThatStepped;
 
+	glm::vec3 m_targetPosition;
+	double maxDistanceToTarget;
+
 	double previousRightFootHeight;
 	double previousLeftFootHeight;
 	double m_fitness;
@@ -43,6 +47,7 @@ private:
 	double timeAlive = 0;
 	double noMovementPenalty;
 	double m_totalSpeed = 0;
+	bool targetReached;
 public:
 	Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);
@@ -110,6 +115,12 @@ public:
 	void calculateSpeed();
 	double getTotalSpeed();
 	double getDistanceWalked();
+
+	glm::vec3 getPositionOfBody();
+	glm::vec3 getTargetPosition();
+	void setTargetPosition(glm::vec3 target);
+	void checkIfTargetReached();
+	bool isTargetReached();
 	~Biped();
 };
 

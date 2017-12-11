@@ -25,6 +25,9 @@
 class Box
 {
 private:
+	const std::string CAPSULE_SHAPE = "CAPSULE";
+	const std::string BOX_SHAPE = "BOX";
+	std::string m_shapeType;
 	glm::vec3 position;
 	glm::vec3 previousPosition;
 	glm::vec3 color;
@@ -52,6 +55,7 @@ private:
 
 
 public:
+	Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass, std::string shapeType);
 	Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass);
 	void render(Shader shader);
 	void setColor(glm::vec3 color);
@@ -65,6 +69,8 @@ public:
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
 	void addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager* pm, std::string name);
 	void addDOFConstraint(Box * cubeB, bool notCollision, btScalar xOffset, PhysicsManager * pm, std::string name);
+	//void addDOFConstraint(Box * cubeB, bool notCollision, btVector3& offsets, PhysicsManager * pm, std::string name);
+	//void addDOFConstraint(Box * cubeB, bool notCollision, btScalar xOffset, PhysicsManager * pm, std::string name);
 	void addDOFConstraintDog(Box * cubeB, bool notCollision, btScalar xOffset, btScalar zOffset, PhysicsManager * pm, std::string name);
 	void addJoint(glm::vec3 pivotA, glm::vec3 pivotB, Box* BoxB, bool notCollision, PhysicsManager* pm, std::string name);
 	btHingeConstraint* getHinge(std::string name);

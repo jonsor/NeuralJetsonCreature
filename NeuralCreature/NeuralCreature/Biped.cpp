@@ -21,20 +21,28 @@ Purpose: Sets up, renders and updates a complete, hardcoded biped.
 Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine): m_startPosition(startPosition)
 {
 	//Limbs:
-	hips = new Box(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 2.0f, 0.4f, 35);
+	//Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass)
+	hips = new Box(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 0.5f, 0.6f, 20);
+	lowerBody = new Box(glm::vec3(m_startPosition.x, m_startPosition.y + hips->getHeight() + 2.0f, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.5f, 2.0f, 0.4f, 35);
 
-	rightThigh = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
-	rightShin = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
-	rightFoot = new Box(glm::vec3(m_startPosition.x - 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
+	rightThigh = new Box(glm::vec3(m_startPosition.x - hips->getWidth(), m_startPosition.y - (hips->getHeight() + 1.8f), m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
+	rightShin = new Box(glm::vec3(m_startPosition.x - hips->getWidth(), m_startPosition.y - (hips->getHeight() + rightThigh->getHeight() + 1.8f *2), m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
+	rightFoot = new Box(glm::vec3(m_startPosition.x - hips->getWidth(), m_startPosition.y - (hips->getHeight() + rightThigh->getHeight() + rightShin->getHeight() + 1.8f * 2 + 0.3f), m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
 
-	leftThigh = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 4, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
-	leftShin = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 8, m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
-	leftFoot = new Box(glm::vec3(m_startPosition.x + 1.5, m_startPosition.y - 10.2, m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
+	leftThigh = new Box(glm::vec3(m_startPosition.x + hips->getWidth(), m_startPosition.y - (hips->getHeight() + 1.8f), m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
+	leftShin = new Box(glm::vec3(m_startPosition.x + hips->getWidth(), m_startPosition.y - (hips->getHeight() + leftThigh->getHeight() + 1.8f *2), m_startPosition.z), glm::vec3(0.2f, 0.3f, 0.7f), 0.5f, 1.8f, 0.3f, 15);
+	leftFoot = new Box(glm::vec3(m_startPosition.x + hips->getWidth(), m_startPosition.y - (hips->getHeight() + leftThigh->getHeight() + leftShin->getHeight() + 1.8f*2 + 0.3f), m_startPosition.z + 0.3), glm::vec3(0.2f, 0.3f, 0.7f), 0.6f, 0.15f, 1.0f, 5);
 
+	//2D
+	hips->getRigidBody()->setLinearFactor(btVector3(0, 1, 1));
+	hips->getRigidBody()->setAngularFactor(btVector3(1, 0, 0));
+	//Freeze 
 	//hips->getRigidBody()->setLinearFactor(btVector3(0, 0, 0));
 	//hips->getRigidBody()->setAngularFactor(btVector3(0, 0, 0));
+
 	//rightFoot->getRigidBody()->setFriction(5.0f);
 	//leftFoot->getRigidBody()->setFriction(5.0f);
+	pm->addBody(lowerBody->getRigidBody(), 1, 2);
 	pm->addBody(hips->getRigidBody(),1, 2);
 
 	pm->addBody(rightThigh->getRigidBody(),1,2);
@@ -49,11 +57,16 @@ Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_en
 
 	//Hinges:
 	bool noCol = true;
-	//hips->addHinge(glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(1.0f, 1.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightThigh, noCol, -1.5, 0.7, pm, "rightHip");
-	//hips->addHinge(glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(-1.0f, 1.5f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftThigh, noCol, -1.5, 0.7, pm, "leftHip");
+	//addHinge(glm::vec3 pivotA, glm::vec3 pivotB, glm::vec3 axisA, glm::vec3 axisB, Box* BoxB, bool notCollision, const btScalar minAngle, const btScalar maxAngle, PhysicsManager * pm, std::string name)
+	lowerBody->addHinge(glm::vec3(0.0f, -lowerBody->getHeight(), 0.0f), glm::vec3(0.0f, hips->getHeight(), 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), hips, noCol, -1.8, 1.8, pm, "lowerBody");
+	//hips->addDOFConstraint(rightThigh, noCol, -(hips->getWidth() + 0.1), pm, "rightHip");
+	//hips->addDOFConstraint(leftThigh, noCol, (hips->getWidth() + 0.1), pm, "leftHip");
 
-	hips->addDOFConstraint(rightThigh, noCol, -1.7, pm, "rightHip");
-	hips->addDOFConstraint(leftThigh, noCol, 1.7, pm, "leftHip");
+	//hips->addDOFConstraint(rightThigh, noCol, btVector3(-(hips->getWidth()), 1.2 ,0), pm, "rightHip");
+	//hips->addDOFConstraint(leftThigh, noCol, btVector3((hips->getWidth()), 1.2, 0), pm, "leftHip");
+
+	hips->addHinge(glm::vec3(0.0f, -hips->getHeight() / 2, 0.0f), glm::vec3((hips->getWidth() + 0.1), rightThigh->getHeight(), 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightThigh, noCol, -1.5, 0.7, pm, "rightHip");
+	hips->addHinge(glm::vec3(0.0f, -hips->getHeight() / 2, 0.0f), glm::vec3(-(hips->getWidth() + 0.1), rightThigh->getHeight(), 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftThigh, noCol, -1.5, 0.7, pm, "leftHip");
 
 	rightThigh->addHinge(glm::vec3(0.0f, -1.9f, 0.0f), glm::vec3(0.0f, 1.9f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), rightShin, noCol, -0.1, PI * 0.8, pm, "rightKnee");
 	leftThigh->addHinge(glm::vec3(0.0f, -1.9f, 0.0f), glm::vec3(0.0f, 1.9f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), leftShin, noCol, -0.1, PI * 0.8, pm, "leftKnee");
@@ -64,9 +77,9 @@ Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_en
 	setMaxMotorImpulses(100.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 42, 16, 10 };
+	//45 - 11
+	std::vector<int> topology{ 41,256, 128, 64, 32, 7 };
 	createNeuralNetwork(topology, engine);
-
 	//Set default fitness
 	m_fitness = 0;
 
@@ -92,6 +105,8 @@ Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_en
 
 	m_previousPosition = getPosition();
 	m_startPosition = getPosition();
+
+	setTargetPosition({ 2, 1.6, -200 });
 }
 
 /**
@@ -101,6 +116,7 @@ Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_en
 */
 void Biped::render(Shader shader)
 {
+	lowerBody->render(shader);
 	hips->render(shader);
 
 	rightThigh->render(shader);
@@ -158,6 +174,7 @@ void Biped::updatePhysics()
 	previousRightFootHeight = getRightFoot()->getRigidBody()->getCenterOfMassPosition().getY();
 	previousLeftFootHeight = getLeftFoot()->getRigidBody()->getCenterOfMassPosition().getY();
 
+	lowerBody->updatePhysics();
 	hips->updatePhysics();
 	rightThigh->updatePhysics();
 	rightShin->updatePhysics();
@@ -174,16 +191,102 @@ void Biped::updatePhysics()
 //double tempHigh = 0;
 //int stepTime = 0;
 
+void Biped::setAllTargetVelocities(std::vector<double>& resultVec)
+{
+	//CHANGE MAX VELOCITY NORMALIZATION IF YOU CHANGE m
+	double m = 15;
+	double mU = 0.0;
+
+
+	// 0 = spin, 1 = fremover/bakover, 2 = side til side
+
+	//LOWER BODY
+	double lbVel = Util::scaleToRange(resultVec[0], lowerBody->getHinge("lowerBody")->getLowerLimit(), lowerBody->getHinge("lowerBody")->getUpperLimit());
+	lowerBody->getHinge("lowerBody")->setMotorTarget(lbVel, 1);
+
+	//HIPS
+	getHips()->getHinge("leftHip")->setMotorTargetVelocity((resultVec[1] - mU) * m);
+	getHips()->getHinge("rightHip")->setMotorTargetVelocity((resultVec[2] - mU) * m);
+
+	////LEFT HIP
+	//btVector3 lhLowerLim;
+	//hips->getdofConstraint("leftHip")->getAngularLowerLimit(lhLowerLim);
+	//btVector3 lhUpperLim;
+	//hips->getdofConstraint("leftHip")->getAngularUpperLimit(lhUpperLim);
+
+	//double lhAngle1 = Util::scaleToRange(resultVec[1], lhLowerLim[0], lhUpperLim[0]);
+	//double lhTargetVel1 = computeTargetVelocity(hips->getdofConstraint("leftHip")->getAngle(0), lhAngle1, 1);
+	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_targetVelocity = lhTargetVel1 * m;
+	////std::cout << "lhLowerLim[1]: " << lhLowerLim[1] << " lhUpperLim[1]: " << lhUpperLim[1] << "\n";
+	//double lhAngle2 = Util::scaleToRange(resultVec[2], lhLowerLim[1], lhUpperLim[1]);
+	//double lhTargetVel2 = computeTargetVelocity(hips->getdofConstraint("leftHip")->getAngle(1), lhAngle2, 1);
+	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_targetVelocity = lhTargetVel2 * m;
+	////std::cout << "resultVec[1]: " << resultVec[1] << " lhTargetVel2: " << lhTargetVel2 << "\n";
+	//double lhAngle3 = Util::scaleToRange(resultVec[3], lhLowerLim[2], lhUpperLim[2]);
+	//double lhTargetVel3 = computeTargetVelocity(hips->getdofConstraint("leftHip")->getAngle(2), lhAngle3, 1);
+	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_targetVelocity = lhTargetVel3 * m;
+
+	////RIGHT HIP
+	//btVector3 rhLowerLim;
+	//hips->getdofConstraint("rightHip")->getAngularLowerLimit(rhLowerLim);
+	//btVector3 rhUpperLim;
+	//hips->getdofConstraint("rightHip")->getAngularUpperLimit(rhUpperLim);
+
+	//double rlhAngle1 = Util::scaleToRange(resultVec[4], rhLowerLim[0], rhUpperLim[0]);
+	//double rhTargetVel1 = computeTargetVelocity(hips->getdofConstraint("rightHip")->getAngle(0), rlhAngle1, 1);
+	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_targetVelocity = rhTargetVel1 * m;
+
+	//double rlhAngle2 = Util::scaleToRange(resultVec[5], rhLowerLim[1], rhUpperLim[1]);
+	//double rhTargetVel2 = computeTargetVelocity(hips->getdofConstraint("rightHip")->getAngle(1), rlhAngle2, 1);
+	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_targetVelocity = rhTargetVel2 * m;
+
+	//double rlhAngle3 = Util::scaleToRange(resultVec[6], rhLowerLim[2], rhUpperLim[2]);
+	//double rhTargetVel3 = computeTargetVelocity(hips->getdofConstraint("rightHip")->getAngle(2), rlhAngle3, 1);
+	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_targetVelocity = rhTargetVel3 * m;
+
+	//KNEES
+	double rkVel = Util::scaleToRange(resultVec[3], getRightThigh()->getHinge("rightKnee")->getLowerLimit(), getRightThigh()->getHinge("rightKnee")->getUpperLimit());
+	getRightThigh()->getHinge("rightKnee")->setMotorTarget(rkVel, 1);
+
+	double lkVel = Util::scaleToRange(resultVec[4], getLeftThigh()->getHinge("leftKnee")->getLowerLimit(), getLeftThigh()->getHinge("leftKnee")->getUpperLimit());
+	getLeftThigh()->getHinge("leftKnee")->setMotorTarget(lkVel, 1);
+
+	//FEET
+	double rfVel = Util::scaleToRange(resultVec[5], getRightShin()->getHinge("rightAnkle")->getLowerLimit(), getRightShin()->getHinge("rightAnkle")->getUpperLimit());
+	getRightShin()->getHinge("rightAnkle")->setMotorTarget(rfVel, 1);
+	double lfVel = Util::scaleToRange(resultVec[6], getLeftShin()->getHinge("leftAnkle")->getLowerLimit(), getLeftShin()->getHinge("leftAnkle")->getUpperLimit());
+	getLeftShin()->getHinge("leftAnkle")->setMotorTarget(lfVel, 1);
+
+	////LEFT HIP
+	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_targetVelocity = resultVec[0] * m;
+	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_targetVelocity = resultVec[1] * m;
+	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_targetVelocity = resultVec[2] * m;
+
+	////RIGHT HIP
+	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_targetVelocity = resultVec[3] * m;
+	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_targetVelocity = resultVec[4] * m;
+	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_targetVelocity = -resultVec[5] * m; //******* MINUS HER PGA motsatt side IKKE SIKKER OM DET VIRKER!! ********
+
+	////KNEES
+	//getRightThigh()->getHinge("rightKnee")->setMotorTarget(1, 1);
+	//getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity((resultVec[6] - mU) * m);
+	//getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity((resultVec[7] - mU) * m);
+
+	////FEET
+	//getRightShin()->getHinge("rightAnkle")->setMotorTargetVelocity((resultVec[8] - mU) * m);
+	//getLeftShin()->getHinge("leftAnkle")->setMotorTargetVelocity((resultVec[9] - mU) * m);
+}
+
 void Biped::updateNeuralNetwork()
 {
 	std::vector<double> inputs = calculateInputs();
 	m_neuralNetwork.forward(inputs);
 	m_neuralNetwork.getResults(resultVec);
-	getHips()->getRigidBody()->applyTorque(btVector3(0, 40, 0));
-	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_targetVelocity = 1.f;
-	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_targetVelocity = 1.f;
-	//getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity(-1.f);
-	//getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity(-1.f);
+	//getHips()->getRigidBody()->applyTorque(btVector3(0, 40, 0));
+	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_targetVelocity = -100.f;
+	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_targetVelocity = -100.f;
+	//getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity(10.f);
+	//getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity(10.f);
 
 	//getRightShin()->getHinge("rightAnkle")->setMotorTargetVelocity(-1.f);
 	//getLeftShin()->getHinge("leftAnkle")->setMotorTargetVelocity(-1.f);
@@ -198,7 +301,7 @@ std::vector<double> Biped::calculateInputs()
 	double height = Util::normalize(hips->getPosition().y, 0, 10);
 	inputs.push_back(height);
 
-	//target velocities size: 21
+	//target velocities size: 24
 	//TODO NORMALIZE
 	std::vector<double> angularVel = getAllAngularVelocities();
 	const double MAX = 8;
@@ -208,37 +311,69 @@ std::vector<double> Biped::calculateInputs()
 
 	inputs.insert(inputs.end(), angularVel.begin(), angularVel.end());
 
-
-	//std::cout << "X: " << getHips()->getRigidBody()->getOrientation().getX() <<
-	//	"Y: " << getHips()->getRigidBody()->getOrientation().getY() << " Z: " << getHips()->getRigidBody()->getOrientation().getZ() <<
-	//	" W: " << getHips()->getRigidBody()->getOrientation().getW() << "\n";
-
-	btMatrix3x3 m = btMatrix3x3(getHips()->getRigidBody()->getOrientation());
+	//Body orientation 3
+	btMatrix3x3 m = btMatrix3x3(hips->getRigidBody()->getOrientation());
 	btScalar yaw, pitch, roll;
-	//m.getEulerZYX(yaw, pitch, roll);
-	btQuaternion q = getHips()->getRigidBody()->getOrientation();
-	//quaternionToEuler(q, yaw, pitch, roll);
-	//yaw = Util::normalize(yaw, -PI, PI);
-	//pitch = Util::normalize(pitch, -PI, PI);
-	//roll = Util::normalize(roll, -PI, PI);
-
-	getHips()->getRigidBody()->getCenterOfMassTransform().getBasis().getEulerZYX(yaw, pitch, roll, 1);
-	//std::cout << "yaw: " << yaw << " pitch: " << pitch << " roll: " << roll << "\n";
+	m.getEulerYPR(yaw, pitch, roll);
+	yaw = Util::normalize(yaw, -PI, PI);
+	pitch = Util::normalize(pitch, -PI, PI);
+	roll = Util::normalize(roll, -PI, PI);
 	//inputs.push_back(yaw);
 	//inputs.push_back(pitch);
 	//inputs.push_back(roll);
 
-	inputs.push_back(getHips()->getRigidBody()->getOrientation().getX());
-	inputs.push_back(getHips()->getRigidBody()->getOrientation().getY());
-	inputs.push_back(getHips()->getRigidBody()->getOrientation().getZ());
-	inputs.push_back(getHips()->getRigidBody()->getOrientation().getW());
+	//Compute angle of body 0 -> 360 degrees in radians
+	btScalar angleOfBody;
+	const btScalar rfPAngle = btAsin(-m[1][2]);
+	if (rfPAngle < SIMD_HALF_PI) {
+		if (rfPAngle > -SIMD_HALF_PI) angleOfBody = btAtan2(m[0][2], m[2][2]);
+		else angleOfBody = -btAtan2(-m[0][1], m[0][0]);
+	}
+	else angleOfBody = btAtan2(-m[0][1], m[0][0]);
+
+	double angleToTarget = std::atan2(m_targetPosition[0] - hips->getRigidBody()->getCenterOfMassPosition()[0], m_targetPosition[2] - hips->getRigidBody()->getCenterOfMassPosition()[2]);
+
+	angleToTarget += PI;
+	angleOfBody += PI;
+	angleOfBody -= angleToTarget;
+	if (angleOfBody < 0) {
+		angleOfBody = PI * 2 + angleOfBody;
+	}
+	double targetSideR = -1.f;
+	double targetSideL = -1.f;
+
+	if (angleOfBody > 0) {
+		targetSideR = 1.f;
+		targetSideL = -1.f;
+	}
+	if (angleOfBody > PI) {
+		targetSideR = -1.f;
+		targetSideL = 1.f;
+	}
+
+
+	if (targetSideR == 1) {
+		hips->setColor(glm::vec3(0.1, 1.0, 0.1));
+	}
+	else if (targetSideL == 1) {
+		hips->setColor(glm::vec3(0.1, 0.1, 1.0));
+	}
+
+	//std::cout << "targetSideL: " << targetSideL << " targetSideR: " << targetSideR << " angleToTarget: " << angleToTarget << "\n";
+	inputs.push_back(targetSideR);
+	inputs.push_back(targetSideL);
+
+	//inputs.push_back(getHips()->getRigidBody()->getOrientation().getX());
+	//inputs.push_back(getHips()->getRigidBody()->getOrientation().getY());
+	//inputs.push_back(getHips()->getRigidBody()->getOrientation().getZ());
+	//inputs.push_back(getHips()->getRigidBody()->getOrientation().getW());
 
 	const double VEL_MAX = 8;
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getX(), -VEL_MAX, VEL_MAX));
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getY(), -VEL_MAX, VEL_MAX));
 	inputs.push_back(Util::normalize(getHips()->getRigidBody()->getLinearVelocity().getZ(), -16, 16));
 		
-	//Hinge angles
+	//Hinge angles 11 
 	std::vector<double> inputAngles = getAllAngles();
 	inputs.insert(inputs.end(), inputAngles.begin(), inputAngles.end());
 
@@ -292,31 +427,31 @@ std::vector<double> Biped::calculateInputs()
 	//inputs.push_back(sin((double)(stepTime) / 16));
 
 
-	double max = 0;
-	double min = 1000;
-	int intMax = 0;
-	int intMin = 0;
-	for (int i = 0; i < inputs.size(); i++) {
-		//max = (max < inputs[i]) ? inputs[i] : max;
-		//min = (min > inputs[i]) ? inputs[i] : min;
+	//double max = 0;
+	//double min = 1000;
+	//int intMax = 0;
+	//int intMin = 0;
+	//for (int i = 0; i < inputs.size(); i++) {
+	//	//max = (max < inputs[i]) ? inputs[i] : max;
+	//	//min = (min > inputs[i]) ? inputs[i] : min;
 
-		if (max < inputs[i]) {
-			max = inputs[i];
-			intMax = i;
-		}
+	//	if (max < inputs[i]) {
+	//		max = inputs[i];
+	//		intMax = i;
+	//	}
 
-		if (min > inputs[i]) {
-			min = inputs[i];
-			intMin = i;
-		}
-	}
+	//	if (min > inputs[i]) {
+	//		min = inputs[i];
+	//		intMin = i;
+	//	}
+	//}
 
-	if (max > 1.5f) {
-		std::cout << "MAX " << intMax << " : " << max << "\n";
-	}
-	if (min < -1.5f) {
-		std::cout << " MIN: " << intMin << " : " << min << "\n";
-	}
+	//if (max > 1.5f) {
+	//	std::cout << "MAX " << intMax << " : " << max << "\n";
+	//}
+	//if (min < -1.5f) {
+	//	std::cout << " MIN: " << intMin << " : " << min << "\n";
+	//}
 
 	return inputs;
 }
@@ -368,6 +503,7 @@ void Biped::mutate(double mutationRate, double mutationChance,  std::default_ran
 
 void Biped::reset()
 {
+	lowerBody->reset();
 	hips->reset();
 	rightThigh->reset();
 	rightShin->reset();
@@ -560,30 +696,32 @@ void Biped::getAllMaxMinAngles2()
 
 std::vector<double> Biped::getAllAngles()
 {
-	//double rha = Util::normalize(getHips()->getHinge("rightHip")->getHingeAngle(), getHips()->getHinge("rightHip")->getLowerLimit(), getHips()->getHinge("rightHip")->getUpperLimit());
-	//double lha = Util::normalize(getHips()->getHinge("leftHip")->getHingeAngle(), getHips()->getHinge("leftHip")->getLowerLimit(), getHips()->getHinge("leftHip")->getUpperLimit());
+	double rha = Util::normalize(getHips()->getHinge("rightHip")->getHingeAngle(), getHips()->getHinge("rightHip")->getLowerLimit(), getHips()->getHinge("rightHip")->getUpperLimit());
+	double lha = Util::normalize(getHips()->getHinge("leftHip")->getHingeAngle(), getHips()->getHinge("leftHip")->getLowerLimit(), getHips()->getHinge("leftHip")->getUpperLimit());
 
-	//RIGHT HIP
-	btVector3 anglularLowerLimitsR;
-	getHips()->getdofConstraint("rightHip")->getAngularLowerLimit(anglularLowerLimitsR);
+	//LOWER BODY
+	double lba = Util::normalize(lowerBody->getHinge("lowerBody")->getHingeAngle(), lowerBody->getHinge("lowerBody")->getLowerLimit(), lowerBody->getHinge("lowerBody")->getUpperLimit());
+	////RIGHT HIP
+	//btVector3 anglularLowerLimitsR;
+	//getHips()->getdofConstraint("rightHip")->getAngularLowerLimit(anglularLowerLimitsR);
 
-	btVector3 anglularUpperLimitsR;
-	getHips()->getdofConstraint("rightHip")->getAngularUpperLimit(anglularUpperLimitsR);
+	//btVector3 anglularUpperLimitsR;
+	//getHips()->getdofConstraint("rightHip")->getAngularUpperLimit(anglularUpperLimitsR);
 
-	double rha1 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(0), anglularLowerLimitsR[0], anglularUpperLimitsR[0]);
-	double rha2 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(1), anglularLowerLimitsR[1], anglularUpperLimitsR[1]);
-	double rha3 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(2), anglularLowerLimitsR[2], anglularUpperLimitsR[2]);
+	//double rha1 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(0), anglularLowerLimitsR[0], anglularUpperLimitsR[0]);
+	//double rha2 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(1), anglularLowerLimitsR[1], anglularUpperLimitsR[1]);
+	//double rha3 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(2), anglularLowerLimitsR[2], anglularUpperLimitsR[2]);
 
-	//LEFT HIP
-	btVector3 anglularLowerLimitsL;
-	getHips()->getdofConstraint("rightHip")->getAngularLowerLimit(anglularLowerLimitsL);
+	////LEFT HIP
+	//btVector3 anglularLowerLimitsL;
+	//getHips()->getdofConstraint("rightHip")->getAngularLowerLimit(anglularLowerLimitsL);
 
-	btVector3 anglularUpperLimitsL;
-	getHips()->getdofConstraint("rightHip")->getAngularUpperLimit(anglularUpperLimitsL);
+	//btVector3 anglularUpperLimitsL;
+	//getHips()->getdofConstraint("rightHip")->getAngularUpperLimit(anglularUpperLimitsL);
 
-	double lha1 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(0), anglularLowerLimitsL[0], anglularUpperLimitsL[0]);
-	double lha2 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(1), anglularLowerLimitsL[1], anglularUpperLimitsL[1]);
-	double lha3 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(2), anglularLowerLimitsL[2], anglularUpperLimitsL[2]);
+	//double lha1 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(0), anglularLowerLimitsL[0], anglularUpperLimitsL[0]);
+	//double lha2 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(1), anglularLowerLimitsL[1], anglularUpperLimitsL[1]);
+	//double lha3 = Util::normalize(getHips()->getdofConstraint("rightHip")->getAngle(2), anglularLowerLimitsL[2], anglularUpperLimitsL[2]);
 
 	//KNEES
 	double rka = Util::normalize(getRightThigh()->getHinge("rightKnee")->getHingeAngle(), getRightThigh()->getHinge("rightKnee")->getLowerLimit(), getRightThigh()->getHinge("rightKnee")->getUpperLimit());
@@ -593,13 +731,19 @@ std::vector<double> Biped::getAllAngles()
 	double raa = Util::normalize(getRightShin()->getHinge("rightAnkle")->getHingeAngle(), getRightShin()->getHinge("rightAnkle")->getLowerLimit(), getRightShin()->getHinge("rightAnkle")->getUpperLimit());
 	double laa = Util::normalize(getLeftShin()->getHinge("leftAnkle")->getHingeAngle(), getLeftShin()->getHinge("leftAnkle")->getLowerLimit(), getLeftShin()->getHinge("leftAnkle")->getUpperLimit());
 
-	return{ rha1, rha2, rha3, lha1, lha2, lha3, rka, lka, raa, laa };
+	//return{ lba, rha1, rha2, rha3, lha1, lha2, lha3, rka, lka, raa, laa };
+	return{ lba, rha, lha, rka, lka, raa, laa };
 }
 
 
 std::vector<double> Biped::getAllAngularVelocities()
 {
 	std::vector<double> angularVelocities;
+	//LOWER BODY
+	angularVelocities.push_back(lowerBody->getRigidBody()->getAngularVelocity().getX());
+	angularVelocities.push_back(lowerBody->getRigidBody()->getAngularVelocity().getY());
+	angularVelocities.push_back(lowerBody->getRigidBody()->getAngularVelocity().getZ());
+
 	//HIPS
 	angularVelocities.push_back(hips->getRigidBody()->getAngularVelocity().getX());
 	angularVelocities.push_back(hips->getRigidBody()->getAngularVelocity().getY());
@@ -638,87 +782,6 @@ std::vector<double> Biped::getAllAngularVelocities()
 	return angularVelocities;
 }
 
-void Biped::setAllTargetVelocities(std::vector<double>& resultVec)
-{
-	//CHANGE MAX VELOCITY NORMALIZATION IF YOU CHANGE m
-	double m = 15;
-	double mU = 0.0;
-
-	//HIPS
-	//getHips()->getHinge("leftHip")->setMotorTargetVelocity((resultVec[0] - mU) * m);
-	//getHips()->getHinge("rightHip")->setMotorTargetVelocity((resultVec[1] - mU) * m);
-
-	// 0 = spin, 1 = fremover/bakover, 2 = side til side
-
-	//LEFT HIP
-	btVector3 lhLowerLim;
-	hips->getdofConstraint("leftHip")->getAngularLowerLimit(lhLowerLim);
-	btVector3 lhUpperLim;
-	hips->getdofConstraint("leftHip")->getAngularUpperLimit(lhUpperLim);
-
-	double lhAngle1 = Util::scaleToRange(resultVec[0], lhLowerLim[0], lhUpperLim[0]);
-	double lhTargetVel1 = computeTargetVelocity(hips->getdofConstraint("leftHip")->getAngle(0), lhAngle1, 1);
-	hips->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_targetVelocity = lhTargetVel1 * 20;
-	//std::cout << "lhLowerLim[1]: " << lhLowerLim[1] << " lhUpperLim[1]: " << lhUpperLim[1] << "\n";
-	double lhAngle2 = Util::scaleToRange(resultVec[1], lhLowerLim[1], lhUpperLim[1]);
-	double lhTargetVel2 = computeTargetVelocity(hips->getdofConstraint("leftHip")->getAngle(1), lhAngle2, 1);
-	hips->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_targetVelocity = lhTargetVel2 * 20;
-	//std::cout << "resultVec[1]: " << resultVec[1] << " lhTargetVel2: " << lhTargetVel2 << "\n";
-	double lhAngle3 = Util::scaleToRange(resultVec[2], lhLowerLim[2], lhUpperLim[2]);
-	double lhTargetVel3 = computeTargetVelocity(hips->getdofConstraint("leftHip")->getAngle(2), lhAngle3, 1);
-	hips->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_targetVelocity = lhTargetVel3;
-
-	//RIGHT HIP
-	btVector3 rhLowerLim;
-	hips->getdofConstraint("leftHip")->getAngularLowerLimit(rhLowerLim);
-	btVector3 rhUpperLim;
-	hips->getdofConstraint("leftHip")->getAngularUpperLimit(rhUpperLim);
-
-	double rlhAngle1 = Util::scaleToRange(resultVec[3], rhLowerLim[0], rhUpperLim[0]);
-	double rhTargetVel1 = computeTargetVelocity(hips->getdofConstraint("rightHip")->getAngle(0), rlhAngle1, 1);
-	hips->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_targetVelocity = rhTargetVel1;
-
-	double rlhAngle2 = Util::scaleToRange(resultVec[4], rhLowerLim[1], rhUpperLim[1]);
-	double rhTargetVel2 = computeTargetVelocity(hips->getdofConstraint("rightHip")->getAngle(1), rlhAngle2, 1);
-	hips->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_targetVelocity = rhTargetVel2;
-
-	double rlhAngle3 = Util::scaleToRange(resultVec[5], rhLowerLim[2], rhUpperLim[2]);
-	double rhTargetVel3 = computeTargetVelocity(hips->getdofConstraint("rightHip")->getAngle(2), rlhAngle3, 1);
-	hips->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_targetVelocity = rhTargetVel3;
-
-	//KNEES
-	double rkVel = Util::scaleToRange(resultVec[6], getRightThigh()->getHinge("rightKnee")->getLowerLimit(), getRightThigh()->getHinge("rightKnee")->getUpperLimit());
-	getRightThigh()->getHinge("rightKnee")->setMotorTarget(rkVel, 1);
-
-	double lkVel = Util::scaleToRange(resultVec[7], getLeftThigh()->getHinge("leftKnee")->getLowerLimit(), getLeftThigh()->getHinge("leftKnee")->getUpperLimit());
-	getLeftThigh()->getHinge("leftKnee")->setMotorTarget(lkVel, 1);
-
-	//FEET
-	double rfVel = Util::scaleToRange(resultVec[8], getRightShin()->getHinge("rightAnkle")->getLowerLimit(), getRightShin()->getHinge("rightAnkle")->getUpperLimit());
-	getRightShin()->getHinge("rightAnkle")->setMotorTarget(rfVel, 1);
-	double lfVel = Util::scaleToRange(resultVec[9], getLeftShin()->getHinge("leftAnkle")->getLowerLimit(), getLeftShin()->getHinge("leftAnkle")->getUpperLimit());
-	getLeftShin()->getHinge("leftAnkle")->setMotorTarget(lfVel, 1);
-	
-	////LEFT HIP
-	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_targetVelocity = resultVec[0] * m;
-	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_targetVelocity = resultVec[1] * m;
-	//hips->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_targetVelocity = resultVec[2] * m;
-
-	////RIGHT HIP
-	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_targetVelocity = resultVec[3] * m;
-	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_targetVelocity = resultVec[4] * m;
-	//hips->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_targetVelocity = -resultVec[5] * m; //******* MINUS HER PGA motsatt side IKKE SIKKER OM DET VIRKER!! ********
-
-	////KNEES
-	//getRightThigh()->getHinge("rightKnee")->setMotorTarget(1, 1);
-	//getRightThigh()->getHinge("rightKnee")->setMotorTargetVelocity((resultVec[6] - mU) * m);
-	//getLeftThigh()->getHinge("leftKnee")->setMotorTargetVelocity((resultVec[7] - mU) * m);
-
-	////FEET
-	//getRightShin()->getHinge("rightAnkle")->setMotorTargetVelocity((resultVec[8] - mU) * m);
-	//getLeftShin()->getHinge("leftAnkle")->setMotorTargetVelocity((resultVec[9] - mU) * m);
-}
-
 btScalar Biped::computeTargetVelocity(btScalar hingeAngle, btScalar targetAngle, double dt) {
 	btScalar dAngle = targetAngle - hingeAngle;
 	return dAngle / dt;
@@ -735,30 +798,33 @@ void Biped::setMaxMotorImpulses(double maxMotorImpulse)
 	bool isEnableMotor = true;
 
 	//THEM HIPS
-	//getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
-	//getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
-	//getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
-	//getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
+	getHips()->getHinge("leftHip")->enableMotor(isEnableMotor);
+	getHips()->getHinge("rightHip")->enableMotor(isEnableMotor);
+	getHips()->getHinge("leftHip")->setMaxMotorImpulse(maxMotorImpulse);
+	getHips()->getHinge("rightHip")->setMaxMotorImpulse(maxMotorImpulse);
+	
+	//HIP
+	lowerBody->getHinge("lowerBody")->enableMotor(isEnableMotor);
+	lowerBody->getHinge("lowerBody")->setMaxMotorImpulse(maxMotorImpulse);
+	////LEFT HIP
+	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_enableMotor = isEnableMotor;
+	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_maxMotorForce = maxMotorImpulse;
 
-	//LEFT HIP
-	getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_enableMotor = isEnableMotor;
-	getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(0)->m_maxMotorForce = maxMotorImpulse;
+	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_enableMotor = isEnableMotor;
+	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_maxMotorForce = maxMotorImpulse;
 
-	getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_enableMotor = isEnableMotor;
-	getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(1)->m_maxMotorForce = maxMotorImpulse;
+	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_enableMotor = isEnableMotor;
+	//getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_maxMotorForce = maxMotorImpulse;
 
-	getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_enableMotor = isEnableMotor;
-	getHips()->getdofConstraint("leftHip")->getRotationalLimitMotor(2)->m_maxMotorForce = maxMotorImpulse;
+	////RIGHT HIP
+	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_enableMotor = isEnableMotor;
+	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_maxMotorForce = maxMotorImpulse;
 
-	//RIGHT HIP
-	getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_enableMotor = isEnableMotor;
-	getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(0)->m_maxMotorForce = maxMotorImpulse;
+	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_enableMotor = isEnableMotor;
+	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_maxMotorForce = maxMotorImpulse;
 
-	getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_enableMotor = isEnableMotor;
-	getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(1)->m_maxMotorForce = maxMotorImpulse;
-
-	getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_enableMotor = isEnableMotor;
-	getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_maxMotorForce = maxMotorImpulse;
+	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_enableMotor = isEnableMotor;
+	//getHips()->getdofConstraint("rightHip")->getRotationalLimitMotor(2)->m_maxMotorForce = maxMotorImpulse;
 
 	//KnEES
 	getRightThigh()->getHinge("rightKnee")->enableMotor(isEnableMotor);
@@ -769,8 +835,8 @@ void Biped::setMaxMotorImpulses(double maxMotorImpulse)
 	//FEETS
 	getRightShin()->getHinge("rightAnkle")->enableMotor(isEnableMotor);
 	getLeftShin()->getHinge("leftAnkle")->enableMotor(isEnableMotor);
-	getRightShin()->getHinge("rightAnkle")->setMaxMotorImpulse(maxMotorImpulse / 2);
-	getLeftShin()->getHinge("leftAnkle")->setMaxMotorImpulse(maxMotorImpulse / 2);
+	getRightShin()->getHinge("rightAnkle")->setMaxMotorImpulse(maxMotorImpulse);
+	getLeftShin()->getHinge("leftAnkle")->setMaxMotorImpulse(maxMotorImpulse);
 }
 void Biped::setFitness(double fitness)
 {
@@ -824,6 +890,7 @@ double Biped::getHeight()
 
 void Biped::removeBodies(PhysicsManager * pm)
 {
+	lowerBody->remove(pm);
 	hips->remove(pm);
 
 	rightThigh->remove(pm);
@@ -838,6 +905,7 @@ void Biped::removeBodies(PhysicsManager * pm)
 
 void Biped::removeConstraints(PhysicsManager * pm)
 {
+	lowerBody->removeConstraint(pm);
 	hips->removeConstraint(pm);
 
 	rightThigh->removeConstraint(pm);
@@ -1014,6 +1082,7 @@ glm::vec3 Biped::getRelativePosition(Box* box) {
 
 void Biped::activate() {
 
+	lowerBody->getRigidBody()->activate();
 	hips->getRigidBody()->activate();
 
 	rightThigh->getRigidBody()->activate();
@@ -1096,13 +1165,48 @@ double Biped::getTotalSpeed()
 
 double Biped::getDistanceWalked()
 {
-	glm::vec3 end = getPosition();
-	glm::vec3 start = getStartPosition();
-	return start.z - end.z;
+	//glm::vec3 end = getPosition();
+	//glm::vec3 start = getStartPosition();
+	//return start.z - end.z;
+
+	glm::vec3 end = getPositionOfBody();
+	glm::vec3 target = m_targetPosition;
+
+	return glm::distance(end, target);
+}
+
+glm::vec3 Biped::getPositionOfBody()
+{
+	return glm::vec3(hips->getRigidBody()->getCenterOfMassPosition().getX(), hips->getRigidBody()->getCenterOfMassPosition().getY(), hips->getRigidBody()->getCenterOfMassPosition().getZ());
+}
+
+glm::vec3 Biped::getTargetPosition()
+{
+	return m_targetPosition;
+}
+
+void Biped::setTargetPosition(glm::vec3 target)
+{
+	m_targetPosition = target;
+	maxDistanceToTarget = glm::distance(m_startPosition, m_targetPosition) + 20;
+}
+
+void Biped::checkIfTargetReached()
+{
+	if (glm::distance(getPositionOfBody(), m_targetPosition) < 2.0) {
+		targetReached = true;
+	}
+}
+
+
+bool Biped::isTargetReached()
+{
+	return targetReached;
 }
 
 Biped::~Biped()
 {
+	delete lowerBody;
 	delete hips;
 	delete rightThigh;
 	delete rightShin;

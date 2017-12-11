@@ -19,7 +19,7 @@ Purpose: Creates Boxs to use in the world. Also renders, updates physics and cre
 	@param depth The depth of the Box.
 	@param mass The Mass of the Box.
 */
-Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
+Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass, std::string shapetype) : position(position), color(color), mass(mass), width(width), height(height), depth(depth), m_shapeType(shapetype)
 {
 	// Boxs
 	GLfloat BoxVertices[] = {
@@ -89,8 +89,93 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 
 	glBindVertexArray(0); // Unbind VAO
 
+	if (shapetype != BOX_SHAPE && shapetype != CAPSULE_SHAPE) {
+		throw std::invalid_argument("invalid shape");
+	}
+
 	//mass = 1;
 	//Set up physics
+	Box::setUpPhysicsBox();
+
+	rigidBody->getMotionState()->getWorldTransform(startPos);
+	groundCollision = false;
+
+	previousPosition = position;
+}
+
+Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
+{
+	// Boxs
+	GLfloat BoxVertices[] = {
+		//BACK
+		-width, -height, -depth,  0.0f,  0.0f, -1.0f,
+		width, -height, -depth,  0.0f,  0.0f, -1.0f,
+		width,  height, -depth,  0.0f,  0.0f, -1.0f,
+		width,  height, -depth,  0.0f,  0.0f, -1.0f,
+		-width,  height, -depth,  0.0f,  0.0f, -1.0f,
+		-width, -height, -depth,  0.0f,  0.0f, -1.0f,
+		//FRONT
+		-width, -height,  depth,  0.0f,  0.0f, 1.0f,
+		width, -height,  depth,  0.0f,  0.0f, 1.0f,
+		width,  height,  depth,  0.0f,  0.0f, 1.0f,
+		width,  height,  depth,  0.0f,  0.0f, 1.0f,
+		-width,  height,  depth,  0.0f,  0.0f, 1.0f,
+		-width, -height,  depth,  0.0f,  0.0f, 1.0f,
+		//LEFT SIDE
+		-width,  height,  depth, -1.0f,  0.0f,  0.0f,
+		-width,  height, -depth, -1.0f,  0.0f,  0.0f,
+		-width, -height, -depth, -1.0f,  0.0f,  0.0f,
+		-width, -height, -depth, -1.0f,  0.0f,  0.0f,
+		-width, -height,  depth, -1.0f,  0.0f,  0.0f,
+		-width,  height,  depth, -1.0f,  0.0f,  0.0f,
+		//RIGHT SIDE
+		width,  height,  depth,  1.0f,  0.0f,  0.0f,
+		width,  height, -depth,  1.0f,  0.0f,  0.0f,
+		width, -height, -depth,  1.0f,  0.0f,  0.0f,
+		width, -height, -depth,  1.0f,  0.0f,  0.0f,
+		width, -height,  depth,  1.0f,  0.0f,  0.0f,
+		width,  height,  depth,  1.0f,  0.0f,  0.0f,
+		//BOTTOM
+		-width, -height, -depth,  0.0f, -1.0f,  0.0f,
+		width, -height, -depth,  0.0f, -1.0f,  0.0f,
+		width, -height,  depth,  0.0f, -1.0f,  0.0f,
+		width, -height,  depth,  0.0f, -1.0f,  0.0f,
+		-width, -height,  depth,  0.0f, -1.0f,  0.0f,
+		-width, -height, -depth,  0.0f, -1.0f,  0.0f,
+		//TOP
+		-width,  height, -depth,  0.0f,  1.0f,  0.0f,
+		width,  height, -depth,  0.0f,  1.0f,  0.0f,
+		width,  height,  depth,  0.0f,  1.0f,  0.0f,
+		width,  height,  depth,  0.0f,  1.0f,  0.0f,
+		-width,  height,  depth,  0.0f,  1.0f,  0.0f,
+		-width,  height, -depth,  0.0f,  1.0f,  0.0f
+	};
+
+	angle = 0.0f;
+	axisOfRotation = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	//Box STUFF
+	GLuint BoxVBO;
+	glGenVertexArrays(1, &BoxVAO);
+	glGenBuffers(1, &BoxVBO);
+
+	glBindVertexArray(BoxVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, BoxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(BoxVertices), BoxVertices, GL_STATIC_DRAW);
+
+	// Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	// Normal attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0); // Unbind VAO
+
+						  //mass = 1;
+						  //Set up physics
+	m_shapeType = BOX_SHAPE;
 	Box::setUpPhysicsBox();
 
 	rigidBody->getMotionState()->getWorldTransform(startPos);
@@ -179,7 +264,13 @@ void Box::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
 void Box::setUpPhysicsBox()
 {
 	//TODO: delete fall shape at the end of game loop
-	fallShape = new btBoxShape(btVector3(width, height, depth));
+	if (m_shapeType == CAPSULE_SHAPE) {
+		fallShape = new btCapsuleShape(width, height);
+	}
+	else {
+		fallShape = new btBoxShape(btVector3(width, height, depth));
+	}
+
 	fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), Util::convertToBtVector3(position)));
 	btVector3 fallInertia(0, 0, 0);
 	if(mass != 0) fallShape->calculateLocalInertia(mass, fallInertia);
@@ -197,6 +288,28 @@ void Box::setUpPhysicsBox()
 	//std::cout << "stiffness: " << rigidBody->getContactStiffness() << "\n";
 	//std::cout << "damping: " << rigidBody->getContactDamping() << "\n";
 }
+
+//void Box::setUpPhysicsBox()
+//{
+//	//TODO: delete fall shape at the end of game loop
+//	fallShape = new btCapsuleShape(width, height);
+//	fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), Util::convertToBtVector3(position)));
+//	btVector3 fallInertia(0, 0, 0);
+//	if (mass != 0) fallShape->calculateLocalInertia(mass, fallInertia);
+//
+//	btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+//	rigidBody = new btRigidBody(fallRigidBodyCI);
+//
+//	rigidBody->setRestitution(0.05);
+//	rigidBody->setDamping(0.05, 0.85);
+//	rigidBody->setDeactivationTime(0.8);
+//	rigidBody->setSleepingThresholds(0.5f, 0.5f);
+//
+//	//Default damping: 0.1 -- stiffness: 10000
+//	//rigidBody->setContactStiffnessAndDamping(10000.0f, 0.1f);
+//	//std::cout << "stiffness: " << rigidBody->getContactStiffness() << "\n";
+//	//std::cout << "damping: " << rigidBody->getContactDamping() << "\n";
+//}
 
 
 btRigidBody* Box::getRigidBody()
@@ -304,12 +417,13 @@ void Box::addDOFConstraint(Box * cubeB, bool notCollision, btScalar xOffset, Phy
 
 	btTransform frameA = btTransform::getIdentity();
 	frameA.getBasis().setEulerZYX(0, 0, PI / 2);
-	frameA.setOrigin(btVector3(btScalar(xOffset), btScalar(-2.2), btScalar(0.)));
-
+	//frameA.setOrigin(btVector3(btScalar(xOffset), btScalar(-2.2), btScalar(0.)));
+	frameA.setOrigin(btVector3(xOffset, -getHeight()/2, 0.f));
 
 	btTransform frameB = btTransform::getIdentity();
 	frameB.getBasis().setEulerZYX(0, 0, PI / 2);
-	frameB.setOrigin(btVector3(btScalar(0.), btScalar(2.2), btScalar(0.)));
+	//frameB.setOrigin(btVector3(btScalar(0.), btScalar(2.2), btScalar(0.)));
+	frameB.setOrigin(btVector3(0.f, cubeB->getHeight(), 0.f));
 
 	btGeneric6DofConstraint* dofConstraint = new btGeneric6DofConstraint(*rigidBody,
 		*cubeB->getRigidBody(), frameA, frameB, true);

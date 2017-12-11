@@ -9,38 +9,50 @@ Purpose: Writes and stores network, generation, fitness and distance data. Also 
 #include "stdafx.h"
 #include "NetworkWriter.h"
 
+//template <class T>
 
-NetworkWriter::NetworkWriter()
-{
+//NetworkWriter::NetworkWriter()
+//{
+//}
+template class NetworkWriter<Biped>;
+template class NetworkWriter<Dog>;
+template <class T>
+void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, int generation, unsigned mainSeed) {
+	std::string fileName = (std::is_same<T, Dog>::value) ? "networksDogs.txt" : "networksBipeds.txt";
+	writeToFile(creatures, fileName, generation, mainSeed);
 }
 
-void NetworkWriter::writeToFile(std::vector<Biped*> creatures, int generation, unsigned mainSeed) {
-	writeToFile(creatures, "network.txt", generation, mainSeed);
+//void NetworkWriter::writeFitness(double bestFitness)
+//{
+//	writeFitness(bestFitness, "fitnessPlot.txt");
+//}
+//
+//void NetworkWriter::writeDistance(double distance)
+//{
+//	writeDistance(distance, "distancePlot.txt");
+//}
+
+template class NetworkWriter<Biped>;
+template class NetworkWriter<Dog>;
+template <class T>
+void NetworkWriter<T>::readFromFile(std::vector<T*> creatures) {
+	std::string dogsName = "networksDogs25-32-16-8.txt";
+	std::string fileName = (std::is_same<T, Dog>::value) ? dogsName : "networksBipeds.txt";
+	readFromFile(creatures, fileName);
+
 }
 
-void NetworkWriter::writeFitness(double bestFitness)
-{
-	writeFitness(bestFitness, "fitnessPlot.txt");
-}
-
-void NetworkWriter::writeDistance(double distance)
-{
-	writeDistance(distance, "distancePlot.txt");
-}
-
-void NetworkWriter::readFromFile(std::vector<Biped*> creatures) {
-	readFromFile(creatures, "network.txt");
-
-}
-
-
-void NetworkWriter::writeToFile(std::vector<Biped*> creatures, std::string fileName, int generation, unsigned mainSeed)
+template class NetworkWriter<Biped>;
+template class NetworkWriter<Dog>;
+template <class T>
+void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, std::string fileName, int generation, unsigned mainSeed)
 {
 	std::cout << "Writing networks to file...\n";
-	std::ofstream myfile;
-	myfile.open(fileName);
-	myfile << creatures.size() << " " << generation << " " << std::setprecision(20) << mainSeed << "\n";
+	std::ofstream myfile(fileName);
+	//myfile.open(fileName);
+	myfile << creatures.size() << " " << generation << " " << std::setprecision(20) << mainSeed << std::endl;
 	for (int i = 0; i < creatures.size(); i++) {
+		myfile << std::setprecision(20) << creatures[i]->getNeuralNetwork().getDivider() << std::endl;
 
 		std::vector<std::vector<Neuron>> tempNetLayers = creatures[i]->getNeuralNetwork().getLayers();
 		for (int l = 0; l < tempNetLayers.size(); l++) {
@@ -48,25 +60,21 @@ void NetworkWriter::writeToFile(std::vector<Biped*> creatures, std::string fileN
 
 			for (int j = 0; j < tempLayer.size(); j++) {
 				std::vector<double> outputWeights = tempLayer[j].getOutputWeights();
+				myfile << std::setprecision(20) << tempLayer[j].getBias() << std::endl;
 				for (int k = 0; k < outputWeights.size(); k++) {
 					myfile << std::setprecision(20) << outputWeights[k] << " ";
 				}
-				myfile << "\n";
+				myfile << std::endl;
 			}
 		}
 	}
 	myfile.close();
 }
 
-void NetworkWriter::writeFitness(double bestFitness, std::string fileName)
-{
-	std::ofstream myfile;
-	myfile.open(fileName, std::ios::out | std::ios::app);
-	myfile << std::setprecision(5) << bestFitness << "\n";
-	myfile.close();
-}
-
-void NetworkWriter::readFromFile(std::vector<Biped*> creatures, std::string fileName)
+template class NetworkWriter<Biped>;
+template class NetworkWriter<Dog>;
+template <class T>
+void NetworkWriter<T>::readFromFile(std::vector<T*> creatures, std::string fileName)
 {
 
 	std::cout << "Reading networks from file...\n";
@@ -78,19 +86,31 @@ void NetworkWriter::readFromFile(std::vector<Biped*> creatures, std::string file
 		std::getline(myfile, line);
 		double numCreatures = std::stod(line);
 
-		if (numCreatures != creatures.size()){
-			std::cout << "Not the same size of creatures, net: " << numCreatures << " creature list: " << creatures.size() << "\n";
-			return;
-		}
+		//if (numCreatures != creatures.size()) {
+		//	std::cout << "Not the same size of creatures, net: " << numCreatures << " creature list: " << creatures.size() << "\n";
+		//	return;
+		//}
 
 
-		for (int i = 0; i < creatures.size(); i++) {
+		for (int i = 0; i < numCreatures; i++) {
+
+			//Get divider
+			std::getline(myfile, line);
+			double divider = std::stod(line);
+			//std::cout << "divider: " << divider << "\n";
+			creatures[i]->getNN()->setDivider(divider);
 
 			std::vector<std::vector<Neuron>> tempNetLayers = creatures[i]->getNeuralNetwork().getLayers();
 			for (int l = 0; l < tempNetLayers.size(); l++) {
 				Layer& tempLayer = tempNetLayers[l];
 
 				for (int j = 0; j < tempLayer.size(); j++) {
+
+					//Get bias
+					std::getline(myfile, line);
+					double bias = std::stod(line);
+					//std::cout << "bias: " << bias << "\n";
+					creatures[i]->getNN()->getL()->at(l).at(j).setBias(bias);
 
 					std::vector<double> outputWeights = tempLayer[j].getOutputWeights();
 					std::getline(myfile, line);
@@ -112,15 +132,23 @@ void NetworkWriter::readFromFile(std::vector<Biped*> creatures, std::string file
 	}
 }
 
-void NetworkWriter::writeDistance(double distance, std::string fileName)
-{
-	std::ofstream myfile;
-	myfile.open(fileName, std::ios::out | std::ios::app);
-	myfile << std::setprecision(5) << distance << "\n";
-	myfile.close();
-}
+//void NetworkWriter::writeFitness(double bestFitness, std::string fileName)
+//{
+//	std::ofstream myfile;
+//	myfile.open(fileName, std::ios::out | std::ios::app);
+//	myfile << std::setprecision(5) << bestFitness << "\n";
+//	myfile.close();
+//}
 
-
-NetworkWriter::~NetworkWriter()
-{
-}
+//void NetworkWriter::writeDistance(double distance, std::string fileName)
+//{
+//	std::ofstream myfile;
+//	myfile.open(fileName, std::ios::out | std::ios::app);
+//	myfile << std::setprecision(5) << distance << "\n";
+//	myfile.close();
+//}
+//
+//
+//NetworkWriter::~NetworkWriter()
+//{
+//}

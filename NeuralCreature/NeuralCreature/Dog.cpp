@@ -17,7 +17,7 @@ Dog::Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine
 	//(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass)
 	// 1.2f, 1.0f, 3.0f
 	//glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass
-	body = new Box(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 2.f, 1.0f, 3.f, 25);
+	body = new Box(glm::vec3(m_startPosition.x, m_startPosition.y, m_startPosition.z), glm::vec3(0.9f, 0.1f, 0.1f), 1.2f, 1.0f, 3.f, 25);
 
 	//TIGHS
 	//frontRightTigh = new Box(glm::vec3(m_startPosition.x + 1.3, m_startPosition.y - 1.6, m_startPosition.z - 2.5), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 15);
@@ -34,16 +34,17 @@ Dog::Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine
 
 
 	// SHINS
-	frontRightShin = new Box(glm::vec3(m_startPosition.x + (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z - (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5);
-	frontLeftShin = new Box(glm::vec3(m_startPosition.x - (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z - (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5);
+	frontRightShin = new Box(glm::vec3(m_startPosition.x + (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z - (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5, "CAPSULE");
+	frontLeftShin = new Box(glm::vec3(m_startPosition.x - (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z - (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5, "CAPSULE");
 
-	backRightShin = new Box(glm::vec3(m_startPosition.x + (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z + (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5);
-	backLeftShin = new Box(glm::vec3(m_startPosition.x - (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z + (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5);
+	backRightShin = new Box(glm::vec3(m_startPosition.x + (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z + (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5, "CAPSULE");
+	backLeftShin = new Box(glm::vec3(m_startPosition.x - (body->getWidth() + 0.2), m_startPosition.y - 4.05, m_startPosition.z + (body->getDepth() - 0.5)), glm::vec3(0.2f, 0.3f, 0.7f), 0.3f, 1.2f, 0.3f, 5, "CAPSULE");
 
-	//frontRightShin->getRigidBody()->setFriction(2.0f);
-	//frontLeftShin->getRigidBody()->setFriction(2.0f);
-	//backRightShin->getRigidBody()->setFriction(2.0f);
-	//backLeftShin->getRigidBody()->setFriction(2.0f);
+	double friction = 3.0f;
+	frontRightShin->getRigidBody()->setFriction(friction);
+	frontLeftShin->getRigidBody()->setFriction(friction);
+	backRightShin->getRigidBody()->setFriction(friction);
+	backLeftShin->getRigidBody()->setFriction(friction);
 
 	pm->addBody(body->getRigidBody(), 1, 2);
 
@@ -84,25 +85,32 @@ Dog::Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine
 	body->addHinge(glm::vec3(body->getWidth() + 0.2, 0.f, -(body->getDepth() - 0.5)), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), frontRightTigh, noCol, -2.0f, PI * 0.5, pm, "frontRightTigh");
 	body->addHinge(glm::vec3(-body->getWidth() - 0.2, 0.f, -(body->getDepth() - 0.5)), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), frontLeftTigh, noCol, -2.0f, PI * 0.5, pm, "frontLeftTigh");
 
+	//body->addHinge(glm::vec3(body->getWidth() + 0.2, 0.f, (body->getDepth() - 0.5)), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), backRightTigh, noCol, -2.0f, PI * 0.5, pm, "backRightTigh");
+	//body->addHinge(glm::vec3(-body->getWidth() - 0.2, 0.f, (body->getDepth() - 0.5)), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), backLeftTigh, noCol, -2.0f, PI * 0.5, pm, "backLeftTigh");
+
 	body->addHinge(glm::vec3(body->getWidth() + 0.2, 0.f, (body->getDepth() - 0.5)), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), backRightTigh, noCol, -2.0f, PI * 0.5, pm, "backRightTigh");
 	body->addHinge(glm::vec3(-body->getWidth() - 0.2, 0.f, (body->getDepth() - 0.5)), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), backLeftTigh, noCol, -2.0f, PI * 0.5, pm, "backLeftTigh");
 
 	frontRightTigh->addHinge(glm::vec3(0.0f, -1.2f, 0.0f), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), frontRightShin, noCol, -0.1, PI * 0.8, pm, "frontRightKnee");
 	frontLeftTigh->addHinge(glm::vec3(0.0f, -1.2f, 0.0f), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), frontLeftShin, noCol, -0.1, PI * 0.8, pm, "frontLeftKnee");
 
+
+	//frontRightTigh->addHinge(glm::vec3(0.0f, -1.2f, 0.0f), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), frontRightShin, noCol, -PI * 0.8, 0.1,  pm, "frontRightKnee");
+	//frontLeftTigh->addHinge(glm::vec3(0.0f, -1.2f, 0.0f), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), frontLeftShin, noCol, -PI * 0.8, 0.1,  pm, "frontLeftKnee");
+
 	backRightTigh->addHinge(glm::vec3(0.0f, -1.2f, 0.0f), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), backRightShin, noCol, -0.1, PI * 0.8, pm, "backRightKnee");
 	backLeftTigh->addHinge(glm::vec3(0.0f, -1.2f, 0.0f), glm::vec3(0.0f, 1.2f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), backLeftShin, noCol, -0.1, PI * 0.8, pm, "backLeftKnee");
 
-	setMaxMotorImpulses(100.0f);
+	setMaxMotorImpulses(150.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 50, 30, 8 };
+	std::vector<int> topology{ 25, 32, 16, 8 };
 	createNeuralNetwork(topology, engine);
 
 	//int numInputs, int numOutputs, double sameSpeciesThreshold, double disjointCoefficient, double excessCoefficient, double averageWeightDifferenceCoefficient
-	NEATController controller(48, 8, 0.4f, 0.3f, 0.2f, 0.5f);
+	NEATController controller(25, 8, 0.4f, 0.3f, 0.2f, 0.5f);
 	//NEATController controller, int netId, int numInputs, int numOutputs
-	m_neatNeuralNetwork = NEATNetwork(controller, 1, 48, 8);
+	m_neatNeuralNetwork = NEATNetwork(controller, 1, 25, 8);
 
 	//Set default fitness
 	m_fitness = 0;
@@ -125,12 +133,16 @@ Dog::Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine
 	m_shouldUpdate = true;
 	timeOnTwoLegs = 0;
 	timeOnGround = 0;
-	m_startPosition = getPosition();
-	m_previousPosition = getPosition();
+	m_startPosition = getPositionOfBody();
+	m_previousPosition = getPositionOfBody();
 
-	m_targetPosition = {2, 1.6, 50};
+	setTargetPosition({ 2, 1.6, 200 });
+	//m_targetPosition = {2, 1.6, 50};
 
-	maxDistanceToTarget = glm::distance(m_startPosition, m_targetPosition);
+	//maxDistanceToTarget = glm::distance(m_startPosition, m_targetPosition);
+
+	inputAngles = getAllAngles();
+	prevInputAngles = getAllAngles();
 }
 
 /**
@@ -205,7 +217,12 @@ void Dog::updatePhysics()
 //}
 
 
-glm::vec3 Dog::getPosition() {
+glm::vec3 Dog::getPositionOfBody()
+{
+	return glm::vec3(body->getRigidBody()->getCenterOfMassPosition().getX(), body->getRigidBody()->getCenterOfMassPosition().getY(), body->getRigidBody()->getCenterOfMassPosition().getZ());
+}
+
+glm::vec3 Dog::getCenterPosition() {
 	btVector3 finalPosition(0, 0, 0);
 	finalPosition += body->getRigidBody()->getCenterOfMassPosition();
 	finalPosition += frontRightTigh->getRigidBody()->getCenterOfMassPosition();
@@ -377,7 +394,9 @@ void Dog::updateNeuralNetwork()
 	//body->getdofConstraint("backLeftTigh")->getRotationalLimitMotor(1)->m_targetVelocity = -2.f;
 	//backLeftTigh->getHinge("backLeftKnee")->setMotorTargetVelocity(2.f);
 
-
+	//body->getRigidBody()->applyTorque(btVector3(btScalar(0.), btScalar(0.), btScalar(700.)));
+	//body->getRigidBody()->applyTorque(btVector3(btScalar(0.), btScalar(200.), btScalar(0.)));
+	//body->getRigidBody()->applyCentralForce(btVector3(btScalar(60.), btScalar(60.), btScalar(60.)));
 	setAllTargetVelocities(resultVec);
 
 }
@@ -396,33 +415,117 @@ std::vector<double> Dog::calculateInputs()
 		angularVel[i] = Util::normalize(angularVel[i], -MAX, MAX);
 	}
 
-	inputs.insert(inputs.end(), angularVel.begin(), angularVel.end());
+	//inputs.insert(inputs.end(), angularVel.begin(), angularVel.end());
 	//Body orientation
 	btMatrix3x3 m = btMatrix3x3(body->getRigidBody()->getOrientation());
 	btScalar yaw, pitch, roll;
-	m.getEulerZYX(yaw, pitch, roll);
+	m.getEulerYPR(yaw, pitch, roll);
 	yaw = Util::normalize(yaw, -PI, PI);
 	pitch = Util::normalize(pitch, -PI, PI);
 	roll = Util::normalize(roll, -PI, PI);
 	//std::cout << "yaw: " << yaw << " pitch: " << pitch << " roll: " << roll << "\n";
-	//inputs.push_back(yaw);
-	//inputs.push_back(pitch);
-	//inputs.push_back(roll);
+	inputs.push_back(yaw);
+	inputs.push_back(pitch);
+	inputs.push_back(roll);
 
-	inputs.push_back(body->getRigidBody()->getOrientation().getX());
-	inputs.push_back(body->getRigidBody()->getOrientation().getY());
-	inputs.push_back(body->getRigidBody()->getOrientation().getZ());
-	inputs.push_back(body->getRigidBody()->getOrientation().getW());
+	//inputs.push_back(body->getRigidBody()->getOrientation().getX());
+	//inputs.push_back(body->getRigidBody()->getOrientation().getY());
+	//inputs.push_back(body->getRigidBody()->getOrientation().getZ());
+	//inputs.push_back(body->getRigidBody()->getOrientation().getW());
 
+	//Compute angle of body 0 -> 360 degrees in radians
+	btScalar angleOfBody;
+	const btScalar rfPAngle = btAsin(-m[1][2]);
+	if (rfPAngle < SIMD_HALF_PI) {
+		if (rfPAngle > -SIMD_HALF_PI) angleOfBody = btAtan2(m[0][2], m[2][2]);
+		else angleOfBody = -btAtan2(-m[0][1], m[0][0]);
+	}
+	else angleOfBody = btAtan2(-m[0][1], m[0][0]);
+
+	btQuaternion quat = body->getRigidBody()->getOrientation();
 	//std::cout << "targetPos: " << " x: " << m_targetPosition[0] << " y: " << m_targetPosition[1] << " z: " << m_targetPosition[2] << "\n";
 	//Math.toDegrees(Math.atan2(target.x - x, target.y - y));
-	double angleToTarget = std::atan2(m_targetPosition[0] - getPosition()[0], m_targetPosition[2] - getPosition()[2]);
-	
+	btVector3 targetVec = { m_targetPosition[0], m_targetPosition[1] , m_targetPosition[2] };
+	btVector3 bodyVec = body->getRigidBody()->getCenterOfMassPosition();
+	//std::cout << "angleToTarget: " <<  bodyVec.angle(targetVec) << "\n";
+	double angleToTarget = std::atan2(m_targetPosition[0] - body->getRigidBody()->getCenterOfMassPosition()[0], m_targetPosition[2] - body->getRigidBody()->getCenterOfMassPosition()[2]);
+	//std::cout << " pitch: " << pitch  << " angleTarget: " << Util::normalize(angleToTarget, -PI, PI) << "\n";
+
+	//double aToT = sin(angleToTarget);
+	//std::cout << " angleTarget: " << angleToTarget << " aToT: " << aToT << "\n";
 	//Angle to target
-	inputs.push_back(Util::normalize(angleToTarget, -PI, PI));
+	//inputs.push_back(Util::normalize(angleToTarget, -PI, PI));
+	
+	//Check if target is on the left or right of body
+	// ************** TDOD **************************
+	//change so targetSizeL/R shows how close to angleToTarget 
+	angleToTarget += PI;
+	angleOfBody += PI;
+	angleOfBody -= angleToTarget;
+	if (angleOfBody < 0) {
+		angleOfBody = PI * 2 + angleOfBody;
+	}
+	double targetSideR = -1.f;
+	double targetSideL = -1.f;
+
+	if (angleOfBody > 0) {
+		targetSideR = -sin(angleOfBody);
+		targetSideL = sin(angleOfBody);
+		//targetSideR = 1.f;
+		//targetSideL = -1.f;
+	}
+	if (angleOfBody > PI){
+		targetSideR =-sin(angleOfBody);
+		targetSideL = sin(angleOfBody);
+		//targetSideR = -1.f;
+		//targetSideL = 1.f;
+	}
+	double targetFacingFront;
+	double targetFacingBack;
+	if (angleOfBody > PI) {
+		targetFacingFront = sin(angleOfBody - PI / 2);
+	}
+	else {
+		targetFacingFront = sin(angleOfBody - PI / 2);
+	}
+
+	if (angleOfBody > PI) {
+		targetFacingBack = sin(angleOfBody + PI / 2);
+	}
+	else {
+		targetFacingBack = sin(angleOfBody + PI / 2);
+	}
+
+	inputs.push_back(targetFacingFront);
+	inputs.push_back(targetFacingBack);
+	//double testTargetSideR = targetSideR + PI/2;
+	//double testTargetSideL;
+
+	//std::cout << "targetSideR: " << targetSideR << " targetSideL: " << targetSideL << "\n";
+	//std::cout << "testTargetSideR: " << testTargetSideR << " testTargetSideL: " << testTargetSideL << "\n";
+	//if (targetSideR > 0) {
+	//	body->setColor(glm::vec3(0.1, 1.0, 0.1));
+	//}else if (targetSideL > 0) {
+	//	body->setColor(glm::vec3(0.1, 0.1, 1.0));
+	//}
+
+	if (targetFacingFront > 0) {
+		body->setColor(glm::vec3(0.1, 1.0, 0.1));
+	}
+	else if (targetFacingBack > 0) {
+		body->setColor(glm::vec3(0.1, 0.1, 1.0));
+	}
+
+
+	//std::cout << "targetSideL: " << targetSideL << " targetSideR: " << targetSideR << " angleToTarget: " << angleToTarget << "\n";
+	inputs.push_back(targetSideR);
+	inputs.push_back(targetSideL);
+
+	//********************* Lag variabel for når m_targetPosition er foran eller bak roboten
+
 	//std::cout << "angleToTarget: " << angleToTarget << " angleToTargetNormalized: " << Util::normalize(angleToTarget, -PI, PI) << "\n";
 	//Distance to target
-	inputs.push_back(Util::normalize(glm::distance(getPosition(), m_targetPosition), 0, maxDistanceToTarget));
+	inputs.push_back(Util::normalize(glm::distance(getCenterPosition(), m_targetPosition), 0, maxDistanceToTarget));
 	//std::cout << "distanceToTarget: " << Util::normalize(glm::distance(getPosition(), m_targetPosition), 0, maxDistanceToTarget) << "\n";
 	const double VEL_MAX = 5;
 	//Body Linear Velocity
@@ -431,7 +534,7 @@ std::vector<double> Dog::calculateInputs()
 	inputs.push_back(Util::normalize(body->getRigidBody()->getLinearVelocity().getZ(), -VEL_MAX, VEL_MAX));
 
 	//Hinge angles 16 or 8
-	std::vector<double> inputAngles = getAllAngles();
+	inputAngles = getAllAngles();
 
 	inputs.insert(inputs.end(), inputAngles.begin(), inputAngles.end());
 
@@ -502,32 +605,29 @@ std::vector<double> Dog::calculateInputs()
 	//inputs.push_back(std::sin(timeAlive/6));
 
 
-	double max = 0;
-	double min = 1000;
-	int intMax = 0;
-	int intMin = 0;
-	for (int i = 0; i < inputs.size(); i++) {
-		//max = (max < inputs[i]) ? inputs[i] : max;
-		//min = (min > inputs[i]) ? inputs[i] : min;
+	//double max = 0;
+	//double min = 1000;
+	//int intMax = 0;
+	//int intMin = 0;
+	//for (int i = 0; i < inputs.size(); i++) {
 
-		if (max < inputs[i]) {
-			max = inputs[i];
-			intMax = i;
-		}
+	//	if (max < inputs[i]) {
+	//		max = inputs[i];
+	//		intMax = i;
+	//	}
 
-		if (min > inputs[i]) {
-			min = inputs[i];
-			intMin = i;
-		}
-	}
+	//	if (min > inputs[i]) {
+	//		min = inputs[i];
+	//		intMin = i;
+	//	}
+	//}
 
-	if (max > 1.5f) {
-		std::cout << "MAX " << intMax << " : " << max << "\n";
-	}
-	if (min < -1.5f) {
-		std::cout << " MIN: " << intMin << " : " << min << "\n";
-	}
-	//std::cout << "max; " << max << " min: " << min<<  "\n";
+	//if (max > 1.5f) {
+	//	std::cout << "MAX " << intMax << " : " << max << "\n";
+	//}
+	//if (min < -1.5f) {
+	//	std::cout << " MIN: " << intMin << " : " << min << "\n";
+	//}
 
 	return inputs;
 }
@@ -927,10 +1027,10 @@ void Dog::setColor(glm::vec3 color)
 	backLeftShin->setColor(color);
 }
 
-void Dog::incrementToAverage()
+void Dog::incrementToAverageHeight()
 {
-	double value = getHeight();
-	average = (avgSize * average + value) / (avgSize + 1);
+	double height = getHeight();
+	average = (avgSize * average + height) / (avgSize + 1);
 	avgSize++;
 }
 
@@ -943,9 +1043,9 @@ double Dog::getMaxHeight()
 	return m_maxHeight;
 }
 
-void Dog::updateMaxHeight(double height)
+void Dog::updateMaxHeight()
 {
-
+	double height = getHeight();
 	if (height > m_maxHeight) m_maxHeight = height;
 }
 
@@ -1011,7 +1111,7 @@ double Dog::getNoMovementPenalty() {
 
 void Dog::calculateSpeed()
 {
-	glm::vec3 currentPosition = getPosition();
+	glm::vec3 currentPosition = getCenterPosition();
 	//double currentSpeed = currentPosition.z - m_previousPosition.z;
 	double currentSpeed = body->getRigidBody()->getLinearVelocity().getZ() * 0.016;
 	m_totalSpeed += currentSpeed;
@@ -1033,7 +1133,7 @@ double Dog::getDistanceWalked()
 	////return start.z - end.z;
 	//return end.z - start.z;
 
-	glm::vec3 end = getPosition();
+	glm::vec3 end = getPositionOfBody();
 	glm::vec3 target = m_targetPosition;
 
 	return glm::distance(end, target);
@@ -1262,8 +1362,106 @@ glm::vec3 Dog::getTargetPosition()
 void Dog::setTargetPosition(glm::vec3 target)
 {
 	m_targetPosition = target;
-	maxDistanceToTarget = glm::distance(m_startPosition, m_targetPosition);
+	maxDistanceToTarget = glm::distance(m_startPosition, m_targetPosition) + 20;
 }
+
+void Dog::checkIfTargetReached()
+{
+	if (glm::distance(getPositionOfBody(), m_targetPosition) < 2.0) {
+		targetReached = true;
+	}
+}
+
+bool Dog::isTargetReached()
+{
+	return targetReached;
+}
+
+void Dog::disableSimulation()
+{
+	body->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+
+	frontRightTigh->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+	frontRightShin->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+
+	frontLeftTigh->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+	frontLeftShin->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+
+	backRightTigh->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+	backRightShin->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+
+	backLeftTigh->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+	backLeftShin->getRigidBody()->forceActivationState(DISABLE_SIMULATION);
+
+}
+
+std::vector<bool> front = { false, false, false, false };
+
+void Dog::calculateTighMovement()
+{
+
+	double limit = 0.5;
+	//frontRightTigh
+	if (body->getHinge("frontRightTigh")->getHingeAngle() >= body->getHinge("frontRightTigh")->getUpperLimit() - limit) {
+		if(!front[0]) tighMovement++;
+		front[0] = true;
+	}
+	if (body->getHinge("frontRightTigh")->getHingeAngle() <= body->getHinge("frontRightTigh")->getLowerLimit() + limit) {
+		if (front[0]) tighMovement++;
+		front[0] = false;
+	}
+
+	//frontLeftTigh
+	if (body->getHinge("frontLeftTigh")->getHingeAngle() >= body->getHinge("frontLeftTigh")->getUpperLimit() - limit) {
+		if (!front[1]) tighMovement++;
+		front[1] = true;
+	}
+	if (body->getHinge("frontLeftTigh")->getHingeAngle() <= body->getHinge("frontLeftTigh")->getLowerLimit() + limit) {
+		if (front[1]) tighMovement++;
+		front[1] = false;
+	}
+
+	//backRightTigh
+	if (body->getHinge("backRightTigh")->getHingeAngle() >= body->getHinge("backRightTigh")->getUpperLimit() - limit) {
+		if (!front[2]) tighMovement++;
+		front[2] = true;
+	}
+	if (body->getHinge("backRightTigh")->getHingeAngle() <= body->getHinge("backRightTigh")->getLowerLimit() + limit) {
+		if (front[2]) tighMovement++;
+		front[2] = false;
+	}
+
+	//backLeftTigh
+	if (body->getHinge("backLeftTigh")->getHingeAngle() >= body->getHinge("backLeftTigh")->getUpperLimit() - limit) {
+		if (!front[3]) tighMovement++;
+		front[3] = true;
+	}
+	if (body->getHinge("backLeftTigh")->getHingeAngle() <= body->getHinge("backLeftTigh")->getLowerLimit() + limit) {
+		if (front[3]) tighMovement++;
+		front[3] = false;
+	}
+
+
+
+	//for(int i = 0; i < 4; i++) {
+	//	if (front[i]) {
+	//		if(inputAngles[i] -0.2 > front)
+	//	}
+
+	//	if (inputAngles[i] - 0.025 > prevInputAngles[i] || inputAngles[i] + 0.025 < prevInputAngles[i]) {
+	//		tighMovement++;
+	//	}
+	//}
+
+
+	//prevInputAngles = inputAngles;
+}
+
+double Dog::getTighMovement()
+{
+	return tighMovement;
+}
+
 
 void Dog::checkRotation()
 {

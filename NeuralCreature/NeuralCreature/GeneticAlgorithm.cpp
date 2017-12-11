@@ -31,7 +31,7 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 	timeNotWritten = 0;
 
 	m_currentStep = 0;
-	allTimeBestFitness = 0;
+	allTimeBestFitness = -100000;
 	m_keepRunning = true;
 
 	fitnessType = FITNESS_WALKING;
@@ -56,9 +56,14 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 	NEATNeuron neuron(1, 2);
 	//NEATNode int id, int type
 	NEATNode(1, 1);
-
-	targetPos = { 2, 1.6, 50 };
-	targetPosBox = new Box(targetPos, glm::vec3(0.1f, 0.1f, 0.9f), 1.f, 1.0f, 1.f, 0);
+	if (creatureType == DOG) {
+		targetPos = { 2, 1.6, 200 };
+		targetPosBox = new Box(targetPos, glm::vec3(0.1f, 0.1f, 0.9f), 1.f, 1.0f, 1.f, 0);
+	}
+	else if (creatureType == BIPED) {
+		targetPos = { 2, 3.6, -200 };
+		targetPosBox = new Box(targetPos, glm::vec3(0.1f, 0.1f, 0.9f), 1.f, 1.0f, 1.f, 0);
+	}
 }
 
 void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
@@ -69,7 +74,7 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		if (creatureType == BIPED) {
 			std::default_random_engine &rand = m_randomEngines[i];
 			//5.0*i - m_populationSize*5.0/2
-			Biped* tempCret = new Biped(pm, glm::vec3(1.0, 12.0, 0.0), rand);
+			Biped* tempCret = new Biped(pm, glm::vec3(1.0, 9.0, 0.0), rand);
 			bipeds.push_back(tempCret);
 		} else {
 			std::default_random_engine &rand = m_randomEngines[i];
@@ -79,7 +84,12 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		}
 
 	}
-	//NetworkWriter::readFromFile(bipeds);
+	if (creatureType == BIPED) {
+		NetworkWriter<Biped>::readFromFile(bipeds);
+	}
+	else {
+		NetworkWriter<Dog>::readFromFile(dogs);
+	}
 }
 
 bool moreThanByFitness(Biped* lhs, Biped* rhs) { return (lhs->getFitness() > rhs->getFitness()); }
@@ -108,14 +118,15 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 	m_currentStep = 0;
 	m_keepRunning = true;
 
-	timeNotWritten++;
-	if (timeNotWritten >= 5) {
-		//NetworkWriter::writeToFile(bipeds, generation, m_overSeed);
-		timeNotWritten = 0;
-	}
 	double bestFit = 0;
 	int bestFitIndex = 0;
 	if (creatureType == BIPED) {
+		timeNotWritten++;
+		if (timeNotWritten >= 5) {
+			NetworkWriter<Biped>::writeToFile(bipeds, generation, m_overSeed);
+			timeNotWritten = 0;
+		}
+
 		for (int i = 0; i < bipeds.size(); i++) {
 			if (bipeds[i]->shouldUpdate()) {
 				bipeds[i]->setFitness(evaluateFitnessBiped(bipeds[i], fitnessType, 1500));
@@ -138,10 +149,16 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 			bipeds[i]->removeBodies(pm);
 		}
-		NetworkWriter::writeFitness(bestFit);
-		NetworkWriter::writeDistance(bipeds[0]->getDistanceWalked());
+		//NetworkWriter::writeFitness(bestFit);
+		//NetworkWriter::writeDistance(bipeds[0]->getDistanceWalked());
 
 	}else{
+		timeNotWritten++;
+		//if (timeNotWritten >= 5) {
+			NetworkWriter<Dog>::writeToFile(dogs, generation, m_overSeed);
+			timeNotWritten = 0;
+		//}
+
 		for (int i = 0; i < dogs.size(); i++) {
 			if (dogs[i]->shouldUpdate()) {
 				dogs[i]->setFitness(evaluateFitnessDog(dogs[i], fitnessType, 1500, timesNoImprovement));
@@ -177,14 +194,26 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 	if (creatureType == BIPED) {
 		double divider = 2.5;
-		int partSize = bipeds.size() / divider;
+		//int oldPopulationSize = bipeds.size();
+		int indexForOld = 0;
+		int partSize = m_populationSize / divider;
 		int numParentCreatures = 5;
 		int crossInd = 0;
+		//if (m_populationSize > oldPopulationSize) {
+		//	std::uniform_int_distribution<int> overDistribution(0, INT_MAX); //INT_MIN instead of 0?
+		//	m_randomEngines = std::vector<std::default_random_engine>();
+
+		//	for (int i = 0; i < m_populationSize - oldPopulationSize; i++) {
+		//		int randomSeed = overDistribution(m_overEngine);
+		//		m_randomEngines.push_back(std::default_random_engine(randomSeed));
+		//	}
+		//}
+		//std::cout << "dogs: " << bipeds.size() << " ,pop: " << m_populationSize << "\n";
 		for (int i = 0; i < bipeds.size(); i++) {
 
 
 			std::default_random_engine &rand = m_randomEngines[i];
-			Biped* tempCret = new Biped(pm, glm::vec3(1.0, 12.0, 0.0), rand);
+			Biped* tempCret = new Biped(pm, glm::vec3(1.0, 9.0, 0.0), rand);
 
 			if (i == 0) {
 				tempCret->setColor(glm::vec3(0.8f, 0.1f, 0.6f));
@@ -192,26 +221,31 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 			if (i <= 0) {
 				tempCret->setNeuralNetwork(RecurrentNeuralNetwork(bipeds[i]->getNeuralNetwork()));
-			}
-			else {
+			} else {
 				int index = i;
 
 				//Smaller fraction of potential candidates for cross over
-				//if (index >= partSize) {
-				//	index = partSize;
-				//}
+				if (index >= partSize) {
+					index = partSize;
+				}
 				std::uniform_int_distribution<int> distribution(0, index);
 				double prob = distribution(m_overEngine);
 
 				int parentAind = 0;
 				int parentBind = 0;
 				do {
+
 					parentAind = distribution(m_overEngine);
 					parentBind = distribution(m_overEngine);
 				} while (parentAind == parentBind);
 
 				tempCret->setNeuralNetwork(crossOver(&bipeds[parentAind]->getNeuralNetwork(), &bipeds[parentBind]->getNeuralNetwork()));
 			}
+
+			//indexForOld++;
+			//if (indexForOld >= oldPopulationSize) {
+			//	indexForOld = 1;
+			//}
 
 			newGenerationBiped.push_back(tempCret);
 
@@ -250,11 +284,36 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			delete oldCret;
 		}
 		bipeds = newGenerationBiped;
+
+		std::uniform_real_distribution<double> realDist(0, 1);
+		double prob1 = realDist(m_overEngine);
+		double prob2 = realDist(m_overEngine);
+
+		std::uniform_real_distribution<double> distribution(-10, 10);
+		std::uniform_real_distribution<double> distribution2(60, 100);
+
+		if (prob1 < 0.5f) {
+
+		}
+		double targetAddX = distribution(m_overEngine);
+		double targetAddZ = distribution2(m_overEngine);
+		//targetAddX = (prob1 < 0.5f) ? targetAddX*-1 : targetAddX;
+		targetAddZ = (prob2 < 0.5f) ? targetAddZ*-1 : targetAddZ;
+		targetPos[0] = targetAddX;
+		//targetPos[2] = targetAddZ;
+		targetPosBox->setPosition(targetPos);
+		double prob = distribution(m_overEngine);
+		for (int i = 0; i < bipeds.size(); i++) {
+			bipeds[i]->setTargetPosition(targetPos);
+		}
+
 	}
 	else {
-		double divider = 2.5;
+		double divider = 1.5;
 		int partSize = dogs.size() / divider;
 		int viableIndex = 0;
+		int index = 0;
+		std::vector<int> taken;
 		//std::uniform_real_distribution<double> distribution(0, 1);
 		//double height = distribution(m_overEngine);
 		for (int i = 0; i < dogs.size(); i++) {
@@ -274,23 +333,51 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 				//tempCret->setNEATNeuralNetwork(NEATNetwork(dogs[i]->getNEATNeuralNetwork()));
 			}
 			else {
-				int index = i;
-				//if (index >= partSize) {
-				//	index = partSize;
-				//}
-				std::uniform_int_distribution<int> distribution(0, index);
-				double prob = distribution(m_overEngine);
+				std::uniform_real_distribution<double> indDist(0, 1);
+				double indDistNum = indDist(m_overEngine);
 
+				index++;
+				if (index >= partSize) {
+					index = 1;
+				}
+				std::uniform_int_distribution<int> distribution(0, index);
+				//std::uniform_int_distribution<int> distribution(0, index);
+				double prob = distribution(m_overEngine);
 				int parentAind = 0;
 				int parentBind = 0;
+				bool takenBool = false;
+				//std::cout << "Crossover...\n";
 				do {
+					takenBool = false;
 					parentAind = distribution(m_overEngine);
 					parentBind = distribution(m_overEngine);
-				} while (parentAind == parentBind);
-				std::cout << parentAind << " " << parentBind << " | ";
+					for (int i = 0; i < taken.size(); i++) {
+						if (taken[i] == parentAind) {
+							takenBool = true;
+							//std::cout << "takenBool: " << parentAind << "\n";
+						}
+					}
+					//if (!takenBool) {
+					//	std::cout << "push_back: " << parentAind << "\n";
+					//	taken.push_back(parentAind);
+					//}
+					//std::cout << "taken.size(): " << taken.size() <<"  " << index << "\n";
+					if (taken.size() >= index) {
+						taken.clear();
+						//std::cout << "clearclearclear(): " << taken.size() << "  " << index << "\n";
+					}
+				} while (parentAind == parentBind || takenBool);
+				//std::cout << parentAind << " " << parentBind << " | ";
+				//std::cout << "parentAind: " << parentAind << "\n";
+				taken.push_back(parentAind);
 				tempCret->setNeuralNetwork(crossOver(&dogs[parentAind]->getNeuralNetwork(), &dogs[parentBind]->getNeuralNetwork()));
 
-				//tempCret->setNEATNeuralNetwork(NEATNetwork(dogs[viableIndex]->getNEATNeuralNetwork()));
+				//std::geometric_distribution<int> expoDist(0.2);
+				//std::exponential_distribution<double> expoDist(1.0);
+				//double randExpo = expoDist(m_overEngine);
+				//int ind = randExpo * dogs.size();
+				//std::cout << "randExpo: " << randExpo << " ind: " << ind << "\n";
+				//tempCret->setNEATNeuralNetwork(NEATNetwork(dogs[index]->getNEATNeuralNetwork()));
 
 				viableIndex++;
 				if (viableIndex >= partSize) {
@@ -331,17 +418,31 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 		newGenerationDog.clear();
 
-		if (generation % 2 == 0) {
+		//if (generation % 2 == 0) {
 			//glm::vec3 prevTarget = dogs[0]->getTargetPosition();
-			std::uniform_real_distribution<double> distribution(-60, 60);
-			double targetAdd = distribution(m_overEngine);
-			targetPos[0] = targetAdd;
+		std::uniform_real_distribution<double> realDist(0, 1);
+		double prob1 = realDist(m_overEngine);
+		double prob2 = realDist(m_overEngine);
+
+			std::uniform_real_distribution<double> distribution(60, 100);
+			//std::uniform_real_distribution<double> distribution(-10, 10);
+			std::uniform_real_distribution<double> distribution2(60, 100);
+
+			if (prob1 < 0.5f) {
+
+			}
+			double targetAddX = distribution(m_overEngine);
+			double targetAddZ = distribution2(m_overEngine);
+			targetAddX = (prob1 < 0.5f) ? targetAddX*-1 : targetAddX;
+			targetAddZ = (prob2 < 0.5f) ? targetAddZ*-1 : targetAddZ;
+			targetPos[0] = targetAddX;
+			targetPos[2] = targetAddZ;
 			targetPosBox->setPosition(targetPos);
 			double prob = distribution(m_overEngine);
 			for (int i = 0; i < dogs.size(); i++) {
 				dogs[i]->setTargetPosition(targetPos);
 			}
-		}
+		//}
 	}
 
 
@@ -372,6 +473,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 
 	std::cout << "Generation: " << generation  << " bipeds size: " << bipeds.size() << std::endl;
 	generation++;
+	m_populationSize += 10;
+	std::cout << "Poulation Size: " << m_populationSize << "\n";
 
 }
 
@@ -400,7 +503,7 @@ RecurrentNeuralNetwork GeneticAlgorithm::crossOver(RecurrentNeuralNetwork * pare
 
 	std::vector<Layer> lA = parent->getLayers();
 	std::vector<Layer> lB = crossOverRecipient->getLayers();
-	std::vector<int> lBTopology = crossOverRecipient->getTopology();
+	std::vector<int> topology = crossOverRecipient->getTopology();
 	//lA[1][1].setOutputVal(59);
 	//std::cout << "lA: " << lA[1][1].getOutputVal() << "\n";
 	//std::cout << "lA: " << parent->getLayers()[1][1].getOutputVal() << "\n";
@@ -455,7 +558,12 @@ RecurrentNeuralNetwork GeneticAlgorithm::crossOver(RecurrentNeuralNetwork * pare
 			}
 		}
 
-		child = RecurrentNeuralNetwork(lB, lBTopology);
+		std::uniform_real_distribution<double> dist(0, 1);
+		double probDivider = dist(m_overEngine);
+
+		//child = (probDivider > 0.5) ? RecurrentNeuralNetwork(lB, topology, crossOverRecipient->getDivider()) : RecurrentNeuralNetwork(lA, topology, parent->getDivider());
+		child = RecurrentNeuralNetwork(lA, topology, crossOverRecipient->getDivider());
+		//child = RecurrentNeuralNetwork(lB, lBTopology);
 	//}
 	//else {
 	//	double parentProb = distribution(m_overEngine);
@@ -505,7 +613,11 @@ double GeneticAlgorithm::evaluateFitnessBiped(Biped* creature, int fitnessType, 
 	if (fitnessType == FITNESS_WALKING) {
 		//fitness = ((distanceWalked*averageHeight*numSteps*timeAlive)/rotationAmount) /noMovementPenalty;
 		//fitness = numSteps*6 + distanceWalked * 2 - rotationAmount;
-		fitness = numSteps + distanceWalked - rotationAmount;
+		fitness = -distanceWalked;
+		if (creature->isTargetReached()) {
+			fitness += 100;
+		}
+		//fitness = numSteps + distanceWalked ;
 		//std::cout << "numsteps: " << numSteps << "\n";
 	}else if (fitnessType == FITNESS_JUMPING) {
 		fitness = maxHeight;
@@ -514,7 +626,7 @@ double GeneticAlgorithm::evaluateFitnessBiped(Biped* creature, int fitnessType, 
 	}
 
 	/*std::cout << "distanceWalked: " << distanceWalked << "\naverageHeight: " << averageHeight << "\nnumSteps: " << numSteps << "\nrotationAmount: " << rotationAmount << "\nnoMovementPenalty: " << noMovementPenalty << "\n";*/
-
+	
 	return fitness;
 }
 
@@ -529,9 +641,10 @@ double GeneticAlgorithm::evaluateFitnessDog(Dog* creature, int fitnessType, int 
 	double noMovementPenalty = creature->getNoMovementPenalty() + 1;
 	double jointsAtlimitPenalty = creature->getJointsAtlimitPenalty();
 	double groundTimeN = creature->getTimeOnGround();
+	double tighMovement = creature->getTighMovement();
 	///SEE HERE CALCULATE FITNESS FOR DESIRED HEIGHT
 	double fitness = 0;
-	creature->getPosition();
+	//creature->getPosition();
 	//std::cout << "x: " << creature->getPosition()[0] << "y: " << creature->getPosition()[1] << "z: " << creature->getPosition()[2] << "\n";
 	if (fitnessType == FITNESS_WALKING) {
 		//if (timesNoImprovement == 0) {
@@ -542,7 +655,11 @@ double GeneticAlgorithm::evaluateFitnessDog(Dog* creature, int fitnessType, int 
 		//	fitness = distanceWalked + averageHeight*2;
 		//}
 		//std::cout << "jointsAtlimitPenalty: " << jointsAtlimitPenalty << "\n";
+		//std::cout << "tighMovement: " << tighMovement << "\n";
 		fitness = -distanceWalked;
+		if (creature->isTargetReached()) {
+			fitness += 100;
+		}
 		//std::cout << "fitness: " << fitness << "\n";
 	
 		// - timeAlive/100
@@ -555,12 +672,13 @@ double GeneticAlgorithm::evaluateFitnessDog(Dog* creature, int fitnessType, int 
 		fitness = averageHeight * timeAlive;
 	}
 
+	//std::cout << "divider: " << creature->getNeuralNetwork().getDivider() << "\n";
 	/*std::cout << "distanceWalked: " << distanceWalked << "\naverageHeight: " << averageHeight << "\nnumSteps: " << numSteps << "\nrotationAmount: " << rotationAmount << "\nnoMovementPenalty: " << noMovementPenalty << "\n";*/
 
 	return fitness;
 }
 
-const int NUM_THREADS = 10;
+const int NUM_THREADS = 50;
 std::thread threadPool[NUM_THREADS];
 void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManager* pm)
 {
@@ -572,18 +690,21 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 	int i;
 
 	if (creatureType == BIPED) {
-		for (i = 0; i < NUM_THREADS; i++) {
+		for (i = 0; i < bipeds.size(); i++) {
 			threadPool[i] = std::thread(updateBiped, bipeds[i], fitnessType, m_currentStep);
+		}
+		for (int i = 0; i < bipeds.size(); i++) {
+			threadPool[i].join();
 		}
 	}
 	else {
 		//timesNoImprovement = rand() % 3;
-		for (i = 0; i < NUM_THREADS; i++) {
+		for (i = 0; i < dogs.size(); i++) {
 			threadPool[i] = std::thread(updateDog, dogs[i], fitnessType, m_currentStep, timesNoImprovement);
 		}
-	}
-	for (int i = 0; i < NUM_THREADS; i++) {
-		threadPool[i].join();
+		for (int i = 0; i < dogs.size(); i++) {
+			threadPool[i].join();
+		}
 	}
 
 	bool allCreaturesStanding = false;
@@ -633,7 +754,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 					}
 				}
 
-				if (bipeds[i]->getHeight() >= 7.0f) {
+				if (bipeds[i]->getHeight() >= 5.0f) {
 					allCreaturesStanding = true;
 				}
 
@@ -656,10 +777,10 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 	else {
 		for (int i = 0; i < dogs.size(); i++) {
 			if (dogs[i]->shouldUpdate()) {
-				if (m_currentStep > 100) {
-					dogs[i]->updateMaxHeight(dogs[i]->getCenterOfMassHeight());
+				//if (m_currentStep > 100) {
+				//	dogs[i]->updateMaxHeight();
 
-				}
+				//}
 
 				dogs[i]->getFrontRightShin()->setCollidingWithGround(false);
 				dogs[i]->getFrontLeftShin()->setCollidingWithGround(false);
@@ -719,7 +840,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 				}
 
 
-				if (dogs[i]->getCenterOfMassHeight() >= 3.2f) {
+				if (dogs[i]->getHeight() >= 2.5f) {
 					allCreaturesStanding = true;
 				}
 
@@ -741,6 +862,7 @@ void GeneticAlgorithm::updateCreatures(Shader shader, bool render, PhysicsManage
 void GeneticAlgorithm::updateBiped(Biped* creature, int fitnessType, int currentStep)
 {
 	if (creature->shouldUpdate()) {
+		//std::cout << "update Biped\n";
 		creature->activate();
 		creature->updatePhysics();
 		creature->incrementToAverage();
@@ -755,7 +877,7 @@ void GeneticAlgorithm::updateBiped(Biped* creature, int fitnessType, int current
 		}
 		//creature->checkIfLegsCrossed();
 
-		if (creature->getHeight() < 7.0f) {
+		if (creature->getHeight() < 5.0f) {
 			creature->setFitness(evaluateFitnessBiped(creature, fitnessType, currentStep));
 			creature->setShouldUpdate(false);
 		}
@@ -766,20 +888,24 @@ void GeneticAlgorithm::updateDog(Dog* creature, int fitnessType, int currentStep
 {
 	if (creature->shouldUpdate()) {
 		creature->activate();
+		creature->calculateTighMovement();
 		creature->updatePhysics();
-		creature->incrementToAverage();
+		creature->incrementToAverageHeight();
 		creature->checkRotation();
 		creature->checkIfMoving();
 		creature->calculateSpeed();
 		creature->checkIfJointsAtLimit();
-		if (creature->getCenterOfMassHeight() < 2.f) {
+		creature->checkIfTargetReached();
+		creature->updateMaxHeight();
+		if (creature->getHeight() < 2.f) {
 			creature->setTimeOnGround(creature->getTimeOnGround() + 0.1);
 		}
 		//creature->checkIfLegsCrossed();
 		//|| creature->noMovement(currentStep)
-		if (creature->getCenterOfMassHeight() < 3.2f) {
+		if (creature->getHeight() < 2.5f) {
 			creature->setFitness(evaluateFitnessDog(creature, fitnessType, currentStep, timesNoImprovement));
 			creature->setShouldUpdate(false);
+			creature->disableSimulation();
 			//std::cout << "height: " << creature->getCenterOfMassHeight() << " no movement: " << creature->noMovement(currentStep) << "\n";
 		}
 	}

@@ -11,31 +11,33 @@ Purpose: Creates a neuron
 
 #include <iomanip>
 
-Neuron::Neuron(int numOutputs, int neuronIndex, std::default_random_engine &engine) : neuronIndex(neuronIndex)
+Neuron::Neuron(int numOutputs, int neuronIndex, std::default_random_engine &engine) : m_neuronIndex(neuronIndex)
 {
-	outputVal = 0;
+	m_outputVal = 0;
 	//Set random weights on neuron outputs
 	for (int con = 0; con < numOutputs; ++con) {
-		outputWeights.push_back(Neuron::getRandomWeight(engine));
+		m_outputWeights.push_back(Neuron::getRandomWeight(engine));
 	}
+	m_bias = Neuron::getRandomWeight(engine);
+
 }
 
-Neuron::Neuron(int numOutputs, int neuronIndex) : neuronIndex(neuronIndex)
+Neuron::Neuron(int numOutputs, int neuronIndex) : m_neuronIndex(neuronIndex)
 {
 	//Set random weights on neuron outputs
 	for (int con = 0; con < numOutputs; ++con) {
-		outputWeights.push_back(0.f);
+		m_outputWeights.push_back(0.f);
 	}
 }
 
 void Neuron::setOutputVal(double value)
 {
-	outputVal = value;
+	m_outputVal = value;
 }
 
 double Neuron::getOutputVal() const
 {
-	return outputVal;
+	return m_outputVal;
 }
 
 void Neuron::forward(Layer & prevLayer, int numForwards)
@@ -44,12 +46,12 @@ void Neuron::forward(Layer & prevLayer, int numForwards)
 	//Sum outputs of prevLayer including the bias
 	//std::cout << "size: " << prevLayer.size() << "\n";
 	for (int i = 0; i < prevLayer.size(); i++) {
-		sum += prevLayer[i].getOutputVal() * prevLayer[i].outputWeights[neuronIndex];
+		sum += prevLayer[i].getOutputVal() * prevLayer[i].m_outputWeights[m_neuronIndex];
 		//std::cout << "o: " << prevLayer[i].getOutputVal() << " ";
 		//std::cout << "w: " << prevLayer[i].outputWeights[neuronIndex] << " ";
 	}
 	//std::cout << "\n\n";
-	outputVal = Neuron::activationFunction(sum * sin(numForwards/divider));
+	m_outputVal = Neuron::activationFunction(sum * sin((numForwards/ m_divider) + m_bias));
 }
 
 void Neuron::forward(Layer & prevLayer, int numForwards, double alternativeDivider)
@@ -58,12 +60,17 @@ void Neuron::forward(Layer & prevLayer, int numForwards, double alternativeDivid
 	//Sum outputs of prevLayer including the bias
 	//std::cout << "size: " << prevLayer.size() << "\n";
 	for (int i = 0; i < prevLayer.size(); i++) {
-		sum += prevLayer[i].getOutputVal() * prevLayer[i].outputWeights[neuronIndex];
+		sum += prevLayer[i].getOutputVal() * prevLayer[i].m_outputWeights[m_neuronIndex];
 		//std::cout << "o: " << prevLayer[i].getOutputVal() << " ";
 		//std::cout << "w: " << prevLayer[i].outputWeights[neuronIndex] << " ";
 	}
-	//std::cout << "\n\n";
-	outputVal = Neuron::activationFunction(sum * sin(numForwards / alternativeDivider));
+	//double sign = (sin((numForwards / 16) + m_bias) < 0) ? -1 : 1;
+	//sign = 1;
+
+	//double sign = (sin(numForwards * 4) + (sin(numForwards * 16) / 4)) * 2 * (-floor(sin(numForwards * 2)) + 0.1);
+
+	m_outputVal = Neuron::activationFunction(sum*sin((numForwards / alternativeDivider) + m_bias));
+
 }
 
 void Neuron::forwardRecurrent(Layer& prevLayer, int numForwards, Layer& lastTimestepPrevLayer)
@@ -71,37 +78,67 @@ void Neuron::forwardRecurrent(Layer& prevLayer, int numForwards, Layer& lastTime
 	double sum = 0.0;
 	//Sum outputs of prevLayer
 	for (int i = 0; i < prevLayer.size(); i++) {
-		sum += prevLayer[i].getOutputVal() * prevLayer[i].outputWeights[neuronIndex] + lastTimestepPrevLayer[i].getOutputVal() * lastTimestepPrevLayer[i].outputWeights[neuronIndex];
+		sum += prevLayer[i].getOutputVal() * prevLayer[i].m_outputWeights[m_neuronIndex] + lastTimestepPrevLayer[i].getOutputVal() * lastTimestepPrevLayer[i].m_outputWeights[m_neuronIndex];
 		//std::cout << "o: " << prevLayer[i].getOutputVal() << " ";
 	}
 	//std::cout << "\n\n";
-	outputVal = Neuron::activationFunction(sum);
+
+	m_outputVal = Neuron::activationFunction(sum);
 }
 
 void Neuron::mutate(double mutationRate, double mutationChance, std::default_random_engine &engine)
 {
-	for (int i = 0; i < outputWeights.size(); i++) {
-		double mutRand = getRandomWeight(0, 1, engine);
-		if (mutRand <= mutationChance) {
-			double chanceNewWeight = getRandomWeight(0, 1, engine);
-			//divider += getRandomWeight(engine) * mutationRate;
-			if (chanceNewWeight <= 0.05) {
-				outputWeights[i] = getRandomWeight(engine);
-			} else {
-				outputWeights[i] += getRandomWeight(engine) * mutationRate;
-			}
+
+
+	std::uniform_real_distribution<double> distribution(0, 1);
+	double mutationChoice = distribution(engine);
+	if (mutationChoice < 0.35) {
+		m_bias += getRandomWeight(engine) * mutationRate;
+	}
+	else {
+		std::uniform_real_distribution<double> distribution(0, m_outputWeights.size()-1);
+		double weightIndex = distribution(engine);
+		double chanceNewWeight = getRandomWeight(0, 1, engine);
+		//divider += getRandomWeight(engine) * mutationRate;
+		if (chanceNewWeight <= 0.1) {
+			m_outputWeights[weightIndex] = getRandomWeight(engine);
+		}
+		else {
+			m_outputWeights[weightIndex] += getRandomWeight(engine) * mutationRate;
 		}
 	}
+
+	//for (int i = 0; i < m_outputWeights.size(); i++) {
+	//	double mutRand = getRandomWeight(0, 1, engine);
+	//	if (mutRand <= mutationChance) {
+	//		std::uniform_real_distribution<double> distribution(0, 1);
+	//		double mutationChoice = distribution(engine);
+	//		if (mutationChoice < 0.35) {
+	//			m_bias += getRandomWeight(engine) * mutationRate;
+	//		}
+	//		else {
+	//			double chanceNewWeight = getRandomWeight(0, 1, engine);
+	//			//divider += getRandomWeight(engine) * mutationRate;
+	//			if (chanceNewWeight <= 0.05) {
+	//				m_outputWeights[i] = getRandomWeight(engine);
+	//			}
+	//			else {
+	//				m_outputWeights[i] += getRandomWeight(engine) * mutationRate;
+	//			}
+	//		}
+	//	}
+	//}
+
 }
 
 std::vector<double> Neuron::getOutputWeights()
 {
-	return outputWeights;
+	return m_outputWeights;
 }
 
 void Neuron::setOutputWeights(std::vector<double> weights)
 {
-	outputWeights = weights;
+	m_outputWeights = weights;
 }
 
 double Neuron::getRandomWeight(std::default_random_engine &generator)
@@ -119,9 +156,19 @@ double Neuron::getRandomWeight(double min, double max, std::default_random_engin
 }
 
 void Neuron::setOutputWeightsToZero() {
-	for (int i = 0; outputWeights.size() < i; i++) {
-		outputWeights[i] = 0;
+	for (int i = 0; m_outputWeights.size() < i; i++) {
+		m_outputWeights[i] = 0;
 	}
+}
+
+double Neuron::getBias()
+{
+	return m_bias;
+}
+
+void Neuron::setBias(double bias)
+{
+	m_bias = bias;
 }
 
 double Neuron::activationFunction(double value)
