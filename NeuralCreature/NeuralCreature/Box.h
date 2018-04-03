@@ -39,7 +39,6 @@ private:
 	btScalar mass;
 	glm::vec3 axisOfRotation;
 	double m_collisionImpulse;
-
 	//Bullet physics variables
 	btCollisionShape* fallShape;
 	btDefaultMotionState* fallMotionState;
@@ -52,7 +51,7 @@ private:
 	const double PI = 3.141592653589793238463;
 	btTransform startPos;
 	bool groundCollision;
-
+	bool prevGroundCollision;
 
 public:
 	Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass, std::string shapeType);
@@ -82,6 +81,7 @@ public:
 	GLfloat getDepth();
 	void setCollidingWithGround(bool colliding);
 	bool isCollidingWithGround();
+	bool isPrevStepCollidingWithGround();
 	void remove(PhysicsManager * pm);
 	void removeConstraint(PhysicsManager * pm);
 	void reset();

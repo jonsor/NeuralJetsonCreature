@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\NEAT">
+      <UniqueIdentifier>{c03c4d2a-89f1-41e5-8d54-137bd9b56f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\NEAT">
+      <UniqueIdentifier>{742949d0-e495-45ce-85b0-c05fc32c10ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{69636ae9-3a2d-4d08-961f-a6f44199d487}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -36,9 +45,6 @@
     <ClInclude Include="PhysicsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Creature.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Spider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -57,11 +63,35 @@
     <ClInclude Include="NetworkWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="World.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Box.h">
+    <ClInclude Include="Dog.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Biped.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RecurrentNeuralNetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NEATGene.h">
+      <Filter>Header Files\NEAT</Filter>
+    </ClInclude>
+    <ClInclude Include="NEATNeuron.h">
+      <Filter>Header Files\NEAT</Filter>
+    </ClInclude>
+    <ClInclude Include="NEATNetwork.h">
+      <Filter>Header Files\NEAT</Filter>
+    </ClInclude>
+    <ClInclude Include="NEATController.h">
+      <Filter>Header Files\NEAT</Filter>
+    </ClInclude>
+    <ClInclude Include="NEATNode.h">
+      <Filter>Header Files\NEAT</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -75,9 +105,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Util.cpp">
@@ -98,25 +125,49 @@
     <ClCompile Include="NetworkWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
+    <ClCompile Include="Dog.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Biped.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RecurrentNeuralNetwork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NEATGene.cpp">
+      <Filter>Source Files\NEAT</Filter>
+    </ClCompile>
+    <ClCompile Include="NEATNeuron.cpp">
+      <Filter>Source Files\NEAT</Filter>
+    </ClCompile>
+    <ClCompile Include="NEATNetwork.cpp">
+      <Filter>Source Files\NEAT</Filter>
+    </ClCompile>
+    <ClCompile Include="NEATController.cpp">
+      <Filter>Source Files\NEAT</Filter>
+    </ClCompile>
+    <ClCompile Include="NEATNode.cpp">
+      <Filter>Source Files\NEAT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="defaultShader.vs">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="defaultShader.frag">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="lightingShader.vs">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="lightingShader.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="lightingShader.vs">
+      <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

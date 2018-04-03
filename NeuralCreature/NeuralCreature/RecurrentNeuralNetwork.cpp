@@ -169,6 +169,7 @@ void RecurrentNeuralNetwork::forward(std::vector<double>& inputVals)
 		else {
 			for (int i = 0; i < layers[layerNum].size() - 1; i++) {
 				layers[layerNum][i].forwardRecurrent(prevLayer, numForwards, lastTimestepPrevLayer);
+				//layers[layerNum][i].forward(prevLayer, numForwards);
 			}
 		}
 	}

@@ -51,7 +51,8 @@ void Neuron::forward(Layer & prevLayer, int numForwards)
 		//std::cout << "w: " << prevLayer[i].outputWeights[neuronIndex] << " ";
 	}
 	//std::cout << "\n\n";
-	m_outputVal = Neuron::activationFunction(sum * sin((numForwards/ m_divider) + m_bias));
+	//m_outputVal = Neuron::activationFunction(sum * sin((numForwards/ m_divider) + m_bias));
+	m_outputVal = Neuron::activationFunction(sum);
 }
 
 void Neuron::forward(Layer & prevLayer, int numForwards, double alternativeDivider)
@@ -69,7 +70,12 @@ void Neuron::forward(Layer & prevLayer, int numForwards, double alternativeDivid
 
 	//double sign = (sin(numForwards * 4) + (sin(numForwards * 16) / 4)) * 2 * (-floor(sin(numForwards * 2)) + 0.1);
 
-	m_outputVal = Neuron::activationFunction(sum*sin((numForwards / alternativeDivider) + m_bias));
+	double offset = 0.3;
+	//alternativeDivider = 10;
+	double rythmBase = sin((numForwards / alternativeDivider) + m_bias);
+	double rythm = (rythmBase > 0) ? rythmBase + offset : rythmBase - offset;
+	//rythm = 1;
+	m_outputVal = Neuron::activationFunction(sum * rythm);
 
 }
 

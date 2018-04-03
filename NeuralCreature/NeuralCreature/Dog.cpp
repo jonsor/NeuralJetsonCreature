@@ -104,13 +104,13 @@ Dog::Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine
 	setMaxMotorImpulses(150.0f);
 
 	//Create the neural network
-	std::vector<int> topology{ 25, 32, 16, 8 };
+	std::vector<int> topology{ 30, 32, 16, 8 };
 	createNeuralNetwork(topology, engine);
 
 	//int numInputs, int numOutputs, double sameSpeciesThreshold, double disjointCoefficient, double excessCoefficient, double averageWeightDifferenceCoefficient
-	NEATController controller(25, 8, 0.4f, 0.3f, 0.2f, 0.5f);
+	//NEATController controller(25, 8, 0.4f, 0.3f, 0.2f, 0.5f);
 	//NEATController controller, int netId, int numInputs, int numOutputs
-	m_neatNeuralNetwork = NEATNetwork(controller, 1, 25, 8);
+	//m_neatNeuralNetwork = NEATNetwork(controller, 1, 25, 8);
 
 	//Set default fitness
 	m_fitness = 0;
@@ -129,7 +129,7 @@ Dog::Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine
 
 	//resultVec = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	resultVec = { 0, 0, 0, 0, 0, 0, 0, 0 };
-
+	stepState = { -1.0, -1.0, -1.0, -1.0 };
 	m_shouldUpdate = true;
 	timeOnTwoLegs = 0;
 	timeOnGround = 0;
@@ -211,11 +211,15 @@ void Dog::updatePhysics()
 
 }
 
-//glm::vec3 Dog::getPosition()
-//{
-//	return body->getPosition();
-//}
+void Dog::setId(int id)
+{
+	m_id = id;
+}
 
+int Dog::getId()
+{
+	return m_id;
+}
 
 glm::vec3 Dog::getPositionOfBody()
 {
@@ -544,37 +548,88 @@ std::vector<double> Dog::calculateInputs()
 	double backRightShinOnGround = (backRightShin->isCollidingWithGround()) ? 1.0 : -1.0;
 	double backLeftShinOnGround = (backLeftShin->isCollidingWithGround()) ? 1.0 : -1.0;
 
-	if (frontRightShinOnGround > 0) {
+	//if (frontRightShinOnGround > 0) {
+	//	frontRightShin->setColor(glm::vec3(0.1, 1.0, 0.1));
+	//}
+	//else {
+	//	frontRightShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
+	//}
+
+	//if (frontLeftShinOnGround > 0) {
+	//	frontLeftShin->setColor(glm::vec3(0.1, 1.0, 0.1));
+	//}
+	//else {
+	//	frontLeftShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
+	//}
+
+	//if (backRightShinOnGround > 0) {
+	//	backRightShin->setColor(glm::vec3(0.1, 1.0, 0.1));
+	//}
+	//else {
+	//	backRightShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
+	//}
+
+	//if (backLeftShinOnGround > 0) {
+	//	backLeftShin->setColor(glm::vec3(0.1, 1.0, 0.1));
+	//}
+	//else {
+	//	backLeftShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
+	//}
+	inputs.push_back(frontRightShinOnGround);
+	inputs.push_back(frontLeftShinOnGround);
+	inputs.push_back(backRightShinOnGround);
+	inputs.push_back(backLeftShinOnGround);
+	//inputs.push_back(backLeftShinOnGround);
+
+	//stepState[0] = (frontRightShin->isCollidingWithGround() && stepState[0] == 1.0) ? stepState[0] * -1 : stepState[0];
+	//stepState[1] = (frontLeftShin->isCollidingWithGround() && stepState[1] == 1.0) ? stepState[1] * -1 : stepState[1];
+	//stepState[2] = (backRightShin->isCollidingWithGround() && stepState[2] == 1.0) ? stepState[2] * -1 : stepState[2];
+	//stepState[3] = (backLeftShin->isCollidingWithGround() && stepState[3] == 1.0) ? stepState[3] * -1 : stepState[3];
+	//if (m_id == 0) {
+	//	std::cout << "isCollidingWithGround: " << frontRightShin->isCollidingWithGround() << " | " << !frontRightShin->isPrevStepCollidingWithGround() << "\n";
+	//}
+	//if (frontRightShin->isCollidingWithGround() && !frontRightShin->isPrevStepCollidingWithGround()) {
+	//	stepState[0] *= -1;
+	//	if (m_id == 0) {
+	//		std::cout << "stateChange: " << stepState[0] << "\n";
+	//	}
+	//}
+	stepState[0] = (frontRightShin->isCollidingWithGround() && !frontRightShin->isPrevStepCollidingWithGround()) ? stepState[0] *= -1 : stepState[0];
+	stepState[1] = (frontLeftShin->isCollidingWithGround() && !frontLeftShin->isPrevStepCollidingWithGround()) ? stepState[1] *= -1 : stepState[1];
+	stepState[2] = (backRightShin->isCollidingWithGround() && !backRightShin->isPrevStepCollidingWithGround()) ? stepState[2] *= -1 : stepState[2];
+	stepState[3] = (backLeftShin->isCollidingWithGround() && !backLeftShin->isPrevStepCollidingWithGround()) ? stepState[3] *= -1 : stepState[3];
+	//inputs.push_back(stepState[0]);
+	//inputs.push_back(stepState[1]);
+	//inputs.push_back(stepState[2]);
+	//inputs.push_back(stepState[3]);
+	inputs.insert(inputs.end(), stepState.begin(), stepState.end());
+	if (stepState[0] > 0) {
 		frontRightShin->setColor(glm::vec3(0.1, 1.0, 0.1));
 	}
 	else {
 		frontRightShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
 	}
 
-	if (frontLeftShinOnGround > 0) {
+	if (stepState[1] > 0) {
 		frontLeftShin->setColor(glm::vec3(0.1, 1.0, 0.1));
 	}
 	else {
 		frontLeftShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
 	}
 
-	if (backRightShinOnGround > 0) {
+	if (stepState[2] > 0) {
 		backRightShin->setColor(glm::vec3(0.1, 1.0, 0.1));
 	}
 	else {
 		backRightShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
 	}
 
-	if (backLeftShinOnGround > 0) {
+	if (stepState[3] > 0) {
 		backLeftShin->setColor(glm::vec3(0.1, 1.0, 0.1));
 	}
 	else {
 		backLeftShin->setColor(glm::vec3(0.2f, 0.3f, 0.7f));
 	}
-	inputs.push_back(frontRightShinOnGround);
-	inputs.push_back(frontLeftShinOnGround);
-	inputs.push_back(backRightShinOnGround);
-	inputs.push_back(backLeftShinOnGround);
 
 	//Collision Impulses
 	//double maxCollisionImpulse = 140.f;
@@ -602,7 +657,7 @@ std::vector<double> Dog::calculateInputs()
 
 	//Time pulse
 
-	//inputs.push_back(std::sin(timeAlive/6));
+	inputs.push_back(std::sin(timeAlive/8));
 
 
 	//double max = 0;

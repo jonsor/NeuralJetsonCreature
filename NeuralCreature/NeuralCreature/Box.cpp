@@ -336,6 +336,8 @@ void Box::updatePhysics()
 	float z = trans.getRotation().getZ();
 	float angle = trans.getRotation().getAngle();
 	setRotation(angle, glm::vec3(x, y, z));
+
+	prevGroundCollision = groundCollision;
 }
 
 /**
@@ -573,11 +575,17 @@ GLfloat Box::getDepth()
 }
 
 void Box::setCollidingWithGround(bool colliding) {
+
+	//prevGroundCollision = groundCollision;
 	groundCollision = colliding;
 }
 
 bool Box::isCollidingWithGround() {
 	return groundCollision;
+}
+
+bool Box::isPrevStepCollidingWithGround() {
+	return prevGroundCollision;
 }
 
 void Box::remove(PhysicsManager * pm)

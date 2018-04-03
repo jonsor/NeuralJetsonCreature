@@ -56,13 +56,16 @@ private:
 	double jointsAtLimitPenalty = 0;
 	bool targetReached = false;
 	double tighMovement = 0;
+	std::vector<double> stepState;
 	std::vector<double> inputAngles;
 	std::vector<double> prevInputAngles;
+	int m_id = -1;
 public:
 	Dog(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);
 	void updatePhysics();
-
+	void setId(int id);
+	int getId();
 	Box* getBody();
 
 	Box* getFrontRightTigh();

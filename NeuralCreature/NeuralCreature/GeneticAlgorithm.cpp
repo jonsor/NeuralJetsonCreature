@@ -23,7 +23,7 @@ GeneticAlgorithm::GeneticAlgorithm(double mutationRate, double mutationChance, d
 		m_randomEngines.push_back(std::default_random_engine(randomSeed));
 	}
 
-	creatureType = DOG;
+	creatureType = BIPED;
 	initCreatures(pm);
 	generation = 0;
 	timesNoImprovement = 0;
@@ -80,6 +80,7 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 			std::default_random_engine &rand = m_randomEngines[i];
 			//5.0*i - m_populationSize*5.0/2
 			Dog* tempCret = new Dog(pm, glm::vec3(1.0, 5.5, 0.0), rand);
+			tempCret->setId(i);
 			dogs.push_back(tempCret);
 		}
 
@@ -88,7 +89,7 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		NetworkWriter<Biped>::readFromFile(bipeds);
 	}
 	else {
-		NetworkWriter<Dog>::readFromFile(dogs);
+		//NetworkWriter<Dog>::readFromFile(dogs);
 	}
 }
 
@@ -222,6 +223,12 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			if (i <= 0) {
 				tempCret->setNeuralNetwork(RecurrentNeuralNetwork(bipeds[i]->getNeuralNetwork()));
 			} else {
+				int noCrossIndex = i;
+
+				if (noCrossIndex >= partSize) {
+					noCrossIndex = 0;
+				}
+
 				int index = i;
 
 				//Smaller fraction of potential candidates for cross over
@@ -239,7 +246,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 					parentBind = distribution(m_overEngine);
 				} while (parentAind == parentBind);
 
-				tempCret->setNeuralNetwork(crossOver(&bipeds[parentAind]->getNeuralNetwork(), &bipeds[parentBind]->getNeuralNetwork()));
+				tempCret->setNeuralNetwork(RecurrentNeuralNetwork(bipeds[noCrossIndex]->getNeuralNetwork()));
+				//tempCret->setNeuralNetwork(crossOver(&bipeds[parentAind]->getNeuralNetwork(), &bipeds[parentBind]->getNeuralNetwork()));
 			}
 
 			//indexForOld++;
@@ -330,11 +338,18 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			if (i <= 0) {
 				std::cout << "Elite transfer\n";
 				tempCret->setNeuralNetwork(RecurrentNeuralNetwork(dogs[i]->getNeuralNetwork()));
+				tempCret->setId(1);
 				//tempCret->setNEATNeuralNetwork(NEATNetwork(dogs[i]->getNEATNeuralNetwork()));
 			}
 			else {
 				std::uniform_real_distribution<double> indDist(0, 1);
 				double indDistNum = indDist(m_overEngine);
+
+				int noCrossIndex = i;
+
+				if (noCrossIndex >= partSize) {
+					noCrossIndex = 0;
+				}
 
 				index++;
 				if (index >= partSize) {
@@ -370,7 +385,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 				//std::cout << parentAind << " " << parentBind << " | ";
 				//std::cout << "parentAind: " << parentAind << "\n";
 				taken.push_back(parentAind);
-				tempCret->setNeuralNetwork(crossOver(&dogs[parentAind]->getNeuralNetwork(), &dogs[parentBind]->getNeuralNetwork()));
+				tempCret->setNeuralNetwork(RecurrentNeuralNetwork(dogs[noCrossIndex]->getNeuralNetwork()));
+				//tempCret->setNeuralNetwork(crossOver(&dogs[parentAind]->getNeuralNetwork(), &dogs[parentBind]->getNeuralNetwork()));
 
 				//std::geometric_distribution<int> expoDist(0.2);
 				//std::exponential_distribution<double> expoDist(1.0);
@@ -415,7 +431,6 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			delete oldCret;
 		}
 		dogs = newGenerationDog;
-
 		newGenerationDog.clear();
 
 		//if (generation % 2 == 0) {
@@ -424,8 +439,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 		double prob1 = realDist(m_overEngine);
 		double prob2 = realDist(m_overEngine);
 
-			std::uniform_real_distribution<double> distribution(60, 100);
-			//std::uniform_real_distribution<double> distribution(-10, 10);
+			//std::uniform_real_distribution<double> distribution(60, 100);
+			std::uniform_real_distribution<double> distribution(-10, 10);
 			std::uniform_real_distribution<double> distribution2(60, 100);
 
 			if (prob1 < 0.5f) {
@@ -436,7 +451,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 			targetAddX = (prob1 < 0.5f) ? targetAddX*-1 : targetAddX;
 			targetAddZ = (prob2 < 0.5f) ? targetAddZ*-1 : targetAddZ;
 			targetPos[0] = targetAddX;
-			targetPos[2] = targetAddZ;
+			//targetPos[2] = targetAddZ;
 			targetPosBox->setPosition(targetPos);
 			double prob = distribution(m_overEngine);
 			for (int i = 0; i < dogs.size(); i++) {
@@ -613,7 +628,7 @@ double GeneticAlgorithm::evaluateFitnessBiped(Biped* creature, int fitnessType, 
 	if (fitnessType == FITNESS_WALKING) {
 		//fitness = ((distanceWalked*averageHeight*numSteps*timeAlive)/rotationAmount) /noMovementPenalty;
 		//fitness = numSteps*6 + distanceWalked * 2 - rotationAmount;
-		fitness = -distanceWalked;
+		fitness = -distanceWalked - timeAlive/500;
 		if (creature->isTargetReached()) {
 			fitness += 100;
 		}
@@ -656,7 +671,7 @@ double GeneticAlgorithm::evaluateFitnessDog(Dog* creature, int fitnessType, int 
 		//}
 		//std::cout << "jointsAtlimitPenalty: " << jointsAtlimitPenalty << "\n";
 		//std::cout << "tighMovement: " << tighMovement << "\n";
-		fitness = -distanceWalked;
+		fitness = -distanceWalked + timeAlive / 100;
 		if (creature->isTargetReached()) {
 			fitness += 100;
 		}

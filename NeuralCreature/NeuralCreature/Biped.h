@@ -48,6 +48,8 @@ private:
 	double noMovementPenalty;
 	double m_totalSpeed = 0;
 	bool targetReached;
+
+	std::vector<double> stepState;
 public:
 	Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_engine &engine);
 	void render(Shader shader);

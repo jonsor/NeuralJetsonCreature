@@ -79,6 +79,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -122,12 +124,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\bullet3-2.86\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>lib_win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;glfw3.lib;glfw3dll.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,32 +156,45 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Creature.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Biped.h" />
+    <ClInclude Include="Dog.h" />
     <ClInclude Include="GeneticAlgorithm.h" />
+    <ClInclude Include="NEATController.h" />
+    <ClInclude Include="NEATGene.h" />
+    <ClInclude Include="NEATNetwork.h" />
+    <ClInclude Include="NEATNeuron.h" />
+    <ClInclude Include="NEATNode.h" />
     <ClInclude Include="NetworkWriter.h" />
-    <ClInclude Include="World.h" />
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Neuron.h" />
     <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="RecurrentNeuralNetwork.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Spider.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="Biped.cpp" />
+    <ClCompile Include="Dog.cpp" />
     <ClCompile Include="GeneticAlgorithm.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NEATController.cpp" />
+    <ClCompile Include="NEATGene.cpp" />
+    <ClCompile Include="NEATNetwork.cpp" />
+    <ClCompile Include="NEATNeuron.cpp" />
+    <ClCompile Include="NEATNode.cpp" />
     <ClCompile Include="NetworkWriter.cpp" />
-    <ClCompile Include="World.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="Neuron.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="RecurrentNeuralNetwork.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Spider.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -186,23 +204,24 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Util.cpp" />
+    <ClCompile Include="World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\bullet\src\BulletCollision\BulletCollision.vcxproj">
+      <Project>{8f42acfb-ed90-3034-9dda-2eef2b9301e7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\bullet\src\BulletDynamics\BulletDynamics.vcxproj">
+      <Project>{9238cf19-27b3-3729-8e12-c29efddfed2c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\bullet\src\LinearMath\LinearMath.vcxproj">
+      <Project>{0cacfaff-dc42-3a9a-898d-68d94265f0d1}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="defaultShader.vs" />
     <None Include="defaultShader.frag" />
     <None Include="lightingShader.frag" />
     <None Include="lightingShader.vs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\build\src\BulletCollision\BulletCollision.vcxproj">
-      <Project>{f520a6c6-1f90-31b4-bf27-5e7ba977e950}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\build\src\BulletDynamics\BulletDynamics.vcxproj">
-      <Project>{eae64882-14a0-3464-a49e-9662f6883885}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\build\src\LinearMath\LinearMath.vcxproj">
-      <Project>{fa574dbc-a6fa-32d0-9211-b1879f8604bd}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -35,7 +35,7 @@ Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_en
 
 	//2D
 	hips->getRigidBody()->setLinearFactor(btVector3(0, 1, 1));
-	hips->getRigidBody()->setAngularFactor(btVector3(1, 0, 0));
+	hips->getRigidBody()->setAngularFactor(btVector3(0, 0, 0));
 	//Freeze 
 	//hips->getRigidBody()->setLinearFactor(btVector3(0, 0, 0));
 	//hips->getRigidBody()->setAngularFactor(btVector3(0, 0, 0));
@@ -78,7 +78,7 @@ Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_en
 
 	//Create the neural network
 	//45 - 11
-	std::vector<int> topology{ 41,256, 128, 64, 32, 7 };
+	std::vector<int> topology{ 43, 64, 32, 7 };
 	createNeuralNetwork(topology, engine);
 	//Set default fitness
 	m_fitness = 0;
@@ -107,6 +107,7 @@ Biped::Biped(PhysicsManager* pm, glm::vec3 startPosition, std::default_random_en
 	m_startPosition = getPosition();
 
 	setTargetPosition({ 2, 1.6, -200 });
+	stepState = { -1,-1 };
 }
 
 /**
@@ -404,7 +405,10 @@ std::vector<double> Biped::calculateInputs()
 	inputs.push_back(Util::normalize(getDistanceFromHips(getRightFoot()), 2.5, 11));
 	inputs.push_back(Util::normalize(getDistanceFromHips(getLeftFoot()), 2.5, 11));
 
-
+	stepState[0] = (getRightFoot()->isCollidingWithGround() && !getRightFoot()->isPrevStepCollidingWithGround()) ? stepState[0] *= -1 : stepState[0];
+	stepState[1] = (getLeftFoot()->isCollidingWithGround() && !getLeftFoot()->isPrevStepCollidingWithGround()) ? stepState[1] *= -1 : stepState[1];
+	inputs.push_back(stepState[0]);
+	inputs.push_back(stepState[1]);
 	//const double RELATIVEPOSMAXMIN = 10;
 	//inputs.push_back(Util::normalize(getRelativePosition(getLeftFoot()).x, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
 	//inputs.push_back(Util::normalize(getRelativePosition(getLeftFoot()).y, -RELATIVEPOSMAXMIN, RELATIVEPOSMAXMIN));
