@@ -77,6 +77,18 @@ void World::init() {
 	GLuint lightVAO, planeVAO;
 	initPlaneAndLight(& lightVAO, & planeVAO);
 
+
+	//std::cout << "start\n";
+	//for(int i = 0; i < 1000; i++){
+	//	Box * box = new Box({ 2, 1.6, 200 }, glm::vec3(0.1f, 0.1f, 0.9f), 1.f, 1.0f, 1.f, 0);
+	//	delete box;
+	//	
+	//	std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	//}
+	//Box * box = new Box({ 2, 1.6, 200 }, glm::vec3(0.1f, 0.1f, 0.9f), 1.f, 1.0f, 1.f, 0);
+	////delete box;
+	//std::cout << "finish\n";
+	//std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 	//Start render loop
 	renderLoop(window, planeVAO, lightVAO, lightingShader);
 

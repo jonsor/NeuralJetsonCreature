@@ -11,6 +11,7 @@ class RecurrentNeuralNetwork
 private:
 	int numForwards = 0;
 	double divider;
+	double m_fitness;
 	std::vector<Layer> layers; //layers[layerNum][neuronNum]
 	std::vector<Layer> previousLayers;
 	std::vector<int> topology;
@@ -29,6 +30,8 @@ public:
 	std::vector<int> getTopology();
 	double getDivider();
 	void setDivider(double div);
+	void setFitness(double fitness);
+	double getFitness();
 	~RecurrentNeuralNetwork();
 };
 

@@ -87,6 +87,7 @@ RecurrentNeuralNetwork::RecurrentNeuralNetwork(const std::vector<int> &topology,
 	divider = randNum;
 	//std::cout << "divider: " << divider << "\n";
 	numForwards = 0;
+	m_fitness = INT_MIN;
 }
 
 RecurrentNeuralNetwork::RecurrentNeuralNetwork(const RecurrentNeuralNetwork & neuralNet)
@@ -117,6 +118,7 @@ RecurrentNeuralNetwork::RecurrentNeuralNetwork(const RecurrentNeuralNetwork & ne
 		//Force bias to 1.0
 		previousLayers.back().back().setOutputVal(1.0);
 	}
+	m_fitness = INT_MIN;
 }
 
 RecurrentNeuralNetwork::RecurrentNeuralNetwork(const std::vector<Layer> networkLayers, const std::vector<int> &topology, double div) : topology(topology)
@@ -144,6 +146,7 @@ RecurrentNeuralNetwork::RecurrentNeuralNetwork(const std::vector<Layer> networkL
 		//Force bias to 1.0
 		previousLayers.back().back().setOutputVal(1.0);
 	}
+	m_fitness = INT_MIN;
 }
 
 
@@ -261,6 +264,16 @@ double RecurrentNeuralNetwork::getDivider()
 void RecurrentNeuralNetwork::setDivider(double div)
 {
 	divider = div;
+}
+
+void RecurrentNeuralNetwork::setFitness(double fitness)
+{
+	m_fitness = fitness;
+}
+
+double RecurrentNeuralNetwork::getFitness()
+{
+	return m_fitness;
 }
 
 RecurrentNeuralNetwork::~RecurrentNeuralNetwork()

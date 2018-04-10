@@ -920,11 +920,11 @@ void Dog::getAllMaxMinAngles()
 	if (backLeftTigh->getHinge("backLeftKnee")->getHingeAngle() <= backLeftTigh->getHinge("backLeftKnee")->getLowerLimit() + 0.05) {
 		maxMinAngles[7] = -1.0;
 	}
-	std::cout << "maxMin: \n";
-	for (int i = 0; i < maxMinAngles.size(); i++) {
-		std::cout << maxMinAngles[i] << " ";
-	}
-	std::cout << "\n";
+	//std::cout << "maxMin: \n";
+	//for (int i = 0; i < maxMinAngles.size(); i++) {
+	//	std::cout << maxMinAngles[i] << " ";
+	//}
+	//std::cout << "\n";
 
 }
 

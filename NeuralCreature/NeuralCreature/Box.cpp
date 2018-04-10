@@ -71,7 +71,6 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 	axisOfRotation = glm::vec3(1.0f, 1.0f, 1.0f);
 	
 	//Box STUFF
-	GLuint BoxVBO;
 	glGenVertexArrays(1, &BoxVAO);
 	glGenBuffers(1, &BoxVBO);
 
@@ -88,6 +87,7 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0); // Unbind VAO
+	glDeleteBuffers(1, &BoxVBO);
 
 	if (shapetype != BOX_SHAPE && shapetype != CAPSULE_SHAPE) {
 		throw std::invalid_argument("invalid shape");
@@ -101,6 +101,7 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 	groundCollision = false;
 
 	previousPosition = position;
+
 }
 
 Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLfloat depth, btScalar mass) : position(position), color(color), mass(mass), width(width), height(height), depth(depth)
@@ -155,12 +156,10 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 	axisOfRotation = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	//Box STUFF
-	GLuint BoxVBO;
 	glGenVertexArrays(1, &BoxVAO);
-	glGenBuffers(1, &BoxVBO);
-
 	glBindVertexArray(BoxVAO);
 
+	glGenBuffers(1, &BoxVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, BoxVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(BoxVertices), BoxVertices, GL_STATIC_DRAW);
 
@@ -172,6 +171,7 @@ Box::Box(glm::vec3 position, glm::vec3 color, GLfloat width, GLfloat height, GLf
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0); // Unbind VAO
+	glDeleteBuffers(1, &BoxVBO);
 
 						  //mass = 1;
 						  //Set up physics
@@ -263,7 +263,7 @@ void Box::setRotation(GLfloat angle, glm::vec3 axisOfRotation)
 */
 void Box::setUpPhysicsBox()
 {
-	//TODO: delete fall shape at the end of game loop
+
 	if (m_shapeType == CAPSULE_SHAPE) {
 		fallShape = new btCapsuleShape(width, height);
 	}
@@ -622,5 +622,8 @@ Box::~Box()
 	hinges.clear();
 	joints.clear();
 	dofConstraints.clear();
+
+	glDeleteVertexArrays(1, &BoxVAO);
+	glDeleteBuffers(1, &BoxVBO);
 
 }

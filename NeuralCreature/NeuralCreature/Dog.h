@@ -4,7 +4,9 @@
 #include "Util.h"
 #include <thread>
 #include "NEATNetwork.h"
-class Dog
+#include "Creature.h"
+
+class Dog : public Creature
 {
 
 private:

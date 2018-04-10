@@ -159,6 +159,7 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Biped.h" />
+    <ClInclude Include="Creature.h" />
     <ClInclude Include="Dog.h" />
     <ClInclude Include="GeneticAlgorithm.h" />
     <ClInclude Include="NEATController.h" />
@@ -182,6 +183,7 @@
   <ItemGroup>
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Biped.cpp" />
+    <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Dog.cpp" />
     <ClCompile Include="GeneticAlgorithm.cpp" />
     <ClCompile Include="Main.cpp" />

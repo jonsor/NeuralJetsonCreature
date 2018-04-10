@@ -16,10 +16,24 @@ Purpose: Writes and stores network, generation, fitness and distance data. Also 
 //}
 template class NetworkWriter<Biped>;
 template class NetworkWriter<Dog>;
+//template class NetworkWriter<RecurrentNeuralNetwork>;
+template <class T>
+void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, int nonEvolvedGen, int generation, unsigned mainSeed) {
+	std::string fileName = "";
+	if (std::is_same<T, RecurrentNeuralNetwork>::value) {
+		std::string fileName = "networks" + std::to_string(nonEvolvedGen) + ".txt";
+	}
+	else {
+		std::string fileName = (std::is_same<T, Dog>::value) ? "networksDogs" + std::to_string(nonEvolvedGen) + ".txt" : "networksBipeds.txt";
+	}
+	writeToFile(creatures, fileName, generation, mainSeed);
+}
+
 template <class T>
 void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, int generation, unsigned mainSeed) {
 	std::string fileName = (std::is_same<T, Dog>::value) ? "networksDogs.txt" : "networksBipeds.txt";
 	writeToFile(creatures, fileName, generation, mainSeed);
+
 }
 
 //void NetworkWriter::writeFitness(double bestFitness)
@@ -31,19 +45,22 @@ void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, int generation, un
 //{
 //	writeDistance(distance, "distancePlot.txt");
 //}
-
-template class NetworkWriter<Biped>;
-template class NetworkWriter<Dog>;
 template <class T>
 void NetworkWriter<T>::readFromFile(std::vector<T*> creatures) {
-	std::string dogsName = "networksDogs25-32-16-8.txt";
+	std::string dogsName = "networksDogs.txt";
 	std::string fileName = (std::is_same<T, Dog>::value) ? dogsName : "networksBipeds.txt";
 	readFromFile(creatures, fileName);
 
 }
 
-template class NetworkWriter<Biped>;
-template class NetworkWriter<Dog>;
+template <class T>
+void NetworkWriter<T>::readFromFile(int num, std::vector<T*> creatures) {
+	std::string dogsName = "networksDogs" + std::to_string(num) +".txt";
+	std::string fileName = (std::is_same<T, Dog>::value) ? dogsName : "networksBipeds.txt";
+	readFromFile(creatures, fileName);
+
+}
+
 template <class T>
 void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, std::string fileName, int generation, unsigned mainSeed)
 {
@@ -52,6 +69,7 @@ void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, std::string fileNa
 	//myfile.open(fileName);
 	myfile << creatures.size() << " " << generation << " " << std::setprecision(20) << mainSeed << std::endl;
 	for (int i = 0; i < creatures.size(); i++) {
+		//RecurrentNeuralNetwork network = (std::is_same<T, RecurrentNeuralNetwork>::value) ? creatures[i] : creatures[i]->getNeuralNetwork();
 		myfile << std::setprecision(20) << creatures[i]->getNeuralNetwork().getDivider() << std::endl;
 
 		std::vector<std::vector<Neuron>> tempNetLayers = creatures[i]->getNeuralNetwork().getLayers();
@@ -71,8 +89,6 @@ void NetworkWriter<T>::writeToFile(std::vector<T*> creatures, std::string fileNa
 	myfile.close();
 }
 
-template class NetworkWriter<Biped>;
-template class NetworkWriter<Dog>;
 template <class T>
 void NetworkWriter<T>::readFromFile(std::vector<T*> creatures, std::string fileName)
 {

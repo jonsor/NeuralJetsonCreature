@@ -19,7 +19,6 @@ const int FITNESS_STANDING = 2;
 
 const int BIPED = 0;
 const int DOG = 1;
-
 class GeneticAlgorithm
 {
 private:
@@ -30,8 +29,10 @@ private:
 	int m_numElites;
 	int m_numCreatures;
 	int timesNoImprovement;
+	std::vector<Creature*> creatures;
 	std::vector<Biped*> bipeds;
 	std::vector<Dog*> dogs;
+	std::vector<RecurrentNeuralNetwork> networks;
 	int generation;
 	double lastFitness;
 	int m_currentStep;
@@ -44,8 +45,12 @@ private:
 	bool m_keepRunning;
 	int fitnessType;
 	double allTimeBestFitness;
+	int nonEvolvedGen;
+	int numTimesNoEvolution;
+	bool evolve;
 
 	glm::vec3 targetPos;
+	//std::shared_ptr<Box> targetPosBox;
 	Box* targetPosBox;
 
 public:
@@ -58,8 +63,13 @@ public:
 	static void updateBiped(Biped* creature, int fitnessType, int currentStep);
 	static void updateDog(Dog* creature, int fitnessType, int currentStep, int timesNoImprovement);
 	void createNewGeneration(PhysicsManager * pm);
+	void evaluateAndSortDogs(PhysicsManager * pm, double & bestFit);
+	void evaluateAndSortBipeds(PhysicsManager * pm, double & bestFit);
 	bool keepRunning();
 	std::vector<unsigned> getSeedsForCreatures();
+
+	template <typename T>
+	void setTargetPosition(std::vector<T*> creatures);
 	~GeneticAlgorithm();
 };
 

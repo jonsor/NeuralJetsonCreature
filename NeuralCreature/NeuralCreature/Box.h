@@ -35,6 +35,7 @@ private:
 	GLfloat height;
 	GLfloat depth;
 	GLuint BoxVAO;
+	GLuint BoxVBO;
 	GLfloat angle;
 	btScalar mass;
 	glm::vec3 axisOfRotation;

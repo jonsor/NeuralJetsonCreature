@@ -24,7 +24,7 @@ void PhysicsManager::initPhysics()
 
 	double x = ((double)rand()) / ((double)RAND_MAX) / 2 -0.25;
 	x /= 100;
-	std::cout << "x: " << x << "\n";
+	//std::cout << "x: " << x << "\n";
 	x = 0; 
 	groundShape = new btStaticPlaneShape(btVector3(x, 1, x), 1);
 

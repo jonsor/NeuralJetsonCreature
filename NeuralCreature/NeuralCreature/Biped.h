@@ -3,8 +3,9 @@
 #include "RecurrentNeuralNetwork.h"
 #include "Util.h"
 #include <thread>
+#include "Creature.h"
 
-class Biped
+class Biped : public Creature
 {
 
 private:
