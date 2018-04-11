@@ -97,7 +97,7 @@ void GeneticAlgorithm::initCreatures(PhysicsManager* pm)
 		NetworkWriter<Biped>::readFromFile(bipeds);
 	}
 	else {
-		//NetworkWriter<Dog>::readFromFile(dogs);
+		NetworkWriter<Dog>::readFromFile(dogs);
 	}
 }
 
@@ -325,8 +325,8 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 				} while (parentAind == parentBind || takenBool);
 
 				taken.push_back(parentAind);
-				tempCret->setNeuralNetwork(RecurrentNeuralNetwork(dogs[noCrossIndex]->getNeuralNetwork()));
-				//tempCret->setNeuralNetwork(crossOver(&dogs[parentAind]->getNeuralNetwork(), &dogs[parentBind]->getNeuralNetwork()));
+				//tempCret->setNeuralNetwork(RecurrentNeuralNetwork(dogs[noCrossIndex]->getNeuralNetwork()));
+				tempCret->setNeuralNetwork(crossOver(&dogs[parentAind]->getNeuralNetwork(), &dogs[parentBind]->getNeuralNetwork()));
 
 				//tempCret->setNEATNeuralNetwork(NEATNetwork(dogs[index]->getNEATNeuralNetwork()));
 
@@ -409,7 +409,7 @@ void GeneticAlgorithm::createNewGeneration(PhysicsManager * pm) //TODO: FIKS MIN
 void GeneticAlgorithm::evaluateAndSortDogs(PhysicsManager * pm, double& bestFit) {
 	timeNotWritten++;
 	//if (timeNotWritten >= 5) {
-	NetworkWriter<Dog>::writeToFile(dogs, nonEvolvedGen, generation, m_overSeed);
+	//NetworkWriter<Dog>::writeToFile(dogs, nonEvolvedGen, generation, m_overSeed);
 	timeNotWritten = 0;
 	//}
 
@@ -672,7 +672,7 @@ double GeneticAlgorithm::evaluateFitnessDog(Dog* creature, int fitnessType, int 
 		//}
 		//std::cout << "jointsAtlimitPenalty: " << jointsAtlimitPenalty << "\n";
 		//std::cout << "tighMovement: " << tighMovement << "\n";
-		fitness = -distanceWalked + timeAlive / 100;
+		fitness = -distanceWalked;
 		if (creature->isTargetReached()) {
 			fitness += 100;
 		}
